@@ -1,11 +1,16 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { CREATE_ACCOUNT } from '$lib';
+	import { CREATE_ACCOUNT, MAIN } from '$lib';
 	import MainAvatar from '$lib/components/common/MainAvatar.svelte';
 	import LoginForm from './LoginForm.svelte';
+	import type { FormData as LoginFormData } from './LoginForm.svelte';
 
 	function onSignUp() {
 		goto(CREATE_ACCOUNT);
+	}
+
+	function onLogin(formData: LoginFormData) {
+		goto(MAIN);
 	}
 </script>
 
@@ -18,6 +23,6 @@
 		<p class="text-md text-gray-500">Enter your username and password to login</p>
 	</div>
 	<div class="w-full max-w-sm">
-		<LoginForm {onSignUp} />
+		<LoginForm {onSignUp} {onLogin} />
 	</div>
 </div>

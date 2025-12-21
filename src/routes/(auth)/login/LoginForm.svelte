@@ -5,7 +5,7 @@
 		onSignUp?: () => void;
 	}
 
-	type FormData = {
+	export type FormData = {
 		username: string;
 		password: string;
 	};

@@ -10,7 +10,7 @@
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { PROFILE, LOGIN } from '$lib/constants/routes.constants';
+	import { PROFILE, LOGIN, BOARD, DASHBOARD, DEPARTMENTS, USERS } from '$lib/constants/routes.constants';
 	import { goto } from '$app/navigation';
 
   let { children } = $props();
@@ -18,22 +18,22 @@
   let sidebarMenuItems = $state<SidebarModel>([
     {
       label: "Dashboard",
-      href: "/dashboard",
+      href: DASHBOARD,
       icon: ChartBarBig,
     },
     {
       label: "Board",
-      href: "/board",
+      href: BOARD,
       icon: FolderKanban,
     },
     {
       label: "Departments",
-      href: "/departments",
+      href: DEPARTMENTS,
       icon: Building2,
     },
     {
       label: "Users",
-      href: "/users",
+      href: USERS,
       icon: Users,
     },
   ]);
