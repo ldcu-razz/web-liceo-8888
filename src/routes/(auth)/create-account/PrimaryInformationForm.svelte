@@ -251,7 +251,6 @@
       <SelectCalendar
         bind:value={birthdate}
         id="birthdate"
-        placeholder="Select birthdate"
         maxValue={todayDate}
         aria-invalid={hasFieldErrorMessage("birthdate")}
         buttonClass={hasFieldErrorMessage("birthdate") ? "border-destructive ring-destructive/20 dark:ring-destructive/40" : ""}

@@ -1,9 +1,15 @@
 <script lang="ts">
 	import { Popover, PopoverContent, PopoverTrigger } from "$lib/components/ui/popover";
 	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
+	import {
+		InputGroup,
+		InputGroupInput,
+	} from "$lib/components/ui/input-group";
+	import { Calendar as CalendarIcon } from "@lucide/svelte";
 	import { getLocalTimeZone, DateFormatter, type DateValue } from "@internationalized/date";
 	import { cn } from "$lib/utils.js";
 	import type { ComponentProps } from "svelte";
+	import InputGroupAddon from "../input-group/input-group-addon.svelte";
 
 	type Props = {
 		value?: DateValue | undefined;
@@ -12,6 +18,7 @@
 		"aria-invalid"?: boolean | "false" | "true";
 		disabled?: boolean;
 		buttonClass?: string;
+		inputClass?: string;
 		popoverContentClass?: string;
 		calendarClass?: string;
 		captionLayout?: ComponentProps<typeof Calendar>["captionLayout"];
@@ -23,11 +30,12 @@
 
 	let {
 		value = $bindable(),
-		placeholder = "Select date",
+		placeholder = "",
 		id,
 		"aria-invalid": ariaInvalid,
 		disabled = false,
 		buttonClass,
+		inputClass,
 		popoverContentClass,
 		calendarClass,
 		captionLayout = "dropdown",
@@ -76,32 +84,35 @@
 		}
 	});
 
-	const defaultButtonClass = $derived(
+	const formattedValue = $derived(formatDate(value));
+
+	const defaultInputGroupClass = $derived(
 		cn(
-			"flex h-9 w-full rounded-md border border-input bg-background px-3 py-1.5 text-base shadow-xs ring-offset-background transition-[color,box-shadow] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 md:text-sm dark:bg-input/30 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 text-left justify-start",
+			"cursor-pointer",
 			popoverOpen && ariaInvalid !== true && ariaInvalid !== "true"
 				? "border-ring ring-[3px] ring-ring/50"
 				: "",
-			ariaInvalid === true || ariaInvalid === "true"
-				? "border-destructive ring-destructive/20 dark:ring-destructive/40"
-				: "",
-			buttonClass
+			buttonClass, // Keep for backward compatibility
+			inputClass
 		)
 	);
 </script>
 
 <Popover bind:open={popoverOpen} onOpenChange={handleOpenChange}>
 	<PopoverTrigger>
-		<button
-			type="button"
-			{id}
-			disabled={disabled}
-			class={defaultButtonClass}
-		>
-			<span class={formatDate(value) ? "" : "text-muted-foreground"}>
-				{formatDate(value) || placeholder}
-			</span>
-		</button>
+		<InputGroup class={defaultInputGroupClass} aria-invalid={ariaInvalid}>
+			<InputGroupInput
+				{id}
+				readonly
+				disabled={disabled}
+				aria-invalid={ariaInvalid}
+				value={formattedValue}
+				placeholder={placeholder}
+			/>
+			<InputGroupAddon>
+				<CalendarIcon />
+			</InputGroupAddon>
+		</InputGroup>
 	</PopoverTrigger>
 	<PopoverContent class={cn("w-auto p-0", popoverContentClass)}>
 		<Calendar
