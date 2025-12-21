@@ -48,7 +48,7 @@
       <SidebarMenu>
         {#each sidebarMenuItems as item (item.label)}
           <SidebarMenuItem>
-            <SidebarMenuButton isActive={item.href === $page.url.pathname}>
+            <SidebarMenuButton isActive={$page.url.pathname.includes(item.href)}>
               <item.icon />
               <a href={item.href} class="w-full">{item.label}</a>
             </SidebarMenuButton>

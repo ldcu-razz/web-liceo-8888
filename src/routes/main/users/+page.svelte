@@ -6,6 +6,9 @@
 	import { createUsersTableColumns } from "./columns";
 	import UsersDataTable from "./UsersDataTable.svelte";
 	import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
+	import { goto } from "$app/navigation";
+	import { getRoute } from "$lib/utils/routes.utils";
+	import { CREATE_USER, USER_DETAILS } from "$lib/constants";
 
 
   let data: Users[] = $state([
@@ -66,8 +69,12 @@
 
   const columns = $derived(createUsersTableColumns(handleUserView, handleUserDelete));
 
+  function handleAddUserClick() {
+    goto(CREATE_USER);
+  }
+
   function handleUserView(id: string) {
-    console.log(id);
+    goto(getRoute(USER_DETAILS, { id }));
   }
 
   function handleUserDelete(id: string) {
@@ -86,13 +93,13 @@
     <div class="flex items-center gap-4">
       <h1 class="text-2xl font-semibold">Users</h1>
       <InputGroup>
-        <InputGroupInput bind:value={search} placeholder="Search by name" />
+        <InputGroupInput bind:value={search} placeholder="Search by name, RFID" />
         <InputGroupAddon>
           <SearchIcon class="size-4" />
         </InputGroupAddon>
       </InputGroup>
     </div>
-    <Button variant="secondary">
+    <Button variant="secondary" onclick={handleAddUserClick}>
       <PlusIcon class="size-4" />
       Add User
     </Button>

@@ -7,4 +7,6 @@ export const DASHBOARD = '/main/dashboard';
 export const BOARD = '/main/board';
 export const DEPARTMENTS = '/main/departments';
 export const USERS = '/main/users';
+export const CREATE_USER = '/main/users/create';
+export const USER_DETAILS = '/main/users/{id}';
 export const PROFILE = '/main/profile';

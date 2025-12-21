@@ -1,7 +1,7 @@
 import z from "zod";
 import { SexEnumSchema, UUIDSchema } from "../common/common.schema";
 
-export const UserRolesEnumSchema = z.enum(["super_admin", "admin", "user"]);
+export const UserRolesEnumSchema = z.enum(["super_admin", "admin", "user", "department_staff"]);
 
 export const UsersSchema = z.object({
   id: UUIDSchema,
