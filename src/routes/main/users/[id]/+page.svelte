@@ -1,5 +1,6 @@
 <script lang="ts">
   import redWhiteGradientPattern from "$lib/assets/images/red-white-gradient-pattern.png";
+  import redBannerGradientPattern from "$lib/assets/images/red-banner-gradient.png";
 	import { Button } from "$lib/components/ui/button";
 	import { ArrowLeftIcon, PencilIcon, TrashIcon } from "@lucide/svelte";
 	import UserPrimaryInfo from "./UserPrimaryInfo.svelte";
@@ -26,7 +27,7 @@
 </script>
 
 <div class="flex flex-col gap-4 container mx-auto">
-  <div class="bg-image bg-cover bg-center h-36 rounded-md" style="background-image: url('{redWhiteGradientPattern}');"></div>
+  <div class="bg-image bg-cover bg-center h-42 rounded-md" style="background-image: url('{redBannerGradientPattern}');"></div>
 
   <div class="min-w-xl mx-auto">
     <div class="flex flex-col gap-2">
