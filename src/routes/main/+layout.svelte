@@ -4,16 +4,18 @@
 	import SidebarMenu from '$lib/components/ui/sidebar/sidebar-menu.svelte';
 	import Sidebar from '$lib/components/ui/sidebar/sidebar.svelte';
 	import type { SidebarModel } from '$lib/models/sidebar/sidebar.model';
-	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Users } from '@lucide/svelte';
+	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Tag, Users } from '@lucide/svelte';
 	import AppNavbar from './AppNavbar.svelte';
 	import { page } from '$app/stores';
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { PROFILE, LOGIN, BOARD, DASHBOARD, DEPARTMENTS, USERS } from '$lib/constants/routes.constants';
+	import { PROFILE, LOGIN, DASHBOARD, DEPARTMENTS, USERS, COMPLAINTS_BOARD, COMPLAINTS_CATEGORIES } from '$lib/constants/routes.constants';
 	import { goto } from '$app/navigation';
+	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
 
   let { children } = $props();
+
 
   let sidebarMenuItems = $state<SidebarModel>([
     {
@@ -22,9 +24,20 @@
       icon: ChartBarBig,
     },
     {
-      label: "Board",
-      href: BOARD,
+      label: "Complaints",
       icon: FolderKanban,
+      children: [
+        {
+          label: "Board",
+          href: COMPLAINTS_BOARD,
+          icon: FolderKanban,
+        },
+        {
+          label: "Categories",
+          href: COMPLAINTS_CATEGORIES,
+          icon: Tag,
+        },
+      ],
     },
     {
       label: "Departments",
@@ -48,10 +61,14 @@
       <SidebarMenu>
         {#each sidebarMenuItems as item (item.label)}
           <SidebarMenuItem>
-            <SidebarMenuButton isActive={$page.url.pathname.includes(item.href)}>
-              <item.icon />
-              <a href={item.href} class="w-full">{item.label}</a>
-            </SidebarMenuButton>
+            {#if item.children}
+              <CollapsibleMenuItem item={item} />
+            {:else}
+              <SidebarMenuButton isActive={item.href ? $page.url.pathname.includes(item.href) : false}>
+                <item.icon />
+                <a href={item.href} class="w-full">{item.label}</a>
+              </SidebarMenuButton>
+            {/if}
           </SidebarMenuItem>
         {/each}
       </SidebarMenu>
