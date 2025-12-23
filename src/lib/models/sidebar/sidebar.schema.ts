@@ -4,7 +4,7 @@ import z from "zod";
 
 export const SidebarItemSchema = z.object({
   label: z.string(),
-  href: z.string(),
+  href: z.string().optional(),
   icon: z.custom<Component>().optional(),
 });
 
