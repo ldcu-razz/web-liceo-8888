@@ -6,7 +6,7 @@
 	import { createComplaintsCategoriesColumns } from "./columns";
 	import type { ComplaintsCategories } from "$lib/models/complaints/categories/complaints-categories.type";
 	import ComplaintsCategoriesDataTable from "./ComplaintsCategoriesDataTable.svelte";
-	import ComplaintCategoryForm, { defaultFormData, type FormData as ComplaintCategoryFormData } from "./ComplainCategoryForm.svelte";
+	import ComplaintCategoryForm, { defaultFormData, type FormData as ComplaintCategoryFormData, type Mode as ComplaintCategoryFormMode } from "./ComplainCategoryForm.svelte";
 
   let data: ComplaintsCategories[] = $state([
     {
@@ -40,7 +40,10 @@
   let showComplaintCategoryFormSheet = $state(false);
 
   let activeComplaintCategoryId: string | null = $state(null);
+
   let activeComplaintCategory: ComplaintsCategories | null = $derived(data.find(c => c.id === activeComplaintCategoryId) ?? null);
+
+  let formMode: ComplaintCategoryFormMode = $state("create");
 
   let formData: ComplaintCategoryFormData = $state({ ...defaultFormData });
 
@@ -48,10 +51,12 @@
 
   function handleAddComplaintCategory() {
     formData = { ...defaultFormData };
+    formMode = "create";
     showComplaintCategoryFormSheet = true;
   }
 
   function handleViewComplaintCategory(id: string) {
+    formMode = "update";
     activeComplaintCategoryId = id;
     activeComplaintCategory = data.find(c => c.id === id) ?? null;
     if (activeComplaintCategory) {
@@ -100,8 +105,8 @@
         </Button>
         <SheetContent>
           <SheetHeader>
-            <SheetTitle>Add Category</SheetTitle>
-            <SheetDescription>Add a new complaint category to the system.</SheetDescription>
+            <SheetTitle>{formMode === "create" ? "Add Category" : "Edit Category"}</SheetTitle>
+            <SheetDescription>{formMode === "create" ? "Add a new complaint category to the system." : "Edit the complaint category information."}</SheetDescription>
           </SheetHeader>
           <ComplaintCategoryForm bind:formData={formData} onSubmit={handleSubmitComplaintCategoryForm} onCancel={handleCancelComplaintCategoryForm} />
         </SheetContent>

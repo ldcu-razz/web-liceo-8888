@@ -23,6 +23,8 @@
 
   export type FormData = z.infer<typeof formSchema>;
 
+  export type Mode = "create" | "update";
+
   export const defaultFormData: FormData = {
     name: "",
     default_department: null,
@@ -30,6 +32,7 @@
   };
 
   export type Props = {
+    mode?: Mode
     invalid?: boolean;
     formData?: FormData;
     onSubmit?: (formData: FormData) => void;
@@ -39,6 +42,7 @@
 
 <script lang="ts">
   let { 
+    mode = "create",
     invalid = $bindable(true),
     formData = $bindable(defaultFormData), 
     onSubmit = () => {}, 
