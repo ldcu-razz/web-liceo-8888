@@ -7,6 +7,7 @@ export const DepartmentsSchema = z.object({
   abbv: z.string(),
   description: z.string().optional().default(""),
   keywords: z.array(z.string()).optional().default([]),
+  avatar: z.string().optional().default(""),
   status: BaseStatusEnumSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
