@@ -97,14 +97,14 @@
       </Popover>
     </SidebarFooter>
   </Sidebar>
-  <main class="w-full min-h-screen bg-gray-50 py-3 px-2">
-    <div class="border border-border rounded-lg h-full bg-white">
+  <main class="flex-1 min-h-screen bg-gray-50 py-3 px-2 flex">
+    <div class="border border-border rounded-lg bg-white flex flex-col flex-1">
       <AppNavbar>
         {#snippet sidebarTrigger()}
           <SidebarTrigger />
         {/snippet}
       </AppNavbar>
-      <div class="p-4">
+      <div class="p-4 flex-1">
         {@render children?.()}
       </div>
     </div>
