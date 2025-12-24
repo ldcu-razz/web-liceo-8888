@@ -10,6 +10,7 @@
 		class: className,
 		sideOffset = 0,
 		side = "top",
+		hideArrow = false,
 		children,
 		arrowClasses,
 		portalProps,
@@ -17,6 +18,7 @@
 	}: TooltipPrimitive.ContentProps & {
 		arrowClasses?: string;
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof TooltipPortal>>;
+		hideArrow?: boolean;
 	} = $props();
 </script>
 
@@ -33,6 +35,7 @@
 		{...restProps}
 	>
 		{@render children?.()}
+	{#if !hideArrow}
 		<TooltipPrimitive.Arrow>
 			{#snippet child({ props })}
 				<div
@@ -48,5 +51,6 @@
 				></div>
 			{/snippet}
 		</TooltipPrimitive.Arrow>
+	{/if}
 	</TooltipPrimitive.Content>
 </TooltipPortal>
