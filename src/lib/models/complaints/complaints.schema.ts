@@ -3,7 +3,7 @@ import { UUIDSchema } from "../common/common.schema";
 
 export const ComplaintPrioritiesSchema = z.enum(["low","lowest", "medium", "high", "highest"]);
 
-export const ComplaintStatusesSchema = z.enum(["backlog", "ready", "in_progress", "in_review", "done"]);
+export const ComplaintStatusesSchema = z.enum(["backlog", "ready", "in_progress", "in_review", "done", "archived"]);
 
 export const ComplaintsSchema = z.object({
   id: UUIDSchema,

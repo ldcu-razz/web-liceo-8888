@@ -16,6 +16,7 @@ export const UsersSchema = z.object({
   password: z.string(),
   role: UserRolesEnumSchema,
   department_id: UUIDSchema,
+  avatar: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });

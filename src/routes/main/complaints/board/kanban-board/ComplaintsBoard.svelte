@@ -19,6 +19,7 @@
   type Props = {
     complaints: Complaints[];
     class: string;
+    onComplainClick?: ( complaint: Complaints ) => void;
   }
 </script>
 
@@ -26,7 +27,7 @@
 	import { draggable, droppable } from "$lib/utils/drag-drop.utils";
 	import { SvelteMap } from "svelte/reactivity";
 
-  let { complaints, class: className = "" }: Props = $props();
+  let { complaints, class: className = "", onComplainClick }: Props = $props();
 
   let baseColumns = $state<BoardColumnBase[]>([
     {
@@ -107,9 +108,9 @@
         <p class="text-xs text-gray-500 px-2">{column.description}</p>
       </div>
 
-      <div class="flex-1 min-h-0 px-2 pb-3">
+      <div class="flex-1 min-h-0 px-1 pb-1">
         <div
-          class="h-full rounded-sm flex flex-col gap-2 column-content drop-zone"
+          class="h-full rounded-sm flex flex-col gap-1 column-content drop-zone"
           use:droppable={{
             dropZoneId: column.id,
             onDrop: handleDrop
@@ -122,7 +123,7 @@
                 data: complaint
               }}
             >
-              <ComplainCard complaint={complaint} />
+              <ComplainCard complaint={complaint} onClick={onComplainClick} />
             </div>
           {/each}
         </div>

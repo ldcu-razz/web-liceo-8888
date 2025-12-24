@@ -25,7 +25,7 @@
         {:else if priority === "high"}
           <ChevronUp class="size-5 text-amber-500" />
         {:else if priority === "highest"}
-          <ChevronsUp class="size-6 text-red-500" />
+          <ChevronsUp class="size-5 text-red-500" />
         {/if}
       </div>
     </TooltipTrigger>
