@@ -3,8 +3,11 @@
   import { type ColumnDef, getCoreRowModel, getPaginationRowModel, type PaginationState } from "@tanstack/table-core";
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
 	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table";
-	import { Button } from "$lib/components/ui/button";
 	import { Loader } from "@lucide/svelte";
+	import { Pagination, PaginationEllipsis, PaginationLink, PaginationNextButton } from "$lib/components/ui/pagination";
+	import PaginationContent from "$lib/components/ui/pagination/pagination-content.svelte";
+	import PaginationItem from "$lib/components/ui/pagination/pagination-item.svelte";
+	import PaginationPrevButton from "$lib/components/ui/pagination/pagination-prev-button.svelte";
 
   type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
@@ -19,8 +22,12 @@
 
   let pagination = $state<PaginationState>({
     pageIndex: 0,
-    pageSize: 25,
+    pageSize: 15,
   });
+  
+  let emptyData = $derived(data.length === 0);
+
+  let dataLength = $derived(data.length);
 
   const table = createSvelteTable({
     get data() {
@@ -127,42 +134,76 @@
     </Table>
   </div>
 
-  <div class="flex items-center justify-between">
-    <div class="text-muted-foreground flex-1 text-sm">
-      Page {pagination.pageIndex + 1} of {table.getPageCount()}
-    </div>
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <Button
-        variant="outline"
-        size="sm"
-        onclick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        Prev
-      </Button>
-      <div class="flex items-center space-x-1">
-        {#each getPageNumbers(pagination.pageIndex, table.getPageCount()) as pageNum, index (index)}
-          {#if pageNum === 'ellipsis'}
-            <span class="px-2 text-muted-foreground">...</span>
-          {:else}
-            <Button
-              variant={pageNum === pagination.pageIndex ? "default" : "outline"}
-              size="sm"
-              onclick={() => table.setPageIndex(pageNum)}
-            >
-              {pageNum + 1}
-            </Button>
-          {/if}
-        {/each}
+  {#if !emptyData}
+    <div class="flex items-center justify-between mt-4">
+      <div class="text-muted-foreground flex-1 text-sm">
+        Page {pagination.pageIndex + 1} of {table.getPageCount()}
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onclick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        Next
-      </Button>
+      <Pagination count={dataLength} page={pagination.pageIndex + 1} onPageChange={(page) => table.setPageIndex(page - 1)} class="w-fit">
+        {#snippet children({ pages, currentPage })}
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevButton />
+            </PaginationItem>
+
+            {#each pages as page (page.key)}
+              {#if page.type === "ellipsis"}
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              {:else}
+                <PaginationItem>
+                  <PaginationLink page={page} isActive={currentPage === page.value}>
+                    {page.value}
+                  </PaginationLink>
+                </PaginationItem>
+              {/if}
+            {/each}
+
+            <PaginationItem>
+              <PaginationNextButton />
+            </PaginationItem>
+          </PaginationContent>
+        {/snippet}
+      </Pagination>
     </div>
-  </div>
+    <!-- <div class="flex items-center justify-between">
+      <div class="text-muted-foreground flex-1 text-sm">
+        Page {pagination.pageIndex + 1} of {table.getPageCount()}
+      </div>
+      <div class="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Prev
+        </Button>
+        <div class="flex items-center space-x-1">
+          {#each getPageNumbers(pagination.pageIndex, table.getPageCount()) as pageNum, index (index)}
+            {#if pageNum === 'ellipsis'}
+              <span class="px-2 text-muted-foreground">...</span>
+            {:else}
+              <Button
+                variant={pageNum === pagination.pageIndex ? "default" : "outline"}
+                size="sm"
+                onclick={() => table.setPageIndex(pageNum)}
+              >
+                {pageNum + 1}
+              </Button>
+            {/if}
+          {/each}
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    </div> -->
+  {/if}
 </div>

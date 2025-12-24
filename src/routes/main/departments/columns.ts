@@ -5,8 +5,9 @@ import StatusBadge from "$lib/components/common/StatusBadge.svelte";
 import DepartmentsDataTableActions from "./DepartmentsDataTableActions.svelte";
 import KeywordsCell from "./KeywordsCell.svelte";
 import NameCell from "./NameCell.svelte";
+import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 
-export function createColumns(onView?: (id: string) => void, onDelete?: (id: string) => void): ColumnDef<Departments>[] {
+export function createColumns(onView?: (id: string) => void, onArchive?: (id: string) => void): ColumnDef<Departments>[] {
   return [
     {
       header: "Name",
@@ -34,13 +35,17 @@ export function createColumns(onView?: (id: string) => void, onDelete?: (id: str
       },
     },
     {
-      header: "Created At",
-      accessorKey: "createdAt",
+      header: "Updated At",
+      accessorKey: "updatedAt",
       cell: ({ row }) => {
-        return new Date(row.original.createdAt).toLocaleDateString("en-US", {
+        return new Date(row.original.updatedAt).toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
         });
       },
     },
@@ -48,7 +53,8 @@ export function createColumns(onView?: (id: string) => void, onDelete?: (id: str
       header: "Actions",
       accessorKey: "actions",
       cell: ({ row }) => {
-        return renderComponent(DepartmentsDataTableActions, { id: row.original.id, onView, onDelete });
+        const disabledArchive = row.original.status === BaseStatusEnumSchema.enum.archived;
+        return renderComponent(DepartmentsDataTableActions, { id: row.original.id, disabledArchive, onView, onArchive });
       },
     },
   ];

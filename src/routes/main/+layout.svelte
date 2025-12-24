@@ -13,6 +13,8 @@
 	import { PROFILE, LOGIN, DASHBOARD, DEPARTMENTS, USERS, COMPLAINTS_BOARD, COMPLAINTS_CATEGORIES } from '$lib/constants/routes.constants';
 	import { goto } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
+	import { onMount } from 'svelte';
+	import { departmentsActions } from '$lib/store/departments.store';
 
   let { children } = $props();
 
@@ -50,6 +52,10 @@
       icon: Users,
     },
   ]);
+
+  onMount(() => {
+    departmentsActions.getDepartments();
+  });
 </script>
 
 <SidebarProvider>

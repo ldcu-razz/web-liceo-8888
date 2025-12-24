@@ -37,13 +37,14 @@
 
   export type Props = {
     formData?: FormData;
+    disabledPositiveButton?: boolean;
     onSubmit?: (formData: FormData) => void;
     onCancel?: () => void;
   };
 </script>
 
 <script lang="ts">
-  let { formData = $bindable(defaultFormData), onSubmit = () => {}, onCancel = () => {} }: Props = $props();
+  let { formData = $bindable(defaultFormData), disabledPositiveButton = false, onSubmit = () => {}, onCancel = () => {} }: Props = $props();
 
 	const statusOptions = BaseStatusEnumSchema.options;
 	
@@ -239,6 +240,6 @@
 
   <div class="flex gap-2 mt-6">
     <Button type="button" variant="outline" class="flex-1 bg-gray-50" onclick={() => onCancel?.()}>Cancel</Button>
-    <Button type="submit" variant="secondary" class="flex-1">Save</Button>
+    <Button type="submit" variant="secondary" class="flex-1" disabled={disabledPositiveButton}>Save</Button>
   </div>
 </form>
