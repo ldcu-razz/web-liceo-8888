@@ -1,5 +1,5 @@
 import z from "zod";
-import { SexEnumSchema, UUIDSchema } from "../common/common.schema";
+import { BaseStatusEnumSchema, PaginatedSchema, SexEnumSchema, UUIDSchema } from "../common/common.schema";
 
 export const UserRolesEnumSchema = z.enum(["super_admin", "admin", "user", "department_staff"]);
 
@@ -16,7 +16,18 @@ export const UsersSchema = z.object({
   password: z.string(),
   role: UserRolesEnumSchema,
   department_id: UUIDSchema,
+  status: BaseStatusEnumSchema,
   avatar: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
+
+export const PaginatedUsersSchema = PaginatedSchema.extend({
+  data: z.array(UsersSchema),
+});
+
+export const PostUsersSchema = UsersSchema;
+
+export const PutUsersSchema = UsersSchema.partial();
+
+export const DeleteUsersSchema = UsersSchema.pick({ id: true });

@@ -5,8 +5,10 @@ import NameCell from "$lib/components/common/NameCell.svelte";
 import SexBadge from "$lib/components/common/SexBadge.svelte";
 import UserRoleBadge from "$lib/components/common/UserRoleBadge.svelte";
 import UsersDataTableActions from "./UsersDataTableActions.svelte";
+import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
+import StatusBadge from "$lib/components/common/StatusBadge.svelte";
 
-export function createUsersTableColumns(onView?: (id: string) => void, onDelete?: (id: string) => void): ColumnDef<Users>[] {
+export function createUsersTableColumns(onView?: (id: string) => void, onArchive?: (id: string) => void): ColumnDef<Users>[] {
   return [
     {
       header: "RFID #",
@@ -32,17 +34,6 @@ export function createUsersTableColumns(onView?: (id: string) => void, onDelete?
       },
     },
     {
-      header: "Birthdate",
-      accessorKey: "birthdate",
-      cell: ({ row }) => {
-        return new Date(row.original.birthdate).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        });
-      },
-    },
-    {
       header: "Email",
       accessorKey: "email",
     },
@@ -58,10 +49,17 @@ export function createUsersTableColumns(onView?: (id: string) => void, onDelete?
       },
     },
     {
-      header: "Created At",
-      accessorKey: "createdAt",
+      header: "Status",
+      accessorKey: "status",
       cell: ({ row }) => {
-        return new Date(row.original.createdAt).toLocaleDateString("en-US", {
+        return renderComponent(StatusBadge, { status: row.original.status });
+      },
+    },
+    {
+      header: "Updated At",
+      accessorKey: "updatedAt",
+      cell: ({ row }) => {
+        return new Date(row.original.updatedAt).toLocaleDateString("en-US", {
           month: "long",
           day: "numeric",
           year: "numeric",
@@ -76,7 +74,8 @@ export function createUsersTableColumns(onView?: (id: string) => void, onDelete?
       header: "Actions",
       accessorKey: "actions",
       cell: ({ row }) => {
-        return renderComponent(UsersDataTableActions, { id: row.original.id, onView, onDelete });
+        const disabledArchiveButton = row.original.status === BaseStatusEnumSchema.enum.archived || row.original.status === BaseStatusEnumSchema.enum.inactive;
+        return renderComponent(UsersDataTableActions, { id: row.original.id, disabledArchiveButton: disabledArchiveButton || false, onView, onArchive });
       },
     },
   ];
