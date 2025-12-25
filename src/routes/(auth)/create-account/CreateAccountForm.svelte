@@ -11,6 +11,8 @@
 		createInitialTouched,
 		markAllFieldsTouched
 	} from "$lib/utils/form.utils";
+	import { usersActions } from "$lib/store/users.store";
+	import { debounce } from "$lib/utils/reactive.utils";
 
   export type FormData = {
     username: string;
@@ -34,7 +36,7 @@
     path: ["confirmPassword"],
   });
 
-  const defaultFormData: FormData = {
+  export const defaultFormData: FormData = {
     username: "",
     password: "",
     confirmPassword: "",
@@ -57,19 +59,53 @@
 
   let errors = $state<Partial<Record<keyof FormData, string>>>({});
 
+  let isUsernameExists = $state(false);
+
+  const debouncedCheckUsername = debounce(async (username: string) => {
+    const response = await usersActions.checkUsername(username);
+    isUsernameExists = response.exists;
+
+    if (isUsernameExists) {
+      errors.username = "Username is already taken";
+      touched.username = true;
+    } else {
+      errors.username = undefined;
+    }
+  }, 600);
+
   $effect(() => {
     isFormTouched = Object.values(touched).every((value) => value === true);
+  });
+
+  $effect(() => {
+    if (formData.username) {
+      debouncedCheckUsername(formData.username);
+    }
   });
 
   function validateFormData() {
     const result = validateForm(formData, formSchema);
     errors = result.errors;
+    
+    // Check for async username validation error
+    if (isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
   function validateFieldData(field: keyof FormData) {
     const result = validateField(field, formData, formSchema, errors);
     errors = result.errors;
+    
+    // Preserve async username validation error
+    if (field === "username" && isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
@@ -80,9 +116,16 @@
 
   function handleInputChange(field: keyof FormData, value: string) {
     formData[field] = value;
+    
+    // Clear username existence check when username changes
+    if (field === "username" && isUsernameExists) {
+      isUsernameExists = false;
+    }
+    
     if (touched[field]) {
       validateFieldData(field);
     }
+
     // If password changes and confirmPassword is touched, re-validate confirmPassword
     if (field === "password" && touched.confirmPassword) {
       validateFieldData("confirmPassword");

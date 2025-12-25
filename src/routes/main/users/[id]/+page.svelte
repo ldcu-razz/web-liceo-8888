@@ -8,19 +8,48 @@
 	import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "$lib/components/ui/sheet";
 	import UserForm from "../create/UserForm.svelte";
 	import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
-	import { currentSelectedUser, currentSelectedUserLoading, hasUsersData, usersActions } from "$lib/store/users.store";
+	import { currentSelectedUser, currentSelectedUserLoading, usersActions } from "$lib/store/users.store";
 	import UserStatusBadge from "$lib/components/common/UserStatusBadge.svelte";
 	import { onDestroy, onMount } from "svelte";
 	import { page } from "$app/stores";
 	import type { BaseStatusEnum } from "$lib/models/common/common.type";
 	import UserDetailsSkeleton from "./UserDetailsSkeleton.svelte";
+	import { type FormData as UserFormDataUpdate , defaultFormData } from "../create/UserForm.svelte";
+	import { getObjectDiff } from "$lib/utils/property.utils";
 
   let isEditUserInfoSheetOpen = $state(false);
   let showArchiveUserAlertDialog = $state(false);
   let currentUser = $derived($currentSelectedUser);
   let currentUserLoading = $derived($currentSelectedUserLoading);
-
   let currentUserId = $state($page.params.id);
+
+  let formData: UserFormDataUpdate = $state({ ...defaultFormData });
+
+  let currentUserInitialData: UserFormDataUpdate = { ...defaultFormData };
+
+  onMount(async () => {
+    if (currentUserId) {
+      await usersActions.getUser(currentUserId);
+    }
+
+    if (currentUser) {
+      formData = {
+        ...defaultFormData,
+        ...currentUser,
+      };
+      
+      currentUserInitialData = {
+        ...currentUserInitialData,
+        ...currentUser,
+      };
+    }
+  });
+
+  function handleUpdateUserStatus(status: BaseStatusEnum) {
+    if (currentUserId) {
+      usersActions.updateUserStatus(currentUserId, status);
+    }
+  }
 
   function goBack() {
     window.history.back();
@@ -34,21 +63,22 @@
     showArchiveUserAlertDialog = true;
   }
 
-  onMount(() => {
+  async function handleUpdateUser(updateFormData: Partial<UserFormDataUpdate>) {
+    // console.log("formData",formData);
     if (currentUserId) {
-      usersActions.getUser(currentUserId);
+      const data = {
+        ...getObjectDiff(updateFormData, currentUserInitialData),
+        updatedAt: new Date().toISOString(),
+      };
+       
+      await usersActions.updateUser(currentUserId, data);
+      isEditUserInfoSheetOpen = false;
     }
-  });
+  }
 
   onDestroy(() => {
     usersActions.resetCurrentSelectedUserId();
   });
-
-  function handleUpdateUserStatus(status: BaseStatusEnum) {
-    if (currentUserId) {
-      usersActions.updateUserStatus(currentUserId, status);
-    }
-  }
 </script>
 
 {#if currentUserLoading}
@@ -83,7 +113,7 @@
                   <SheetTitle>Edit User Information</SheetTitle>
                   <SheetDescription>Edit the user information</SheetDescription>
                 </SheetHeader>
-                <UserForm mode="update" formBordered={false} onCancel={handleCancelEditUserInfo} />
+                <UserForm mode="update" bind:formData={formData} formBordered={false} onCancel={handleCancelEditUserInfo} onUpdateUser={handleUpdateUser} />
               </SheetContent>
             </Sheet>
 

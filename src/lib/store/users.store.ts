@@ -1,7 +1,7 @@
 import { derived, get, writable } from "svelte/store";
-import type { PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
+import type { GetUserByUsernameResponse, PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
 import type { BaseStatusEnum, Pagination } from "$lib/models/common/common.type";
-import { archiveUser, createUser, deleteUser, getNonMemberUsers, getUser, getUsers, updateUser } from "$lib/services/users/users.service";
+import { archiveUser, checkUsername, createUser, deleteUser, getNonMemberUsers, getUser, getUsers, updateUser } from "$lib/services/users/users.service";
 import { toast } from "svelte-sonner";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 
@@ -73,13 +73,18 @@ export const usersActions = {
     }
   },
 
-  createUser: async (user: PostUsers) => {
-    const toastId = toast.loading(`Creating user...`);
+  createUser: async (user: PostUsers, disabledToast?: boolean) => {
+    let toastId: string | number | undefined = undefined;
+    if (!disabledToast) {
+      toastId = toast.loading(`Creating user...`);
+    }
     try {
       usersStore.set([user, ...get(usersStore) || []]);
       await createUser(user);
       usersLoading.set(false);
-      toast.success(`User created successfully`, { id: toastId });
+      if (!disabledToast) {
+        toast.success(`User created successfully`, { id: toastId });
+      }
     } catch (error) {
       console.error(error);
       usersStore.set(get(usersStore).filter(u => u.id !== user.id));
@@ -92,12 +97,14 @@ export const usersActions = {
     const currentUser = get(usersStore).find(u => u.id === id);
     try {
       usersStore.set(get(usersStore).map(u => u.id === id ? {...u, ...user} : u));
+      currentSelectedUser.update(prev => prev ? {...prev, ...user} : prev);
       await updateUser(id, user);
       toast.success(`User updated successfully`, { id: toastId });
     } catch (error) {
       console.error(error);
       if (currentUser) {
         usersStore.set(get(usersStore).map(u => u.id === id ? {...currentUser} : u));
+        currentSelectedUser.update(prev => prev ? {...prev, ...currentUser} : prev);
       }
       toast.error(`Failed to update user`, { id: toastId });
     }
@@ -152,6 +159,32 @@ export const usersActions = {
         currentSelectedUser.update(prev => prev ? {...prev, status: currentUser.status} : prev);
       }
       toast.error(`Failed to update user status`, { id: toastId });
+    }
+  },
+
+  updatePassword: async (id: string, password: string) => {
+    const toastId = toast.loading(`Updating password...`);
+    const currentUser = get(usersStore).find(u => u.id === id);
+    try {
+      await updateUser(id, { password });
+      toast.success(`Password updated successfully`, { id: toastId });
+    } catch (error) {
+      console.error(error);
+      if (currentUser) {
+        usersStore.set(get(usersStore).map(u => u.id === id ? {...currentUser} : u));
+        currentSelectedUser.update(prev => prev ? {...prev, password: currentUser.password} : prev);
+      }
+      toast.error(`Failed to update password`, { id: toastId });
+    }
+  },
+
+  checkUsername: async (username: string): Promise<GetUserByUsernameResponse> => {
+    try {
+      const response = await checkUsername(username);
+      return response;
+    } catch (error) {
+      console.error(error);
+      throw new Error((error as Error).message);
     }
   },
 }

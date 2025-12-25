@@ -31,3 +31,7 @@ export const PostUsersSchema = UsersSchema;
 export const PutUsersSchema = UsersSchema.partial();
 
 export const DeleteUsersSchema = UsersSchema.pick({ id: true });
+
+export const GetUserByUsernameResponseSchema = z.object({
+  exists: z.boolean(),
+});

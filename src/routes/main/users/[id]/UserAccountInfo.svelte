@@ -1,8 +1,9 @@
 <script lang="ts" module>
   import { Button } from "$lib/components/ui/button";
   import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "$lib/components/ui/sheet";
-  import ChangePasswordForm from "./ChangePasswordForm.svelte";
+  import ChangePasswordForm, { type FormData as ChangePasswordFormData } from "./ChangePasswordForm.svelte";
   import type { Users } from "$lib/models/users/users.type";
+	import { usersActions } from "$lib/store/users.store";
 
   export type Props = {
     user: Users;
@@ -20,6 +21,11 @@
   }
 
   function handleCancelChangePassword() {
+    isChangePasswordSheetOpen = false;
+  }
+
+  function handleSubmitChangePassword(formData: ChangePasswordFormData) {
+    usersActions.updatePassword(user.id, formData.password);
     isChangePasswordSheetOpen = false;
   }
 </script>
@@ -46,7 +52,7 @@
             <SheetTitle>Change Password</SheetTitle>
             <SheetDescription>Change the password for the user</SheetDescription>
           </SheetHeader>
-          <ChangePasswordForm onCancel={handleCancelChangePassword} />
+          <ChangePasswordForm onCancel={handleCancelChangePassword} onSubmit={handleSubmitChangePassword} />
         </SheetContent>
       </Sheet>
     </div>

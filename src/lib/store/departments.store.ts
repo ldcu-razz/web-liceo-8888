@@ -57,15 +57,16 @@ export const departmentsActions = {
 
   updateDepartment: async (id: string, department: Partial<Departments>) => {
     const toastId = toast.loading(`Updating department...`);
-    const currentDepartment = get(departmentsStore).find(d => d.id === id);
+    const currentDepartment = (get(departmentsStore).find(d => d.id === id));
+    
     try {
-      departmentsStore.set(get(departmentsStore).map(d => d.id === id ? {...d, ...department} : d));
+      departmentsStore.update(prev => prev.map(d => d.id === id ? {...d, ...department} : d));
       await updateDepartment(id, department);
       toast.success(`Department updated successfully`, { id: toastId });
     } catch (error) {
       console.error(error);
       if (currentDepartment) {
-        departmentsStore.set(get(departmentsStore).map(d => d.id === id ? {...currentDepartment} : d));
+        departmentsStore.update(prev => prev.map(d => d.id === id ? {...currentDepartment} : d));
       }
       toast.error(`Failed to update department`, { id: toastId });
     }

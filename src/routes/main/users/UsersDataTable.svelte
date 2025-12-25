@@ -74,7 +74,7 @@
         {:else}
           <TableRow>
             <TableCell colspan={columns.length} class="h-24 text-center">
-              No departments found.
+              No users found.
             </TableCell>
           </TableRow>
         {/each}

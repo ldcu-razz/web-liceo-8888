@@ -1,9 +1,9 @@
-import { API_USERS, API_USERS_ID } from "$lib/constants";
+import { API_USERS, API_USERS_CHECK_USERNAME, API_USERS_ID } from "$lib/constants";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 import type { Pagination } from "$lib/models/common/common.type";
 import { UserRolesEnumSchema } from "$lib/models/users/users.schema";
-import type { PaginatedUsers, PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
-import { getRouteWithParams } from "$lib/utils/routes.utils";
+import type { GetUserByUsernameResponse, PaginatedUsers, PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
+import { getRoute, getRouteWithParams, getRouteWithQuery } from "$lib/utils/routes.utils";
 
 export async function getUsers(pagination: Pagination, q?: string): Promise<PaginatedUsers> {
   try {
@@ -116,6 +116,23 @@ export async function archiveUser(id: string): Promise<boolean> {
     }
     return result.json();
   } catch (error) {
+    console.error(error);
+    throw new Error((error as Error).message);
+  }
+}
+
+export async function checkUsername(username: string): Promise<GetUserByUsernameResponse> {
+  try {
+    const url = new URL(API_USERS_CHECK_USERNAME, window.location.origin);
+    url.searchParams.set('username', username);
+    
+    const result = await fetch(url.toString());
+    if (!result.ok) {
+      throw new Error(result.statusText);
+    }
+    return result.json();
+  }
+  catch (error) {
     console.error(error);
     throw new Error((error as Error).message);
   }

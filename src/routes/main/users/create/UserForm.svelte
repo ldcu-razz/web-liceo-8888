@@ -16,11 +16,12 @@
 		createInitialTouched,
 		markAllFieldsTouched
 	} from "$lib/utils/form.utils";
-	import { fromDate, getLocalTimeZone, type DateValue } from "@internationalized/date";
+	import { fromDate, getLocalTimeZone, CalendarDate, type DateValue } from "@internationalized/date";
 	import { transformText } from "$lib/utils/texts.utils";
-	import { getObjectDiff } from "$lib/utils/property.utils";
 	import { departmentsStore } from "$lib/store/departments.store";
 	import type { Departments } from "$lib/models/departments/departments.type";
+	import { debounce } from "$lib/utils/reactive.utils";
+	import { usersActions } from "$lib/store/users.store";
 
   export type FormData = z.infer<typeof formSchema>;
   
@@ -54,6 +55,13 @@
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
+  });
+
+
+  export const formSchemaUpdate = formSchema.omit({
+    password: true,
+    confirmPassword: true,
+    username: true,
   });
 
   export const defaultFormData: FormData = {
@@ -104,15 +112,58 @@
 
   let selectedDepartment = $derived(departments.find(department => department.id === formData.department_id));
 
+  let isUsernameExists = $state(false);
+
+  const debouncedCheckUsername = debounce(async (username: string) => {
+    const response = await usersActions.checkUsername(username);
+    isUsernameExists = response.exists;
+
+    if (isUsernameExists) {
+      errors.username = "Username is already taken";
+      touched.username = true;
+    } else {
+      errors.username = undefined;
+    }
+  }, 600);
+
+  $effect(() => {
+    if (formData.birthdate) {
+      const date = new Date(formData.birthdate);
+      birthdate = new CalendarDate(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+      formData.birthdate = date.toISOString();
+    }
+  });
+
+  $effect(() => {
+    if (formData.username && mode === "create") {
+      debouncedCheckUsername(formData.username);
+    }
+  });
+
   function validateFormData() {
-    const result = validateForm(formData, formSchema);
+    const schema = mode === "create" ? formSchema : formSchemaUpdate;
+    const result = validateForm(formData, schema);
     errors = result.errors;
+    
+    // Check for async username validation error
+    if (mode === "create" && isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
   function validateFieldData(field: keyof FormData) {
     const result = validateField(field, formData, formSchema, errors);
     errors = result.errors;
+    
+    // Preserve async username validation error
+    if (field === "username" && isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
@@ -123,9 +174,16 @@
 
   function handleInputChange(field: keyof FormData, value: string) {
     formData[field] = value as never;
+    
+    // Clear username existence check when username changes
+    if (field === "username" && isUsernameExists) {
+      isUsernameExists = false;
+    }
+    
     if (touched[field]) {
       validateFieldData(field);
     }
+
     // If password changes and confirmPassword is touched, re-validate confirmPassword
     if (field === "password" && touched.confirmPassword) {
       validateFieldData("confirmPassword");
@@ -138,7 +196,12 @@
 
   function handleBirthdateChange(dateValue: DateValue | undefined) {
     if (dateValue) {
-      const isoString = new Date(dateValue.toDate(getLocalTimeZone())).toISOString();
+      // Construct ISO string directly from date components to avoid timezone issues
+      const year = dateValue.year;
+      const month = String(dateValue.month).padStart(2, '0');
+      const day = String(dateValue.day).padStart(2, '0');
+      const isoString = `${year}-${month}-${day}T00:00:00.000Z`;
+      
       if (formData.birthdate !== isoString) {
         formData.birthdate = isoString;
 
@@ -187,15 +250,15 @@
   function handleSubmit() {
     validateFormData();
     markAllFieldsTouchedData();
+
     if (invalid) {
       return;
     }
-
+  
     if (mode === "create") {
       onCreateUser?.(formData);
     } else {
-      const data = getObjectDiff(formData, initialFormData);
-      onUpdateUser?.(data);
+      onUpdateUser?.(formData);
     }
   }
 </script>
