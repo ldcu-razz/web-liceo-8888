@@ -11,39 +11,13 @@
 	import AlertDialog from "$lib/components/ui/alert-dialog/alert-dialog.svelte";
 	import AlertDialogContent from "$lib/components/ui/alert-dialog/alert-dialog-content.svelte";
 	import { AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
+	import { departmentsActions, departmentsLoading, departmentsStore } from "$lib/store/departments.store";
+	import { uuid } from "$lib/utils/uuid.util";
+	import { debounce } from "$lib/utils/reactive.utils";
+	import { onMount } from "svelte";
 
-  let data: Departments[] = $state([
-    {
-      id: "1",
-      name: "Department 1",
-      abbv: "D1",
-      description: "Description 1",
-      keywords: ["Keyword 1", "Keyword 2", "Keyword 3", "Keyword 4", "Keyword 5", "Keyword 6", "Keyword 7", "Keyword 8", "Keyword 9", "Keyword 10"],
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      name: "Department 2",
-      abbv: "D2",
-      description: "Description 2",
-      keywords: ["Keyword 3", "Keyword 4"],
-      status: "inactive",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      name: "Department 3",
-      abbv: "D3",
-      description: "Description 3",
-      keywords: ["Keyword 5", "Keyword 6"],
-      status: "archived",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ]);
+  let data: Departments[] = $derived($departmentsStore);
+  let loading = $derived($departmentsLoading);
 
   let search = $state("");
   let showDepartmentFormSheet = $state(false);
@@ -52,10 +26,15 @@
   let showDeleteDepartmentAlertDialog = $state(false);
 
   let formData: FormData = $state({ ...defaultFormData });
+  
+  let isFirstMount = $state(true);
 
-  const columns = $derived(createColumns(handleView, handleDelete));
+  const columns = $derived(createColumns(handleView, handleArchive));
+  
+  const debouncedSearch = debounce((query: string) => {
+    departmentsActions.getDepartments({ page: 1, size: 15 }, query);
+  }, 500);
 
-  // Reset form when sheet opens in add mode or closes
   $effect(() => {
     if (!showDepartmentFormSheet) {
       activeDepartmentId = null;
@@ -63,6 +42,19 @@
     } else if (showDepartmentFormSheet && !activeDepartmentId) {
       formData = { ...defaultFormData };
     }
+  });
+
+  $effect(() => {
+    const query = search.trim();
+    if (isFirstMount) {
+      return;
+    }
+    
+    debouncedSearch(query);
+  });
+
+  onMount(() => {
+    isFirstMount = false;
   });
 
   function handleView(id: string) {
@@ -80,7 +72,7 @@
     }
   }
 
-  function handleDelete(id: string) {
+  function handleArchive(id: string) {
     activeDepartmentId = id;
     showDeleteDepartmentAlertDialog = true;
   }
@@ -105,9 +97,11 @@
           updatedAt: new Date().toISOString(),
         };
       }
+
+      departmentsActions.updateDepartment(activeDepartmentId, data[index]);
     } else {
       const newDepartment: Departments = {
-        id: String(Date.now()),
+        id: uuid(),
         name: submittedFormData.name,
         abbv: submittedFormData.abbreviation,
         description: submittedFormData.description,
@@ -116,7 +110,8 @@
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
-      data = [...data, newDepartment];
+
+      departmentsActions.createDepartment(newDepartment);
     }
 
     handleCancelDepartmentForm();
@@ -124,6 +119,10 @@
 
   function handleDeleteDepartment() {
     showDeleteDepartmentAlertDialog = false;
+    if (activeDepartmentId) {
+      departmentsActions.archiveDepartment(activeDepartmentId);
+    }
+    activeDepartmentId = null;
   }
 </script>
 
@@ -159,7 +158,7 @@
     </Sheet>
   </div>
   
-  <DeaprtmentsDataTable {columns} {data} />
+  <DeaprtmentsDataTable {loading} {columns} {data} />
 </div>
 
 <AlertDialog bind:open={showDeleteDepartmentAlertDialog}>
@@ -169,7 +168,7 @@
       <AlertDialogDescription>Deleting this department will remove all related data.</AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <Button variant="destructive" onclick={handleDeleteDepartment}>Delete</Button>
+      <Button variant="destructive" onclick={handleDeleteDepartment}>Archive</Button>
       <Button variant="outline" onclick={() => showDeleteDepartmentAlertDialog = false}>Cancel</Button>
     </AlertDialogFooter>
   </AlertDialogContent>

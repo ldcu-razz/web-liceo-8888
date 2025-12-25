@@ -37,30 +37,35 @@
 
   export type Props = {
     formData?: FormData;
+    disabledPositiveButton?: boolean;
+    invalid?: boolean;
     onSubmit?: (formData: FormData) => void;
     onCancel?: () => void;
   };
 </script>
 
 <script lang="ts">
-  let { formData = $bindable(defaultFormData), onSubmit = () => {}, onCancel = () => {} }: Props = $props();
-
-	const statusOptions = BaseStatusEnumSchema.options;
-	
-	function getStatusLabel(value: BaseStatusEnum): string {
-		return value.charAt(0).toUpperCase() + value.slice(1);
-	}
-
-	// Initialize touched state
+  let { formData = $bindable(defaultFormData),  invalid = $bindable(true), disabledPositiveButton = false, onSubmit = () => {}, onCancel = () => {} }: Props = $props();
+  
 	let touched = $state<Record<keyof FormData, boolean>>(
 		createInitialTouched(formData)
 	);
 
-	// Initialize errors state
 	let errors = $state<Partial<Record<keyof FormData, string>>>({});
 
-	// Keywords input for typing new keywords
 	let keywordsInput = $state("");
+
+  let isFormTouched = $derived(Object.values(touched).some((value) => value === true));
+
+	const statusOptions = BaseStatusEnumSchema.options;
+	
+  $effect(() => {
+    invalid = !validateFormData();
+  });
+
+	function getStatusLabel(value: BaseStatusEnum): string {
+		return value.charAt(0).toUpperCase() + value.slice(1);
+	}
 
 	// Handle adding a keyword on Enter
 	function handleKeywordsKeydown(e: KeyboardEvent) {
@@ -84,7 +89,6 @@
 			validateFieldData("keywords");
 		}
 	}
-
 
 	function validateFormData() {
 		const result = validateForm(formData, formSchema);
@@ -135,7 +139,7 @@
 <form onsubmit={handleSubmit}>
   <FieldGroup>
     <Field>
-      <FieldLabel for="department-name">Department name<span class="text-red-500">*</span></FieldLabel>
+      <FieldLabel for="department-name" class="gap-1">Department name<span class="text-red-500">*</span></FieldLabel>
       <Input
         id="department-name"
         type="text"
@@ -150,7 +154,7 @@
     </Field>
 
     <Field>
-      <FieldLabel for="abbreviation">Abbreviation<span class="text-red-500">*</span></FieldLabel>
+      <FieldLabel for="abbreviation" class="gap-1">Abbreviation<span class="text-red-500">*</span></FieldLabel>
       <Input
         id="abbreviation"
         type="text"
@@ -212,7 +216,7 @@
     </Field>
 
     <Field>
-      <FieldLabel for="status">Status<span class="text-red-500">*</span></FieldLabel>
+      <FieldLabel for="status" class="gap-1">Status<span class="text-red-500">*</span></FieldLabel>
       <Select
         type="single"
         bind:value={formData.status}
@@ -239,6 +243,6 @@
 
   <div class="flex gap-2 mt-6">
     <Button type="button" variant="outline" class="flex-1 bg-gray-50" onclick={() => onCancel?.()}>Cancel</Button>
-    <Button type="submit" variant="secondary" class="flex-1">Save</Button>
+    <Button type="submit" variant="secondary" class="flex-1" disabled={disabledPositiveButton || (isFormTouched && invalid)}>Save</Button>
   </div>
 </form>

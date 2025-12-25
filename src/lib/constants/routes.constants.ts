@@ -11,3 +11,6 @@ export const USERS = '/main/users';
 export const CREATE_USER = '/main/users/create';
 export const USER_DETAILS = '/main/users/{id}';
 export const PROFILE = '/main/profile';
+
+export const API_DEPARTMENTS = '/api/departments';
+export const API_DEPARTMENTS_ID = '/api/departments/{id}';
