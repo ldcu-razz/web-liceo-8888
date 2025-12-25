@@ -11,7 +11,7 @@
 	import AlertDialog from "$lib/components/ui/alert-dialog/alert-dialog.svelte";
 	import AlertDialogContent from "$lib/components/ui/alert-dialog/alert-dialog-content.svelte";
 	import { AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
-	import { departmentsActions, departmentsLoading, departmentsStore } from "$lib/store/departments.store";
+	import { departmentsActions, departmentsLoading, departmentsStore, hasDepartmentsLoaded } from "$lib/store/departments.store";
 	import { uuid } from "$lib/utils/uuid.util";
 	import { debounce } from "$lib/utils/reactive.utils";
 	import { onMount } from "svelte";
@@ -24,6 +24,7 @@
   let activeDepartmentId: string | null = $state(null);
   let activeDepartment: Departments | null = $derived(data.find(d => d.id === activeDepartmentId) ?? null);
   let showDeleteDepartmentAlertDialog = $state(false);
+  let hasLoadedData = $derived($hasDepartmentsLoaded);
 
   let formData: FormData = $state({ ...defaultFormData });
   
@@ -32,7 +33,8 @@
   const columns = $derived(createColumns(handleView, handleArchive));
   
   const debouncedSearch = debounce((query: string) => {
-    departmentsActions.getDepartments({ page: 1, size: 15 }, query);
+    const silentLoading = hasLoadedData && !query;
+    departmentsActions.getDepartments({ page: 1, size: 25 }, query, silentLoading);
   }, 500);
 
   $effect(() => {

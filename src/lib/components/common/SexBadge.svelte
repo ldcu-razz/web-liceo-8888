@@ -11,13 +11,13 @@
 
 <div
   class="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
-  class:text-blue-500!={sex === "male"}
-  class:text-pink-500!={sex === "female"}
+  class:text-blue-700!={sex === "male"}
+  class:text-pink-700!={sex === "female"}
 >
   {#if sex === "male"}
-    <MarsIcon class="size-3 text-blue-500" />
+    <MarsIcon class="size-3 text-blue-700" />
   {:else if sex === "female"}
-    <VenusIcon class="size-3 text-pink-500" />
+    <VenusIcon class="size-3 text-pink-700" />
   {/if}
   <span class="capitalize">{sex}</span>
 </div>

@@ -9,65 +9,40 @@
 	import { goto } from "$app/navigation";
 	import { getRoute } from "$lib/utils/routes.utils";
 	import { CREATE_USER, USER_DETAILS } from "$lib/constants";
+	import { hasUsersData, usersActions, usersLoading, usersStore } from "$lib/store/users.store";
+	import { onMount } from "svelte";
+	import { debounce } from "$lib/utils/reactive.utils";
 
-
-  let data: Users[] = $state([
-    {
-      id: "1",
-      rfid_number: "1234567890",
-      firstname: "John",
-      lastname: "Doe",
-      sex: "male",
-      birthdate: "1990-01-01",
-      email: "john.doe@example.com",
-      contact_number: "1234567890",
-      username: "john.doe",
-      password: "password",
-      role: "user",
-      department_id: "1",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      rfid_number: "1234567890",
-      firstname: "Jane",
-      lastname: "Doe",
-      sex: "female",
-      birthdate: "1990-01-01",
-      email: "jane.doe@example.com",
-      contact_number: "1234567890",
-      username: "jane.doe",
-      password: "password",
-      role: "super_admin",
-      department_id: "1",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      rfid_number: "1234567890",
-      firstname: "Jim",
-      lastname: "Beam",
-      sex: "male",
-      birthdate: "1990-01-01",
-      email: "jim.beam@example.com",
-      contact_number: "1234567890",
-      username: "jim.beam",
-      password: "password",
-      role: "user",
-      department_id: "1",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ]);
+  let data = $derived($usersStore);
 
   let search = $state("");
   let showDeleteUserAlertDialog = $state(false);
   let activeUserId: string | null = $state(null);
   let activeUser: Users | null = $derived(data.find(u => u.id === activeUserId) ?? null);
+  let hasUsersDataLoaded = $derived($hasUsersData);
 
-  const columns = $derived(createUsersTableColumns(handleUserView, handleUserDelete));
+  let loading = $derived($usersLoading);
+
+  let isFirstMount = $state(true);
+
+  const columns = $derived(createUsersTableColumns(handleUserView, handleUserArchive));
+
+  const debouncedSearch = debounce(({ query }: { query: string }) => {
+    const silentLoading = hasUsersDataLoaded && !query;
+    usersActions.getUsers({ page: 1, size: 25 }, query, silentLoading);
+  }, 600);
+
+  $effect(() => {
+    if (isFirstMount) {
+      return;
+    }
+    
+    debouncedSearch({ query: search });
+  });
+
+  onMount(async () => {
+    isFirstMount = false;
+  });
 
   function handleAddUserClick() {
     goto(CREATE_USER);
@@ -77,13 +52,18 @@
     goto(getRoute(USER_DETAILS, { id }));
   }
 
-  function handleUserDelete(id: string) {
+  function handleUserArchive(id: string) {
     activeUserId = id;
     showDeleteUserAlertDialog = true;
   }
 
-  function handleDeleteUser() {
-    console.log(activeUserId);
+  function handleArchiveUser() {
+    if (activeUserId) {
+      usersActions.archiveUser(activeUserId);
+    }
+
+    showDeleteUserAlertDialog = false;
+    activeUserId = null;
   }
 </script>
 
@@ -105,17 +85,17 @@
     </Button>
   </div>
 
-  <UsersDataTable {columns} {data} />
+  <UsersDataTable {loading} {columns} {data} />
 </div>
 
 <AlertDialog bind:open={showDeleteUserAlertDialog}>
   <AlertDialogContent>
     <AlertDialogHeader>
-      <AlertDialogTitle>Are you sure to delete the user {activeUser?.firstname} {activeUser?.lastname}?</AlertDialogTitle>
-      <AlertDialogDescription>Deleting this user will remove all related data.</AlertDialogDescription>
+      <AlertDialogTitle>Are you sure to archive the user {activeUser?.firstname} {activeUser?.lastname}?</AlertDialogTitle>
+      <AlertDialogDescription>Archiving this user will not be used in the system.</AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <Button variant="destructive" onclick={handleDeleteUser}>Delete</Button>
+      <Button variant="destructive" onclick={handleArchiveUser}>Archive</Button>
       <Button variant="outline" onclick={() => showDeleteUserAlertDialog = false}>Cancel</Button>
     </AlertDialogFooter>
   </AlertDialogContent>

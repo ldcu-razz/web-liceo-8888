@@ -16,8 +16,12 @@
 		createInitialTouched,
 		markAllFieldsTouched
 	} from "$lib/utils/form.utils";
-	import { fromDate, getLocalTimeZone, type DateValue } from "@internationalized/date";
+	import { fromDate, getLocalTimeZone, CalendarDate, type DateValue } from "@internationalized/date";
 	import { transformText } from "$lib/utils/texts.utils";
+	import { departmentsStore } from "$lib/store/departments.store";
+	import type { Departments } from "$lib/models/departments/departments.type";
+	import { debounce } from "$lib/utils/reactive.utils";
+	import { usersActions } from "$lib/store/users.store";
 
   export type FormData = z.infer<typeof formSchema>;
   
@@ -28,20 +32,21 @@
     invalid?: boolean;
     formData?: FormData;
     formBordered?: boolean;
+    loading?: boolean;
     onCancel?: () => void;
     onCreateUser?: (formData: FormData) => void;
-    onUpdateUser?: (formData: FormData) => void;
+    onUpdateUser?: (formData: Partial<FormData>) => void;
   };
 
   export const formSchema = z.object({
-    rfidNumber: z.string().min(1, "RFID number is required"),
+    rfid_number: z.string().min(1, "RFID number is required"),
     firstname: z.string().min(1, "Firstname is required"),
     lastname: z.string().min(1, "Lastname is required"),
     sex: SexEnumSchema,
     birthdate: z.string().min(1, "Birthdate is required"),
     email: z.string().min(1, "Email is required").email("Invalid email address"),
-    contactNumber: z.string().min(1, "Contact number is required").max(13, "Invalid contact number").startsWith("09", "Contact number must start with 09"),
-    department: z.string().min(1, "Department is required"),
+    contact_number: z.string().min(1, "Contact number is required").max(13, "Invalid contact number").startsWith("09", "Contact number must start with 09"),
+    department_id: UUIDSchema,
     role: UserRolesEnumSchema,
     username: z.string().min(1, "Username is required").min(6, "Username must be at least 6 characters").regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, hyphens (-), and underscores (_)"),
     password: z.string().min(1, "Password is required").min(8, "Password must be at least 8 characters"),
@@ -52,15 +57,22 @@
     path: ["confirmPassword"],
   });
 
+
+  export const formSchemaUpdate = formSchema.omit({
+    password: true,
+    confirmPassword: true,
+    username: true,
+  });
+
   export const defaultFormData: FormData = {
-    rfidNumber: "",
+    rfid_number: "",
     firstname: "",
     lastname: "",
     sex: SexEnumSchema.enum.male,
     birthdate: "",
     email: "",
-    contactNumber: "",
-    department: "",
+    contact_number: "",
+    department_id: "",
     role: UserRolesEnumSchema.enum.user,
     username: "",
     password: "",
@@ -74,6 +86,7 @@
     invalid = $bindable(true), 
     formData = $bindable(defaultFormData),
     formBordered = true,
+    loading = $bindable(false),
     onCancel = () => {},
     onCreateUser = () => {},
     onUpdateUser = () => {}
@@ -95,15 +108,62 @@
     fromDate(new Date(), getLocalTimeZone())
   );
 
+  let departments = $derived<Departments[]>($departmentsStore);
+
+  let selectedDepartment = $derived(departments.find(department => department.id === formData.department_id));
+
+  let isUsernameExists = $state(false);
+
+  const debouncedCheckUsername = debounce(async (username: string) => {
+    const response = await usersActions.checkUsername(username);
+    isUsernameExists = response.exists;
+
+    if (isUsernameExists) {
+      errors.username = "Username is already taken";
+      touched.username = true;
+    } else {
+      errors.username = undefined;
+    }
+  }, 600);
+
+  $effect(() => {
+    if (formData.birthdate) {
+      const date = new Date(formData.birthdate);
+      birthdate = new CalendarDate(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate());
+      formData.birthdate = date.toISOString();
+    }
+  });
+
+  $effect(() => {
+    if (formData.username && mode === "create") {
+      debouncedCheckUsername(formData.username);
+    }
+  });
+
   function validateFormData() {
-    const result = validateForm(formData, formSchema);
+    const schema = mode === "create" ? formSchema : formSchemaUpdate;
+    const result = validateForm(formData, schema);
     errors = result.errors;
+    
+    // Check for async username validation error
+    if (mode === "create" && isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
   function validateFieldData(field: keyof FormData) {
     const result = validateField(field, formData, formSchema, errors);
     errors = result.errors;
+    
+    // Preserve async username validation error
+    if (field === "username" && isUsernameExists) {
+      errors.username = "Username is already taken";
+      result.invalid = true;
+    }
+    
     invalid = result.invalid;
   }
 
@@ -114,9 +174,16 @@
 
   function handleInputChange(field: keyof FormData, value: string) {
     formData[field] = value as never;
+    
+    // Clear username existence check when username changes
+    if (field === "username" && isUsernameExists) {
+      isUsernameExists = false;
+    }
+    
     if (touched[field]) {
       validateFieldData(field);
     }
+
     // If password changes and confirmPassword is touched, re-validate confirmPassword
     if (field === "password" && touched.confirmPassword) {
       validateFieldData("confirmPassword");
@@ -129,7 +196,12 @@
 
   function handleBirthdateChange(dateValue: DateValue | undefined) {
     if (dateValue) {
-      const isoString = new Date(dateValue.toDate(getLocalTimeZone())).toISOString();
+      // Construct ISO string directly from date components to avoid timezone issues
+      const year = dateValue.year;
+      const month = String(dateValue.month).padStart(2, '0');
+      const day = String(dateValue.day).padStart(2, '0');
+      const isoString = `${year}-${month}-${day}T00:00:00.000Z`;
+      
       if (formData.birthdate !== isoString) {
         formData.birthdate = isoString;
 
@@ -156,7 +228,7 @@
     }
   }
 
-  function handleSelectClose(field: "sex" | "department" | "role") {
+  function handleSelectClose(field: "sex" | "department_id" | "role") {
     if (formData[field]) {
       touched[field] = true;
       validateFieldData(field);
@@ -178,11 +250,16 @@
   function handleSubmit() {
     validateFormData();
     markAllFieldsTouchedData();
+
     if (invalid) {
       return;
     }
-
-    mode === "create" ? onCreateUser?.(formData) : onUpdateUser?.(formData);
+  
+    if (mode === "create") {
+      onCreateUser?.(formData);
+    } else {
+      onUpdateUser?.(formData);
+    }
   }
 </script>
 
@@ -196,13 +273,13 @@
         type="text"
         id="rfid-number"
         placeholder="Enter school ID number"
-        bind:value={formData.rfidNumber}
-        aria-invalid={hasFieldErrorMessage("rfidNumber")}
-        onblur={() => markTouched("rfidNumber")}
-        oninput={(e) => handleInputChange("rfidNumber", e.currentTarget.value)}
+        bind:value={formData.rfid_number}
+        aria-invalid={hasFieldErrorMessage("rfid_number")}
+        onblur={() => markTouched("rfid_number")}
+        oninput={(e) => handleInputChange("rfid_number", e.currentTarget.value)}
       />
-      {#if getFieldErrorMessage("rfidNumber")}
-        <FieldError errors={[{ message: getFieldErrorMessage("rfidNumber") }]} />
+      {#if getFieldErrorMessage("rfid_number")}
+        <FieldError errors={[{ message: getFieldErrorMessage("rfid_number") }]} />
       {/if}
     </Field>
 
@@ -292,13 +369,13 @@
       <Input
         type="tel"
         id="contact-number"
-        bind:value={formData.contactNumber}
-        aria-invalid={hasFieldErrorMessage("contactNumber")}
-        onblur={() => markTouched("contactNumber")}
-        oninput={(e) => handleInputChange("contactNumber", e.currentTarget.value)}
+        bind:value={formData.contact_number}
+        aria-invalid={hasFieldErrorMessage("contact_number")}
+        onblur={() => markTouched("contact_number")}
+        oninput={(e) => handleInputChange("contact_number", e.currentTarget.value)}
       />
-      {#if getFieldErrorMessage("contactNumber")}
-        <FieldError errors={[{ message: getFieldErrorMessage("contactNumber") }]} />
+      {#if getFieldErrorMessage("contact_number")}
+        <FieldError errors={[{ message: getFieldErrorMessage("contact_number") }]} />
       {/if}
     </Field>
   </FieldGroup>
@@ -328,29 +405,26 @@
       </FieldLabel>
       <Select
         type="single"
-        bind:value={formData.department}
+        bind:value={formData.department_id}
         onOpenChange={(open) => {
           if (!open) {
-            handleSelectClose("department");
+            handleSelectClose("department_id");
           }
         }}
       >
-        <SelectTrigger aria-invalid={hasFieldErrorMessage("department")}>
-          {formData.department || "Select Department"}
+        <SelectTrigger aria-invalid={hasFieldErrorMessage("department_id")}>
+          <div class="text-ellipsis overflow-hidden whitespace-nowrap">{selectedDepartment ? selectedDepartment.name : "Select Department"}</div>
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="College of Information Technology">College of Information Technology</SelectItem>
-          <SelectItem value="School of Teachers Education">School of Teachers Education</SelectItem>
-          <SelectItem value="School of Business Administration">School of Business Administration</SelectItem>
-          <SelectItem value="School of Engineering">School of Engineering</SelectItem>
-          <SelectItem value="School of Arts and Sciences">School of Arts and Sciences</SelectItem>
-          <SelectItem value="School of Social Sciences">School of Social Sciences</SelectItem>
-          <SelectItem value="School of Law">School of Law</SelectItem>
-          <SelectItem value="School of Medicine">School of Medicine</SelectItem>
+        <SelectContent class="max-h-60 overflow-y-auto">
+          {#each departments as department}
+            <SelectItem value={department.id}>{department.name}</SelectItem>
+          {:else}
+            <SelectItem value="">No departments found</SelectItem>
+          {/each}
         </SelectContent>
       </Select>
-      {#if getFieldErrorMessage("department")}
-        <FieldError errors={[{ message: getFieldErrorMessage("department") }]} />
+      {#if getFieldErrorMessage("department_id")}
+        <FieldError errors={[{ message: getFieldErrorMessage("department_id") }]} />
       {/if}
     </Field>
 
@@ -446,11 +520,11 @@
     </Field>
     <Field>
       {#if mode === "create"}
-        <Button type="submit" variant="secondary" class="w-fit" disabled={invalid && isFormTouched}>
+        <Button type="submit" variant="secondary" class="w-fit" disabled={(invalid && isFormTouched) || loading}>
           Create User
         </Button>
       {:else}
-        <Button type="submit" variant="secondary" class="w-fit" disabled={invalid && isFormTouched}>
+        <Button type="submit" variant="secondary" class="w-fit" disabled={(invalid && isFormTouched) || loading}>
           Update User
         </Button>
       {/if}

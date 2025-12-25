@@ -69,6 +69,7 @@
 	},
 	"dependencies": {
 		"@supabase/supabase-js": "^2.89.0",
+		"bcrypt": "^6.0.0",
 		"uuid": "^13.0.0",
 		"zod": "^4.2.1"
 	}

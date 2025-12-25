@@ -14,3 +14,6 @@ export const PROFILE = '/main/profile';
 
 export const API_DEPARTMENTS = '/api/departments';
 export const API_DEPARTMENTS_ID = '/api/departments/{id}';
+export const API_USERS = '/api/users';
+export const API_USERS_ID = '/api/users/{id}';
+export const API_USERS_CHECK_USERNAME = '/api/users/check-username';

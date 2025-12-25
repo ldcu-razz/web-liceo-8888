@@ -14,17 +14,10 @@
 	} from "$lib/utils/form.utils";
 	import { fromDate, getLocalTimeZone, type DateValue } from "@internationalized/date";
 	import { SelectCalendar } from "$lib/components/ui/select-calendar";
-
-  export type FormData = {
-    rfidNumber: string;
-    firstname: string;
-    lastname: string;
-    sex: string;
-    birthdate: string;
-    email: string;
-    contactNumber: string;
-    department: string;
-  }
+	import { departmentsMap, departmentsStore } from "$lib/store/departments.store";
+	import type { Departments } from "$lib/models/departments/departments.type";
+	import { SexEnumSchema, UUIDSchema } from "$lib/models/common/common.schema";
+	import { transformText } from "$lib/utils/texts.utils";
 
 	type Props = {
     invalid?: boolean;
@@ -34,25 +27,27 @@
 	}
 
   const formSchema = z.object({
-    rfidNumber: z.string().min(1, "RFID number is required"),
+    rfid_number: z.string().min(1, "RFID number is required"),
     firstname: z.string().min(1, "Firstname is required"),
     lastname: z.string().min(1, "Lastname is required"),
-    sex: z.string().min(1, "Sex is required"),
+    sex: SexEnumSchema,
     birthdate: z.string().min(1, "Birthdate is required"),
     email: z.string().min(1, "Email is required").email("Invalid email address"),
-    contactNumber: z.string().min(1, "Contact number is required").max(13, "Invalid contact number").startsWith("09", "Contact number must start with 09"),
-    department: z.string().min(1, "Department is required"),
+    contact_number: z.string().min(1, "Contact number is required").max(13, "Invalid contact number").startsWith("09", "Contact number must start with 09"),
+    department_id: UUIDSchema,
   });
 
-  const defaultFormData: FormData = {
-    rfidNumber: "",
+  export type FormData = z.infer<typeof formSchema>;
+
+  export const defaultFormData: FormData = {
+    rfid_number: "",
     firstname: "",
     lastname: "",
-    sex: "Male",
+    sex: SexEnumSchema.enum.male,
     birthdate: "",
     email: "",
-    contactNumber: "",
-    department: "",
+    contact_number: "",
+    department_id: "",
   };
 </script>
 
@@ -77,6 +72,12 @@
   let todayDate = $state<DateValue | undefined>(
     fromDate(new Date(), getLocalTimeZone())
   );
+
+  let departments = $derived<Departments[]>($departmentsStore);
+
+  let departmentMap = $derived($departmentsMap);
+
+  let selectedDepartment = $derived(departmentMap[formData.department_id]);
 
   $effect(() => {
     isFormTouched = Object.values(touched).every((value) => value === true);
@@ -129,13 +130,17 @@
   }
 
   function handleInputChange(field: keyof FormData, value: string) {
-    formData[field] = value;
+    if (field === "sex") {
+      formData.sex = value as typeof formData.sex;
+    } else {
+      formData[field] = value;
+    }
     if (touched[field]) {
       validateFieldData(field);
     }
   }
 
-  function handleSelectClose(field: "sex" | "department") {
+  function handleSelectClose(field: "sex" | "department_id") {
     if (formData[field]) {
       touched[field] = true;
       validateFieldData(field);
@@ -174,13 +179,13 @@
         type="text"
         id="rfid-number"
         placeholder="Enter your school ID number"
-        bind:value={formData.rfidNumber}
-        aria-invalid={hasFieldErrorMessage("rfidNumber")}
-        onblur={() => markTouched("rfidNumber")}
-        oninput={(e) => handleInputChange("rfidNumber", e.currentTarget.value)}
+        bind:value={formData.rfid_number}
+        aria-invalid={hasFieldErrorMessage("rfid_number")}
+        onblur={() => markTouched("rfid_number")}
+        oninput={(e) => handleInputChange("rfid_number", e.currentTarget.value)}
       />
-      {#if getFieldErrorMessage("rfidNumber")}
-        <FieldError errors={[{ message: getFieldErrorMessage("rfidNumber") }]} />
+      {#if getFieldErrorMessage("rfid_number")}
+        <FieldError errors={[{ message: getFieldErrorMessage("rfid_number") }]} />
       {/if}
     </Field>
 
@@ -232,11 +237,11 @@
         }}
       >
         <SelectTrigger aria-invalid={hasFieldErrorMessage("sex")}>
-          {formData.sex || "Select Sex"}
+          {formData.sex ? transformText(formData.sex) : "Select Sex"}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="Male">Male</SelectItem>
-          <SelectItem value="Female">Female</SelectItem>
+          <SelectItem value={SexEnumSchema.enum.male}>{transformText(SexEnumSchema.enum.male)}</SelectItem>
+          <SelectItem value={SexEnumSchema.enum.female}>{transformText(SexEnumSchema.enum.female)}</SelectItem>
         </SelectContent>
       </Select>
       {#if getFieldErrorMessage("sex")}
@@ -286,13 +291,13 @@
       <Input
         type="tel"
         id="contact-number"
-        bind:value={formData.contactNumber}
-        aria-invalid={hasFieldErrorMessage("contactNumber")}
-        onblur={() => markTouched("contactNumber")}
-        oninput={(e) => handleInputChange("contactNumber", e.currentTarget.value)}
+        bind:value={formData.contact_number}
+        aria-invalid={hasFieldErrorMessage("contact_number")}
+        onblur={() => markTouched("contact_number")}
+        oninput={(e) => handleInputChange("contact_number", e.currentTarget.value)}
       />
-      {#if getFieldErrorMessage("contactNumber")}
-        <FieldError errors={[{ message: getFieldErrorMessage("contactNumber") }]} />
+      {#if getFieldErrorMessage("contact_number")}
+        <FieldError errors={[{ message: getFieldErrorMessage("contact_number") }]} />
       {/if}
     </Field>
 
@@ -302,29 +307,24 @@
       </FieldLabel>
       <Select
         type="single"
-        bind:value={formData.department}
+        bind:value={formData.department_id}
         onOpenChange={(open) => {
           if (!open) {
-            handleSelectClose("department");
+            handleSelectClose("department_id");
           }
         }}
       >
-        <SelectTrigger aria-invalid={hasFieldErrorMessage("department")}>
-          {formData.department || "Select Department"}
+        <SelectTrigger aria-invalid={hasFieldErrorMessage("department_id")}>
+          {selectedDepartment ? selectedDepartment.name : "Select Department"}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="College of Information Technology">College of Information Technology</SelectItem>
-          <SelectItem value="School of Teachers Education">School of Teachers Education</SelectItem>
-          <SelectItem value="School of Business Administration">School of Business Administration</SelectItem>
-          <SelectItem value="School of Engineering">School of Engineering</SelectItem>
-          <SelectItem value="School of Arts and Sciences">School of Arts and Sciences</SelectItem>
-          <SelectItem value="School of Social Sciences">School of Social Sciences</SelectItem>
-          <SelectItem value="School of Law">School of Law</SelectItem>
-          <SelectItem value="School of Medicine">School of Medicine</SelectItem>
+          {#each departments as department}
+            <SelectItem value={department.id}>{department.name}</SelectItem>
+          {/each}
         </SelectContent>
       </Select>
-      {#if getFieldErrorMessage("department")}
-        <FieldError errors={[{ message: getFieldErrorMessage("department") }]} />
+      {#if getFieldErrorMessage("department_id")}
+        <FieldError errors={[{ message: getFieldErrorMessage("department_id") }]} />
       {/if}
     </Field>
 

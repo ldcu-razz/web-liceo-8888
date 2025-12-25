@@ -16,6 +16,7 @@
 	import { onMount } from 'svelte';
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { browser } from '$app/environment';
+	import { usersActions } from '$lib/store/users.store';
 
   let { children } = $props();
 
@@ -25,7 +26,7 @@
     preloadCode(COMPLAINTS_CATEGORIES);
     preloadCode(DEPARTMENTS);
     preloadCode(USERS);
-    preloadCode(PROFILE);
+    // preloadCode(PROFILE);
   }
 
 
@@ -64,7 +65,8 @@
   ]);
 
   onMount(() => {
-    departmentsActions.getDepartments({ page: 1, size: 15 });
+    departmentsActions.getDepartments({ page: 1, size: 25 });
+    usersActions.getNonMemberUsers();
   });
 </script>
 

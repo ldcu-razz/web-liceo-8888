@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { Departments } from "$lib/models/departments/departments.type";
 import { createDepartment, archiveDepartment, getDepartments, updateDepartment } from "$lib/services/departments/departments.services";
 import { toast } from "svelte-sonner";
@@ -8,14 +8,26 @@ import type { Pagination } from "$lib/models/common/common.type";
 export const departmentsStore = writable<Departments[]>([]);
 export const departmentsLoading = writable(false);
 export const departmentsError = writable<string | null>(null);
-export const departmentsPagination = writable<Pagination>({ page: 1, size: 15 });
+export const departmentsPagination = writable<Pagination>({ page: 1, size: 25 });
 export const departmentsTotalCount = writable<number>(0);
 
+export const hasDepartmentsLoaded = derived(departmentsStore, ($departmentsStore) => $departmentsStore.length > 0);
+
+export const departmentsMap = derived(departmentsStore, ($departmentsStore) => {
+  return $departmentsStore.reduce((acc, department) => {
+    acc[department.id] = department;
+    return acc;
+  }, {} as Record<string, Departments>);
+});
+
 export const departmentsActions = {
-  getDepartments: async ( pagination: Pagination, q?: string ) => {
+  getDepartments: async ( pagination: Pagination, q?: string, silentLoading?: boolean) => {
     try {
+      if (!silentLoading) {
+        departmentsLoading.set(true);
+      }
+
       departmentsPagination.set(pagination);
-      departmentsLoading.set(true);
 
       const data = await getDepartments(pagination, q);
 
@@ -45,15 +57,16 @@ export const departmentsActions = {
 
   updateDepartment: async (id: string, department: Partial<Departments>) => {
     const toastId = toast.loading(`Updating department...`);
-    const currentDepartment = get(departmentsStore).find(d => d.id === id);
+    const currentDepartment = (get(departmentsStore).find(d => d.id === id));
+    
     try {
-      departmentsStore.set(get(departmentsStore).map(d => d.id === id ? {...d, ...department} : d));
+      departmentsStore.update(prev => prev.map(d => d.id === id ? {...d, ...department} : d));
       await updateDepartment(id, department);
       toast.success(`Department updated successfully`, { id: toastId });
     } catch (error) {
       console.error(error);
       if (currentDepartment) {
-        departmentsStore.set(get(departmentsStore).map(d => d.id === id ? {...currentDepartment} : d));
+        departmentsStore.update(prev => prev.map(d => d.id === id ? {...currentDepartment} : d));
       }
       toast.error(`Failed to update department`, { id: toastId });
     }
