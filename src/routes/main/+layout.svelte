@@ -11,12 +11,22 @@
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { PROFILE, LOGIN, DASHBOARD, DEPARTMENTS, USERS, COMPLAINTS_BOARD, COMPLAINTS_CATEGORIES } from '$lib/constants/routes.constants';
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
 	import { onMount } from 'svelte';
 	import { departmentsActions } from '$lib/store/departments.store';
+	import { browser } from '$app/environment';
 
   let { children } = $props();
+
+  if (browser) {
+    preloadCode(DASHBOARD);
+    preloadCode(COMPLAINTS_BOARD);
+    preloadCode(COMPLAINTS_CATEGORIES);
+    preloadCode(DEPARTMENTS);
+    preloadCode(USERS);
+    preloadCode(PROFILE);
+  }
 
 
   let sidebarMenuItems = $state<SidebarModel>([
