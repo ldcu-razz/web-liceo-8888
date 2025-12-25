@@ -45,7 +45,7 @@ export function createColumns(onView?: (id: string) => void, onArchive?: (id: st
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: false,
+          hour12: true,
         });
       },
     },

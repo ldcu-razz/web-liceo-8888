@@ -89,7 +89,7 @@
 
   let birthdate = $state<DateValue | undefined>(undefined);
 
-  let isFormTouched = $derived(Object.values(touched).every((value) => value === true));
+  let isFormTouched = $derived(Object.values(touched).some((value) => value === true));
 
   let todayDate = $state<DateValue | undefined>(
     fromDate(new Date(), getLocalTimeZone())

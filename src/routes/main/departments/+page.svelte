@@ -13,6 +13,8 @@
 	import { AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
 	import { departmentsActions, departmentsLoading, departmentsStore } from "$lib/store/departments.store";
 	import { uuid } from "$lib/utils/uuid.util";
+	import { debounce } from "$lib/utils/reactive.utils";
+	import { onMount } from "svelte";
 
   let data: Departments[] = $derived($departmentsStore);
   let loading = $derived($departmentsLoading);
@@ -24,10 +26,15 @@
   let showDeleteDepartmentAlertDialog = $state(false);
 
   let formData: FormData = $state({ ...defaultFormData });
+  
+  let isFirstMount = $state(true);
 
   const columns = $derived(createColumns(handleView, handleArchive));
+  
+  const debouncedSearch = debounce((query: string) => {
+    departmentsActions.getDepartments({ page: 1, size: 15 }, query);
+  }, 500);
 
-  // Reset form when sheet opens in add mode or closes
   $effect(() => {
     if (!showDepartmentFormSheet) {
       activeDepartmentId = null;
@@ -35,6 +42,19 @@
     } else if (showDepartmentFormSheet && !activeDepartmentId) {
       formData = { ...defaultFormData };
     }
+  });
+
+  $effect(() => {
+    const query = search.trim();
+    if (isFirstMount) {
+      return;
+    }
+    
+    debouncedSearch(query);
+  });
+
+  onMount(() => {
+    isFirstMount = false;
   });
 
   function handleView(id: string) {

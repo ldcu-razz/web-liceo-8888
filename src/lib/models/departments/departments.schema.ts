@@ -1,5 +1,5 @@
 import z from "zod";
-import { BaseStatusEnumSchema, UUIDSchema } from "../common/common.schema";
+import { BaseStatusEnumSchema, PaginatedSchema, UUIDSchema } from "../common/common.schema";
 
 export const DepartmentsSchema = z.object({
   id: UUIDSchema,
@@ -11,4 +11,8 @@ export const DepartmentsSchema = z.object({
   status: BaseStatusEnumSchema,
   createdAt: z.string(),
   updatedAt: z.string(),
+});
+
+export const PaginatedDepartmentsSchema = PaginatedSchema.extend({
+  data: z.array(DepartmentsSchema),
 });

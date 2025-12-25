@@ -3,18 +3,26 @@ import type { Departments } from "$lib/models/departments/departments.type";
 import { createDepartment, archiveDepartment, getDepartments, updateDepartment } from "$lib/services/departments/departments.services";
 import { toast } from "svelte-sonner";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
+import type { Pagination } from "$lib/models/common/common.type";
 
 export const departmentsStore = writable<Departments[]>([]);
 export const departmentsLoading = writable(false);
 export const departmentsError = writable<string | null>(null);
+export const departmentsPagination = writable<Pagination>({ page: 1, size: 15 });
+export const departmentsTotalCount = writable<number>(0);
 
 export const departmentsActions = {
-  getDepartments: async () => {
+  getDepartments: async ( pagination: Pagination, q?: string ) => {
     try {
+      departmentsPagination.set(pagination);
       departmentsLoading.set(true);
-      const departments = await getDepartments();
+
+      const data = await getDepartments(pagination, q);
+
       departmentsLoading.set(false);
-      departmentsStore.set(departments);
+      departmentsStore.set(data.data);
+      departmentsPagination.update(prev => ({ ...prev, page: pagination.page, size: pagination.size }));
+      departmentsTotalCount.update(() => data.count);
     } catch (error) {
       console.error(error);
       departmentsError.set((error as Error).message);

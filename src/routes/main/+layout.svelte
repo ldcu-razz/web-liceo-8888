@@ -54,7 +54,7 @@
   ]);
 
   onMount(() => {
-    departmentsActions.getDepartments();
+    departmentsActions.getDepartments({ page: 1, size: 15 });
   });
 </script>
 
