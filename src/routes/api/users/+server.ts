@@ -1,5 +1,6 @@
 import { supabase } from "$lib/supabase/client";
 import type { Users } from "$lib/models/users/users.type";
+import bcrypt from "bcrypt";
 
 export const GET = async ({ url }) => {
   const page = Number(url.searchParams.get('page')) || 1;
@@ -39,7 +40,13 @@ export const GET = async ({ url }) => {
 
 export const POST = async ({ request }) => {
   const body = await request.json();
-  const { data, error } = await supabase.from('users').insert(body).select().single().overrideTypes<Users>();
+  const password = body.password;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newBody = { ...body, password: hashedPassword };
+
+  const { data, error } = await supabase.from('users').insert(newBody).select().single().overrideTypes<Users>();
+
+
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

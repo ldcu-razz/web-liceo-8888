@@ -71,7 +71,6 @@
   }
 
   async function handleUpdateUser(updateFormData: Partial<UserFormDataUpdate>) {
-    // console.log("formData",formData);
     if (currentUserId) {
       const data = {
         ...getObjectDiff(updateFormData, currentUserInitialData),

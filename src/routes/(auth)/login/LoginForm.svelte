@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	interface Props {
+		loading?: boolean;
 		onLogin?: (formData: FormData) => void;
 		onForgotPassword?: () => void;
 		onSignUp?: () => void;
@@ -20,9 +21,9 @@
 	import { InputGroupInput } from '$lib/components/ui/input-group';
 	import InputGroupAddon from '$lib/components/ui/input-group/input-group-addon.svelte';
 	import InputGroup from '$lib/components/ui/input-group/input-group.svelte';
-	import { LockIcon, UserIcon } from '@lucide/svelte';
+	import { LoaderCircle, LockIcon, UserIcon } from '@lucide/svelte';
 
-	let { onLogin = () => {}, onForgotPassword = () => {}, onSignUp = () => {} }: Props = $props();
+	let { loading = false, onLogin = () => {}, onForgotPassword = () => {}, onSignUp = () => {} }: Props = $props();
 
 	let formData = $state<FormData>({
 		username: '',
@@ -58,7 +59,10 @@
 		</Field>
 
 		<Field>
-			<Button type="submit" variant="secondary" class="w-full" onclick={() => onLogin(formData)}>
+			<Button type="submit" variant="secondary" class="w-full" disabled={loading} onclick={() => onLogin(formData)}>
+				{#if loading}
+					<LoaderCircle class="size-4 animate-spin" />
+				{/if}
         Login
       </Button>
 		</Field>

@@ -12,6 +12,14 @@ export const CREATE_USER = '/main/users/create';
 export const USER_DETAILS = '/main/users/{id}';
 export const PROFILE = '/main/profile';
 
+export const API_BASE_URL = '/api';
+
+// Auth
+export const API_AUTH_SESSION = '/api/auth/session';
+export const API_AUTH_LOGIN = '/api/auth/login';
+export const API_AUTH_LOGOUT = '/api/auth/logout';
+
+// Departments
 export const API_DEPARTMENTS = '/api/departments';
 export const API_DEPARTMENTS_ID = '/api/departments/{id}';
 export const API_USERS = '/api/users';

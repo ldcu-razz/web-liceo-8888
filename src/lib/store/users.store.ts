@@ -66,7 +66,6 @@ export const usersActions = {
     try {
       const data = await getNonMemberUsers();
       nonMemberUsersStore.set(data.data);
-      console.log(data);
     } catch (error) {
       console.error(error);
       usersError.set((error as Error).message);
