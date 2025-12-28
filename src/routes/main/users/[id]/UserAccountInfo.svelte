@@ -1,7 +1,18 @@
+<script lang="ts" module>
+  import { Button } from "$lib/components/ui/button";
+  import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "$lib/components/ui/sheet";
+  import ChangePasswordForm, { type FormData as ChangePasswordFormData } from "./ChangePasswordForm.svelte";
+  import type { Users } from "$lib/models/users/users.type";
+	import { usersActions } from "$lib/store/users.store";
+
+  export type Props = {
+    user: Users;
+  };
+</script>
+
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "$lib/components/ui/sheet";
-	import ChangePasswordForm from "./ChangePasswordForm.svelte";
+  
+  let { user }: Props = $props();
 
   let isChangePasswordSheetOpen = $state(false);
 
@@ -10,6 +21,11 @@
   }
 
   function handleCancelChangePassword() {
+    isChangePasswordSheetOpen = false;
+  }
+
+  function handleSubmitChangePassword(formData: ChangePasswordFormData) {
+    usersActions.updatePassword(user.id, formData.password);
     isChangePasswordSheetOpen = false;
   }
 </script>
@@ -21,7 +37,7 @@
   <div class="flex items-center justify-between py-2 px-4 not-last:border-b not-last:border-border not-last:border-dashed">
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-500 w-42">Username:</span>
-      <span class="text-sm">@john.doe</span>
+      <span class="text-sm">@{user?.username ?? ''}</span>
     </div>
   </div>
   <div class="flex items-center justify-between py-2 px-4 not-last:border-b not-last:border-border not-last:border-dashed">
@@ -36,7 +52,7 @@
             <SheetTitle>Change Password</SheetTitle>
             <SheetDescription>Change the password for the user</SheetDescription>
           </SheetHeader>
-          <ChangePasswordForm onCancel={handleCancelChangePassword} />
+          <ChangePasswordForm onCancel={handleCancelChangePassword} onSubmit={handleSubmitChangePassword} />
         </SheetContent>
       </Sheet>
     </div>

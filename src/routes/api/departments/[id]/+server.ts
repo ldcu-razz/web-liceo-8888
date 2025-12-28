@@ -4,7 +4,16 @@ import { supabase } from "$lib/supabase/client";
 
 export const PUT = async ({ request }) => {
   const body = await request.json();
-  const { data, error } = await supabase.from('departments').update({...body }).eq('id', body.id).select().single().overrideTypes<Departments>();
+  const { id: _id, ...updateData } = body;
+
+  const { data, error } = await supabase
+    .from('departments')
+    .update({ ...updateData })
+    .eq('id', _id)
+    .select()
+    .single()
+    .overrideTypes<Departments>();
+    
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

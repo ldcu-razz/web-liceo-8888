@@ -6,14 +6,15 @@
 
   export type UsersDataTableActionsProps = {
     id: string;
+    disabledArchiveButton?: boolean;
     onView?: (id: string) => void;
-    onDelete?: (id: string) => void;
+    onArchive?: (id: string) => void;
   };
 </script>
 
 <script lang="ts">
  
-  let { id, onView, onDelete }: UsersDataTableActionsProps = $props();
+  let { id, disabledArchiveButton = false, onView, onArchive }: UsersDataTableActionsProps = $props();
 </script>
 
 <DropdownMenu>
@@ -35,8 +36,8 @@
     <DropdownMenuItem onclick={() => onView?.(id)}>
       <span>View</span>
     </DropdownMenuItem>
-    <DropdownMenuItem onclick={() => onDelete?.(id)}>
-      <span class="text-destructive">Delete</span>
+    <DropdownMenuItem onclick={() => onArchive?.(id)} disabled={disabledArchiveButton}>
+      <span class="text-destructive">Archive</span>
     </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>

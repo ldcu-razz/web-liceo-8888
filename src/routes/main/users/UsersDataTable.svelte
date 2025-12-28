@@ -1,10 +1,11 @@
 <script lang="ts" module>
-  import { type ColumnDef, getCoreRowModel, getPaginationRowModel, type PaginationState } from "@tanstack/table-core";
+  import { type ColumnDef, getCoreRowModel } from "@tanstack/table-core";
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "$lib/components/ui/table";
 	import { createSvelteTable, FlexRender } from "$lib/components/ui/data-table";
-	import { Button } from "$lib/components/ui/button";
 	import { Loader } from "@lucide/svelte";
 	import type { Users } from "$lib/models/users/users.type";
+	import { usersActions, usersPagination, usersTotalCount } from "$lib/store/users.store";
+	import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNextButton, PaginationPrevButton } from "$lib/components/ui/pagination";
 
   type DataTableProps<TData, TValue> = {
     columns: ColumnDef<TData, TValue>[];
@@ -17,10 +18,11 @@
 
   let { columns, data, loading = $bindable(false) }: DataTableProps<Users, unknown> = $props();
 
-  let pagination = $state<PaginationState>({
-    pageIndex: 0,
-    pageSize: 25,
-  });
+  let pagination = $state($usersPagination);
+
+  let totalCount = $derived($usersTotalCount);
+  
+  let emptyData = $derived(data.length === 0);
 
   const table = createSvelteTable({
     get data() {
@@ -29,60 +31,13 @@
     get columns() {
       return columns;
     },
-    state: {
-      get pagination() {
-        return pagination;
-      }
-    },
-    onPaginationChange: (updater) => {
-      if (typeof updater === "function") {
-        pagination = updater(pagination);
-      } else {
-        pagination = updater;
-      }
-    },
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
-  function getPageNumbers(currentPage: number, totalPages: number): (number | 'ellipsis')[] {
-    const maxVisible = 6;
-    const pages: (number | 'ellipsis')[] = [];
-
-    if (totalPages <= maxVisible) {
-      for (let i = 0; i < totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      pages.push(0);
-
-      if (currentPage <= 2) {
-        // Near the beginning: show 1, 2, 3, 4
-        for (let i = 1; i <= 4; i++) {
-          pages.push(i);
-        }
-        pages.push('ellipsis');
-        pages.push(totalPages - 1);
-      } else if (currentPage >= totalPages - 3) {
-        // Near the end: show last 5 pages
-        pages.push('ellipsis');
-        for (let i = totalPages - 5; i < totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        // In the middle: show current page and neighbors
-        pages.push('ellipsis');
-        for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-          pages.push(i);
-        }
-        pages.push('ellipsis');
-        pages.push(totalPages - 1);
-      }
-    }
-
-    return pages;
+  async function handlePageChange(page: number) {
+    await usersActions.getUsers({ page: page, size: pagination.size });
+    table.setPageIndex(page);
   }
-
 </script>
 
 <div class="relative">
@@ -119,7 +74,7 @@
         {:else}
           <TableRow>
             <TableCell colspan={columns.length} class="h-24 text-center">
-              No departments found.
+              No users found.
             </TableCell>
           </TableRow>
         {/each}
@@ -127,42 +82,38 @@
     </Table>
   </div>
 
-  <div class="flex items-center justify-between">
-    <div class="text-muted-foreground flex-1 text-sm">
-      Page {pagination.pageIndex + 1} of {table.getPageCount()}
-    </div>
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <Button
-        variant="outline"
-        size="sm"
-        onclick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        Prev
-      </Button>
-      <div class="flex items-center space-x-1">
-        {#each getPageNumbers(pagination.pageIndex, table.getPageCount()) as pageNum, index (index)}
-          {#if pageNum === 'ellipsis'}
-            <span class="px-2 text-muted-foreground">...</span>
-          {:else}
-            <Button
-              variant={pageNum === pagination.pageIndex ? "default" : "outline"}
-              size="sm"
-              onclick={() => table.setPageIndex(pageNum)}
-            >
-              {pageNum + 1}
-            </Button>
-          {/if}
-        {/each}
+  {#if !emptyData}
+    <div class="flex items-center justify-between mt-4">
+      <div class="text-muted-foreground flex-1 text-sm">
+        Page {pagination.page} of {Math.ceil(totalCount / pagination.size)}
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onclick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        Next
-      </Button>
+      <Pagination count={totalCount} page={pagination.page} perPage={pagination.size} onPageChange={handlePageChange} class="w-fit">
+        {#snippet children({ pages, currentPage })}
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevButton />
+            </PaginationItem>
+
+            {#each pages as page (page.key)}
+              {#if page.type === "ellipsis"}
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              {:else}
+                <PaginationItem>
+                  <PaginationLink page={page} isActive={currentPage === page.value}>
+                    {page.value}
+                  </PaginationLink>
+                </PaginationItem>
+              {/if}
+            {/each}
+
+            <PaginationItem>
+              <PaginationNextButton />
+            </PaginationItem>
+          </PaginationContent>
+        {/snippet}
+      </Pagination>
     </div>
-  </div>
+  {/if}
 </div>

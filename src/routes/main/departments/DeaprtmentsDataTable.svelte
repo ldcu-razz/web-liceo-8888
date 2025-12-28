@@ -88,9 +88,9 @@
   {#if !emptyData}
     <div class="flex items-center justify-between mt-4">
       <div class="text-muted-foreground flex-1 text-sm">
-        Page {pagination.page} of {totalCount}
+        Page {pagination.page} of {Math.ceil(totalCount / pagination.size)}
       </div>
-      <Pagination count={totalCount} page={pagination.page} onPageChange={handlePageChange} class="w-fit">
+      <Pagination count={totalCount} page={pagination.page} perPage={pagination.size} onPageChange={handlePageChange} class="w-fit">
         {#snippet children({ pages, currentPage })}
           <PaginationContent>
             <PaginationItem>

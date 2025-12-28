@@ -1,11 +1,42 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { Button } from "$lib/components/ui/button";
-	import { ArrowLeftIcon, User, UserPlus } from "@lucide/svelte";
-	import UserForm from "./UserForm.svelte";
+	import { ArrowLeftIcon, User } from "@lucide/svelte";
+	import UserForm, { type FormData } from "./UserForm.svelte";
+	import { usersActions } from "$lib/store/users.store";
+	import type { PostUsers } from "$lib/models/users/users.type";
+	import { uuid } from "$lib/utils/uuid.util";
+	import { PostUsersSchema } from "$lib/models/users/users.schema";
+	import { USERS } from "$lib/constants";
+	import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
+
+  let loading = $state(false);
 
   function goBack() {
     window.history.back();
+  }
+
+  async function handleCreateUser(formData: FormData) {
+    loading = true;
+
+    try {
+      const data = {
+        ...formData,
+        id: uuid(),
+        avatar: "",
+        status: BaseStatusEnumSchema.enum.active,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+      const payload: PostUsers = PostUsersSchema.parse(data);
+
+      await usersActions.createUser(payload);
+      goto(USERS);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      loading = false;
+    }
   }
 </script>
 <div class="flex flex-col gap-4 max-w-4xl mx-auto mt-2">
@@ -26,6 +57,6 @@
   </div>
 
   <div class="mt-2">
-    <UserForm onCancel={goBack} />
+    <UserForm onCancel={goBack} onCreateUser={handleCreateUser} />
   </div>
 </div>
