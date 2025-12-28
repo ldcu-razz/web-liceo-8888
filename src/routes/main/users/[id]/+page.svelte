@@ -16,6 +16,9 @@
 	import UserDetailsSkeleton from "./UserDetailsSkeleton.svelte";
 	import { type FormData as UserFormDataUpdate , defaultFormData } from "../create/UserForm.svelte";
 	import { getObjectDiff } from "$lib/utils/property.utils";
+	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+	import { DEFAULT_AVATAR } from "$lib/constants/avatar.constants";
+	import { transformText } from "$lib/utils/texts.utils";
 
   let isEditUserInfoSheetOpen = $state(false);
   let showArchiveUserAlertDialog = $state(false);
@@ -26,6 +29,10 @@
   let formData: UserFormDataUpdate = $state({ ...defaultFormData });
 
   let currentUserInitialData: UserFormDataUpdate = { ...defaultFormData };
+
+  let userAvatar = $derived(currentUser?.avatar || DEFAULT_AVATAR);
+
+  let userFullName = $derived(transformText(`${currentUser?.firstname} ${currentUser?.lastname}`));
 
   onMount(async () => {
     if (currentUserId) {
@@ -93,7 +100,14 @@
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
           <div class="rounded-full bg-gray-50 p-1 w-32 h-32 flex border border-gray-200 -mt-18">
-            <img src={'https://github.com/evilrabbit.png'} alt="User" class="w-full h-full object-cover rounded-full" />
+            <Avatar class="size-full">
+              <AvatarImage src={userAvatar} />
+              <AvatarFallback>
+                <div class="text-2xl font-bold">
+                  {userFullName.slice(0, 2).toUpperCase()}
+                </div>
+              </AvatarFallback>
+            </Avatar>
           </div>
           
           <div class="flex items-center gap-2">

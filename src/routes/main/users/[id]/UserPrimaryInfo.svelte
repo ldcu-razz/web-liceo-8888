@@ -2,10 +2,8 @@
 	import SexBadge from "$lib/components/common/SexBadge.svelte";
 	import StatusBadge from "$lib/components/common/StatusBadge.svelte";
 	import UserRoleBadge from "$lib/components/common/UserRoleBadge.svelte";
-	import UserStatusBadge from "$lib/components/common/UserStatusBadge.svelte";
   import type { Users } from "$lib/models/users/users.type";
 	import { departmentsMap } from "$lib/store/departments.store";
-	import { transformText } from "$lib/utils/texts.utils";
 
   export type Props = {
     user: Users;
