@@ -1,5 +1,4 @@
 <script lang="ts" module>
-  import type { ComplaintStatuses } from "$lib/models/complaints/complaints.type";
 	import { cn } from "$lib/utils";
 	import { transformText } from "$lib/utils/texts.utils";
 	import { ChevronDown } from "@lucide/svelte";

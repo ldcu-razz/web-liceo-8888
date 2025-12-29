@@ -3,15 +3,16 @@
   import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "$lib/components/ui/dropdown-menu";
   import { EllipsisIcon } from "@lucide/svelte";
 
-  export type ComplaintsCategoriesDataTableActionsProps = {
+  export type TicketsCategoriesDataTableActionsProps = {
     id: string;
+    disabledArchive?: boolean;
     onView?: (id: string) => void;
-    onDelete?: (id: string) => void;
+    onArchive?: (id: string) => void;
   };
 </script>
 
 <script lang="ts">
-  let { id, onView, onDelete }: ComplaintsCategoriesDataTableActionsProps = $props();
+  let { id, disabledArchive = false, onView, onArchive }: TicketsCategoriesDataTableActionsProps = $props();
 </script>
 
 <DropdownMenu>
@@ -32,8 +33,8 @@
     <DropdownMenuItem onclick={() => onView?.(id)}>
       <span>View</span>
     </DropdownMenuItem>
-    <DropdownMenuItem onclick={() => onDelete?.(id)}>
-      <span class="text-destructive">Delete</span>
+    <DropdownMenuItem onclick={() => onArchive?.(id)} disabled={disabledArchive}>
+      <span class="text-destructive">Archive</span>
     </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>

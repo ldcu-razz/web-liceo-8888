@@ -1,15 +1,15 @@
 <script lang="ts" module>
-  import type { ComplaintPriorities } from "$lib/models/complaints/complaints.type";
+  import type { TicketsPriorities } from "$lib/models/tickets/tickets.type";
+  import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, EqualIcon } from "@lucide/svelte";
+  import Tooltip from "../ui/tooltip/tooltip.svelte";
+  import { TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+  import TooltipContent from "../ui/tooltip/tooltip-content.svelte";
+  import { transformText } from "$lib/utils/texts.utils";
 </script>
 
 <script lang="ts">
-  import { ChevronDown, ChevronsDown, ChevronsUp, ChevronUp, EqualIcon } from "@lucide/svelte";
-	import Tooltip from "../ui/tooltip/tooltip.svelte";
-	import { TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-	import TooltipContent from "../ui/tooltip/tooltip-content.svelte";
-	import { transformText } from "$lib/utils/texts.utils";
 
-  let { priority }: { priority: ComplaintPriorities } = $props();
+  let { priority }: { priority: TicketsPriorities } = $props();
 </script>
 
 <TooltipProvider delayDuration={0}>

@@ -1,9 +1,9 @@
 <script lang="ts" module>
-  import type { Complaints } from "$lib/models/complaints/complaints.type";
-
+  import type { Ticket } from "$lib/models/tickets/tickets.type";
+  
   export type Props = {
-    complaint: Complaints;
-    onClick?: ( complaint: Complaints ) => void;
+    ticket: Ticket;
+    onClick?: ( ticket: Ticket ) => void;
   }
 </script>
 
@@ -13,16 +13,16 @@
 	import Avatar from "$lib/components/ui/avatar/avatar.svelte";
 	import { TagIcon } from "@lucide/svelte";
 
-  let { complaint, onClick }: Props = $props();
+  let { ticket, onClick }: Props = $props();
 
   function handleClick() {
-    onClick?.(complaint);
+    onClick?.(ticket);
   }
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      onClick?.(complaint);
+      onClick?.(ticket);
     }
   }
 </script>
@@ -39,17 +39,17 @@
       <div class="size-3 rounded-full">
         <TagIcon class="size-3 text-gray-500" />
       </div>
-      <span class="text-xs font-medium text-ellipsis line-clamp-1">{complaint.code}</span>
+      <span class="text-xs font-medium text-ellipsis line-clamp-1">{ticket.code}</span>
     </div>
 
     <Avatar class="size-5">
-      <AvatarImage src={complaint.imageUrl} />
-      <AvatarFallback>{complaint.current_user_assigned?.slice(0, 2).toUpperCase()}</AvatarFallback>
+      <AvatarImage src={ticket.imageUrl} />
+      <AvatarFallback>{ticket.current_user_assigned?.slice(0, 2).toUpperCase()}</AvatarFallback>
     </Avatar>
   </div>
 
   <div class="flex items-center justify-between gap-2">
-    <span class="text-sm font-semibold text-ellipsis line-clamp-1">{complaint.subject}</span>
-    <PriorityIcons priority={complaint.priority} />
+    <span class="text-sm font-semibold text-ellipsis line-clamp-1">{ticket.subject}</span>
+    <PriorityIcons priority={ticket.priority} />
   </div>
 </div>

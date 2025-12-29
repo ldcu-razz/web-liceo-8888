@@ -1,25 +1,23 @@
 <script lang="ts">
-	import { TabsContent, TabsList, TabsTrigger } from "$lib/components/ui/tabs";
+	import { TabsList, TabsTrigger } from "$lib/components/ui/tabs";
 	import Tabs from "$lib/components/ui/tabs/tabs.svelte";
   import { ListIcon, PresentationIcon } from "@lucide/svelte";
-	import ComplaintsBoard from "./kanban-board/ComplaintsBoard.svelte";
-	import type { Complaints } from "$lib/models/complaints/complaints.type";
-	import ComplaintsList from "./list/ComplaintsList.svelte";
-	import Select from "$lib/components/ui/select/select.svelte";
-	import { SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
-	import ComplainFilters from "./ComplainFilters.svelte";
+	import ComplaintsBoard from "./kanban-board/TicketsBoard.svelte";
+	import type { Ticket } from "$lib/models/tickets/tickets.type";
+	import ComplaintsList from "./list/TicketsList.svelte";
+	import ComplainFilters from "./TicketsFilters.svelte";
 	import Dialog from "$lib/components/ui/dialog/dialog.svelte";
 	import { DialogContent } from "$lib/components/ui/dialog";
-	import ComplainDetails from "./ComplainDetails.svelte";
+	import ComplainDetails from "./TicketsDetails.svelte";
 
   let activeTab = $state("board");
-  let showComplaintDetails = $state(false);
-  let selectedComplaint = $state<Complaints | null>(null);
+  let showTicketDetails = $state(false);
+  let selectedTicket = $state<Ticket | null>(null);
 
-  let complaints = $state<Complaints[]>([
+  let tickets = $state<Ticket[]>([
     {
       id: "1",
-      complaint_category: "1",
+      category: "1",
       code: "1",
       subject: "Subject 1",
       description: "Description 1",
@@ -34,7 +32,7 @@
     },
     {
       id: "2",
-      complaint_category: "2",
+      category: "2",
       code: "2",
       subject: "Subject 2",
       description: "Description 2",
@@ -49,7 +47,7 @@
     },
     {
       id: "3",
-      complaint_category: "3",
+      category: "3",
       code: "3",
       subject: "Subject 3",
       description: "Description 3",
@@ -64,7 +62,7 @@
     },
     {
       id: "4",
-      complaint_category: "4",
+      category: "4",
       code: "4",
       subject: "Subject 4",
       description: "Description 4",
@@ -79,7 +77,7 @@
     },
     {
       id: "5",
-      complaint_category: "5",
+      category: "5",
       code: "5",
       subject: "Subject 5",
       description: "Description 5",
@@ -94,7 +92,7 @@
     },
     {
       id: "6",
-      complaint_category: "6",
+      category: "6",
       code: "6",
       subject: "Subject 6",
       description: "Description 6",
@@ -109,14 +107,14 @@
     },
   ]);
 
-  function handleComplainClick(complaint: Complaints) {
-    selectedComplaint = complaint;
-    showComplaintDetails = true;
+  function handleTicketClick(ticket: Ticket) {
+    selectedTicket = ticket;
+    showTicketDetails = true;
   }
 </script>
 
 <div class="flex flex-col gap-4 mx-auto h-full flex-1 min-h-0 w-full max-w-full">
-  <h5 class="text-xl font-semibold">Complaints {activeTab === "board" ? "Board" : "List"}</h5>
+  <h5 class="text-xl font-semibold">Tickets {activeTab === "board" ? "Board" : "List"}</h5>
   <div class="flex justify-between items-center gap-4">
     <ComplainFilters />
     <Tabs bind:value={activeTab} class="">
@@ -135,17 +133,17 @@
 
   <div class="h-full flex-1 flex flex-col min-h-0 min-w-0 max-w-full">
     {#if activeTab === "board"}
-      <ComplaintsBoard complaints={complaints} class="flex-1 min-h-0" onComplainClick={handleComplainClick} />
+      <ComplaintsBoard tickets={tickets} class="flex-1 min-h-0" onTicketClick={handleTicketClick} />
     {:else}
-      <ComplaintsList complaints={complaints} onComplainClick={handleComplainClick} />
+      <ComplaintsList tickets={tickets} onTicketClick={handleTicketClick} />
     {/if}
   </div>
 </div>
 
-<Dialog bind:open={showComplaintDetails}>
+<Dialog bind:open={showTicketDetails}>
   <DialogContent showCloseButton={false} class="sm:max-w-6xl">
-    {#if selectedComplaint}
-      <ComplainDetails complaint={selectedComplaint} close={() => showComplaintDetails = false} />
+    {#if selectedTicket}
+      <ComplainDetails ticket={selectedTicket} close={() => showTicketDetails = false} />
     {/if}
   </DialogContent>
 </Dialog>

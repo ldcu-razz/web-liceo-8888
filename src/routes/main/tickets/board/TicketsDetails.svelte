@@ -1,9 +1,9 @@
 <script lang="ts" module>
-	import ComplaintStatusBadge from "$lib/components/common/ComplaintStatusBadge.svelte";
+	import TicketStatusBadge from "$lib/components/common/TicketStatusBadge.svelte";
 	import { Button } from "$lib/components/ui/button";
-  import type { Complaints } from "$lib/models/complaints/complaints.type";
+  import type { Ticket } from "$lib/models/tickets/tickets.type";
 	import { Share2Icon, TagIcon, XIcon } from "@lucide/svelte";
-	import ComplainDetailItem from "./ComplainDetaiItem.svelte";
+	import ComplainDetailItem from "./TicketsDetaiItem.svelte";
 	import PriorityIcons from "$lib/components/common/PriorityIcons.svelte";
 	import { transformText } from "$lib/utils/texts.utils";
 	import AssignedDepartmentBadge from "$lib/components/common/AssignedDepartmentBadge.svelte";
@@ -11,13 +11,13 @@
 	import CreateCommentField from "$lib/components/common/CreateCommentField.svelte";
 
   export type Props = {
-    complaint: Complaints;
+    ticket: Ticket;
     close: () => void;
   }
 </script>
 
 <script lang="ts">
-  let { complaint, close }: Props = $props();
+  let { ticket, close }: Props = $props();
 
   let commentValue = $state('');
 </script>
@@ -27,9 +27,9 @@
     <div class="flex flex-col gap-1">
       <div class="flex items-center gap-2">
         <TagIcon class="size-4 text-gray-500" />
-          <h1 class="text-sm font-semibold">{complaint.code}</h1>
+          <h1 class="text-sm font-semibold">{ticket.code}</h1>
       </div>
-      <h2 class="text-lg font-semibold">{complaint.subject}</h2>
+      <h2 class="text-lg font-semibold">{ticket.subject}</h2>
     </div>
 
     <div class="flex gap-2">
@@ -46,7 +46,7 @@
     <div class="flex flex-col col-span-6">
       <h3 class="text-sm font-semibold">Description</h3>
       <div class="min-h-46 mb-4">
-        <p class="text-sm text-gray-500">{@html complaint.description}</p>
+        <p class="text-sm text-gray-500">{@html ticket.description}</p>
       </div>
 
       <CreateCommentField bind:value={commentValue} />
@@ -57,31 +57,31 @@
         <h3 class="text-sm font-semibold mb-2">Properties</h3>
         <div class="flex flex-col gap-3">
           <ComplainDetailItem title="Status">
-            <ComplaintStatusBadge status={complaint.status} size="sm" />
+            <TicketStatusBadge status={ticket.status} size="sm" />
           </ComplainDetailItem>
 
           <ComplainDetailItem title="Department Assigned">
-            <AssignedDepartmentBadge selectedDepartmentId={complaint.curent_department_assigned ?? ''} />
+            <AssignedDepartmentBadge selectedDepartmentId={ticket.curent_department_assigned ?? ''} />
           </ComplainDetailItem>
 
           <ComplainDetailItem title="Assigned to">
-            <AssignedUserBadge selectedUserId={complaint.current_user_assigned ?? ''} />
+            <AssignedUserBadge selectedUserId={ticket.current_user_assigned ?? ''} />
           </ComplainDetailItem>
 
           <ComplainDetailItem title="Reported by">
-            <AssignedUserBadge selectedUserId={complaint.current_user_assigned ?? ''} showOptions={false} />
+            <AssignedUserBadge selectedUserId={ticket.current_user_assigned ?? ''} showOptions={false} />
           </ComplainDetailItem>
 
           <ComplainDetailItem title="Priority">
             <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
-              <PriorityIcons priority={complaint.priority} />
-              <span class="text-xs">{transformText(complaint.priority)}</span>
+              <PriorityIcons priority={ticket.priority} />
+              <span class="text-xs">{transformText(ticket.priority)}</span>
             </div>
           </ComplainDetailItem>
 
           <ComplainDetailItem title="Created At">
             <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
-              <span class="text-xs">{new Date(complaint.createdAt).toLocaleString('en-US', {
+              <span class="text-xs">{new Date(ticket.createdAt).toLocaleString('en-US', {
                 month: "short",
                 day: "numeric",
                 year: "numeric",
@@ -94,7 +94,7 @@
 
           <ComplainDetailItem title="Updated At">
             <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
-              <span class="text-xs">{new Date(complaint.updatedAt).toLocaleDateString('en-US', {
+              <span class="text-xs">{new Date(ticket.updatedAt).toLocaleDateString('en-US', {
                 month: "short",
                 day: "numeric",
                 year: "numeric",

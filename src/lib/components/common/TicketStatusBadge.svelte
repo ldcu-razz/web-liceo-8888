@@ -1,11 +1,11 @@
 <script lang="ts" module>
-  import type { ComplaintStatuses } from "$lib/models/complaints/complaints.type";
+  import type { TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { cn } from "$lib/utils";
 	import { transformText } from "$lib/utils/texts.utils";
 	import { ChevronDown } from "@lucide/svelte";
 
   type Props = {
-    status: ComplaintStatuses;
+    status: TicketStatuses;
     size?: "sm" | "md" | "lg";
   }
 </script>
@@ -13,11 +13,11 @@
 <script lang="ts">
 	import DropdownMenu from "../ui/dropdown-menu/dropdown-menu.svelte";
 	import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-	import { ComplaintStatusesSchema } from "$lib/models/complaints/complaints.schema";
+	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
 
   let { status, size = "md" }: Props = $props();
 
-  const statusColors: Record<ComplaintStatuses, string> = {
+  const statusColors: Record<TicketStatuses, string> = {
     "backlog": "bg-gray-50",
     "ready": "bg-yellow-100",
     "in_progress": "bg-blue-100",
@@ -26,7 +26,7 @@
     "archived": "bg-rose-100",
   }
 
-  const borderColors: Record<ComplaintStatuses, string> = {
+  const borderColors: Record<TicketStatuses, string> = {
     "backlog": "border-gray-200",
     "ready": "border-yellow-200",
     "in_progress": "border-blue-200",
@@ -35,7 +35,7 @@
     "archived": "border-rose-200",
   }
 
-  let statuses: ComplaintStatuses[] = ComplaintStatusesSchema.options;
+  let statuses: TicketStatuses[] = TicketStatusesSchema.options;
 
   let sizeClasses: Record<"sm" | "md" | "lg", string> = {
     sm: "text-xs",
