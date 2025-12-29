@@ -17,6 +17,7 @@
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { browser } from '$app/environment';
 	import { usersActions } from '$lib/store/users.store';
+	import { authActions } from '$lib/store/auth.store';
 
   let { children } = $props();
 
@@ -68,6 +69,11 @@
     departmentsActions.getDepartments({ page: 1, size: 25 });
     usersActions.getNonMemberUsers();
   });
+
+  async function handleLogout() {
+    await authActions.logout();
+    goto(LOGIN);
+  }
 </script>
 
 <SidebarProvider>
@@ -106,7 +112,7 @@
             <Button 
               variant="ghost" 
               class="justify-start w-full text-destructive hover:text-destructive"
-              onclick={() => goto(LOGIN)}
+              onclick={handleLogout}
             >
               Logout
             </Button>

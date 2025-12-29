@@ -37,6 +37,7 @@
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.17",
 		"@tanstack/table-core": "^8.21.3",
+		"@types/bcrypt": "^6.0.0",
 		"@types/node": "^22",
 		"@vitest/browser-playwright": "^4.0.15",
 		"@vitest/coverage-v8": "^4.0.15",
@@ -70,6 +71,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^2.89.0",
 		"bcrypt": "^6.0.0",
+		"jsonwebtoken": "^9.0.3",
 		"uuid": "^13.0.0",
 		"zod": "^4.2.1"
 	}
