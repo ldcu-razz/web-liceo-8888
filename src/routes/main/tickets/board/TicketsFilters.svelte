@@ -1,15 +1,15 @@
 <script lang="ts" module>
 	import SelectWithSearch from "$lib/components/common/SelectWithSearch.svelte";
   import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
-	import { ComplaintStatusesSchema } from "$lib/models/complaints/complaints.schema";
-	import type { ComplaintStatuses } from "$lib/models/complaints/complaints.type";
+	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
+	import type { TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { transformText } from "$lib/utils/texts.utils";
 	import { LoaderCircleIcon } from "@lucide/svelte";
 
   export type Props = {
     selectedDepartments?: string[];
     selectedUser?: string;
-    selectedStatus?: ComplaintStatuses | undefined;
+    selectedStatus?: TicketStatuses | undefined;
     loading?: boolean;
   }
 </script>
@@ -23,8 +23,8 @@
     loading = $bindable(true)
   }: Props = $props();
 
-  let statuses: { label: string, value: ComplaintStatuses | "" }[] = [
-    ...ComplaintStatusesSchema.options.map((status) => ({
+  let statuses: { label: string, value: TicketStatuses | "" }[] = [
+    ...TicketStatusesSchema.options.map((status) => ({
       label: transformText(status),
       value: status,
     }))

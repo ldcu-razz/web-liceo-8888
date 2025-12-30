@@ -1,11 +1,14 @@
 import { renderComponent } from "$lib/components/ui/data-table";
-import type { ComplaintsCategories } from "$lib/models/complaints/categories/complaints-categories.type";
+import type { TicketCategories } from "$lib/models/tickets/categories/tickets-categories.type";
 import type { ColumnDef } from "@tanstack/table-core";
 import StatusBadge from "$lib/components/common/StatusBadge.svelte";
-import ComplaintsCategoriesDataTableActions from "./ComplaintsCategoriesDataTableActions.svelte";
+import TicketsCategoriesDataTableActions from "./TicketsCategoriesDataTableActions.svelte";
 import NameCell from "$lib/components/common/NameCell.svelte";
+import { get } from "svelte/store";
+import { departmentsMap } from "$lib/store/departments.store";
+import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 
-export function createComplaintsCategoriesColumns(onView?: (id: string) => void, onDelete?: (id: string) => void): ColumnDef<ComplaintsCategories>[] {
+export function createTicketsCategoriesColumns(onView?: (id: string) => void, onArchive?: (id: string) => void): ColumnDef<TicketCategories>[] {
   return [
     {
       header: "Name",
@@ -17,6 +20,10 @@ export function createComplaintsCategoriesColumns(onView?: (id: string) => void,
     {
       header: "Department",
       accessorKey: "default_department",
+      cell: ({ row }) => {
+        const department = get(departmentsMap)[row.original.department_id ?? ''];
+        return renderComponent(NameCell, { name: department?.abbv ?? '', id: row.original.id, onView });
+      },
     },
     {
       header: "Status",
@@ -59,7 +66,8 @@ export function createComplaintsCategoriesColumns(onView?: (id: string) => void,
       header: "Actions",
       accessorKey: "actions",
       cell: ({ row }) => {
-        return renderComponent(ComplaintsCategoriesDataTableActions, { id: row.original.id, onView, onDelete });
+        const disabledArchive = row.original.status === BaseStatusEnumSchema.enum.archived;
+        return renderComponent(TicketsCategoriesDataTableActions, { id: row.original.id, disabledArchive, onView, onArchive });
       },
     },
   ];

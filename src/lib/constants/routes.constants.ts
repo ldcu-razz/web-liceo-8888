@@ -4,8 +4,8 @@ export const CREATE_ACCOUNT = '/create-account';
 export const CREATE_ACCOUNT_SUCCESS = '/create-account-success';
 export const MAIN = '/main';
 export const DASHBOARD = '/main/dashboard';
-export const COMPLAINTS_BOARD = '/main/complaints/board';
-export const COMPLAINTS_CATEGORIES = '/main/complaints/categories';
+export const TICKETS_BOARD = '/main/tickets/board';
+export const TICKETS_CATEGORIES = '/main/tickets/categories';
 export const DEPARTMENTS = '/main/departments';
 export const USERS = '/main/users';
 export const CREATE_USER = '/main/users/create';
@@ -25,3 +25,6 @@ export const API_DEPARTMENTS_ID = '/api/departments/{id}';
 export const API_USERS = '/api/users';
 export const API_USERS_ID = '/api/users/{id}';
 export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
+
+// Tickets
+export const API_TICKET_CATEGORIES = '/api/tickets/categories';

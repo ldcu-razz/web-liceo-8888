@@ -1,25 +1,25 @@
 <script lang="ts" module>
 	import { Badge } from "$lib/components/ui/badge";
-	import { ComplaintStatusesSchema } from "$lib/models/complaints/complaints.schema";
-	import type { Complaints, ComplaintStatuses } from "$lib/models/complaints/complaints.type";
+	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
+	import type { Ticket, TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { transformText } from "$lib/utils/texts.utils";
-	import ComplainCard from "../ComplainCard.svelte";
+	import TicketsCard from "../TicketsCard.svelte";
 
   type BoardColumnBase = {
-    id: ComplaintStatuses;
-    title: ComplaintStatuses;
+    id: TicketStatuses;
+    title: TicketStatuses;
     description: string;
     colorClass: string;
   };
 
   type BoardColumn = BoardColumnBase & {
-    items: Complaints[];
+    items: Ticket[];
   };
 
   type Props = {
-    complaints: Complaints[];
+    tickets: Ticket[];
     class: string;
-    onComplainClick?: ( complaint: Complaints ) => void;
+    onTicketClick?: ( ticket: Ticket ) => void;
   }
 </script>
 
@@ -27,66 +27,66 @@
 	import { draggable, droppable } from "$lib/utils/drag-drop.utils";
 	import { SvelteMap } from "svelte/reactivity";
 
-  let { complaints, class: className = "", onComplainClick }: Props = $props();
+  let { tickets, class: className = "", onTicketClick }: Props = $props();
 
   let baseColumns = $state<BoardColumnBase[]>([
     {
-      id: ComplaintStatusesSchema.enum.backlog,
-      title: ComplaintStatusesSchema.enum.backlog,
+      id: TicketStatusesSchema.enum.backlog,
+      title: TicketStatusesSchema.enum.backlog,
       description: "This items are not yet started",
       colorClass: "bg-gray-500",
     },
     {
-      id: ComplaintStatusesSchema.enum.ready,
-      title: ComplaintStatusesSchema.enum.ready,
+      id: TicketStatusesSchema.enum.ready,
+      title: TicketStatusesSchema.enum.ready,
       description: "This items are ready to be started",
       colorClass: "bg-yellow-500",
     },
     {
-      id: ComplaintStatusesSchema.enum.in_progress,
-      title: ComplaintStatusesSchema.enum.in_progress,
+      id: TicketStatusesSchema.enum.in_progress,
+      title: TicketStatusesSchema.enum.in_progress,
       description: "This items are in progress",
       colorClass: "bg-blue-500",
     },
     {
-      id: ComplaintStatusesSchema.enum.in_review,
-      title: ComplaintStatusesSchema.enum.in_review,
+      id: TicketStatusesSchema.enum.in_review,
+      title: TicketStatusesSchema.enum.in_review,
       description: "This items are in review",
       colorClass: "bg-purple-500",
     },
     {
-      id: ComplaintStatusesSchema.enum.done,
-      title: ComplaintStatusesSchema.enum.done,
+      id: TicketStatusesSchema.enum.done,
+      title: TicketStatusesSchema.enum.done,
       description: "This items has been done",
       colorClass: "bg-green-500",
     },
   ]);
 
   // Track status overrides for complaints that have been moved
-  let statusOverrides = new SvelteMap<string, ComplaintStatuses>();
+  let statusOverrides = new SvelteMap<string, TicketStatuses>();
 
   let columns = $derived<BoardColumn[]>(baseColumns.map((column) => ({
     ...column,
-    items: complaints
-      .filter((complaint) => {
-        const currentStatus = statusOverrides.get(complaint.id) ?? complaint.status;
+    items: tickets
+      .filter((ticket) => {
+        const currentStatus = statusOverrides.get(ticket.id) ?? ticket.status;
         return currentStatus === column.title;
       })
-      .map(complaint => ({
-        ...complaint,
-        status: statusOverrides.get(complaint.id) ?? complaint.status
+      .map(ticket => ({
+        ...ticket,
+        status: statusOverrides.get(ticket.id) ?? ticket.status
       })),
   })));
 
   // Handle drop event
-  function handleDrop(draggedComplaint: Complaints, targetColumnId: string) {
+  function handleDrop(draggedTicket: Ticket, targetColumnId: string) {
     // Update the status based on the target column
-    const newStatus = targetColumnId as ComplaintStatuses;
+    const newStatus = targetColumnId as TicketStatuses;
     
     // Update the status override using SvelteMap
-    statusOverrides.set(draggedComplaint.id, newStatus);
+    statusOverrides.set(draggedTicket.id, newStatus);
 
-    console.log(`✅ Moved complaint "${draggedComplaint.subject}" from ${draggedComplaint.status} to ${newStatus}`);
+    console.log(`✅ Moved ticket "${draggedTicket.subject}" from ${draggedTicket.status} to ${newStatus}`);
 
     // TODO: Here you would typically make an API call to persist the status change
     // Example:
@@ -116,14 +116,14 @@
             onDrop: handleDrop
           }}
         >
-          {#each column.items as complaint (complaint.id)}
+          {#each column.items as ticket (ticket.id)}
             <div 
               class="card"
               use:draggable={{
-                data: complaint
+                data: ticket
               }}
             >
-              <ComplainCard complaint={complaint} onClick={onComplainClick} />
+              <TicketsCard ticket={ticket} onClick={onTicketClick} />
             </div>
           {/each}
         </div>

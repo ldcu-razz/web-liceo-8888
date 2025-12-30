@@ -10,7 +10,7 @@
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { PROFILE, LOGIN, DASHBOARD, DEPARTMENTS, USERS, COMPLAINTS_BOARD, COMPLAINTS_CATEGORIES } from '$lib/constants/routes.constants';
+	import { PROFILE, LOGIN, DASHBOARD, DEPARTMENTS, USERS, TICKETS_BOARD, TICKETS_CATEGORIES } from '$lib/constants/routes.constants';
 	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
 	import { onMount } from 'svelte';
@@ -23,8 +23,8 @@
 
   if (browser) {
     preloadCode(DASHBOARD);
-    preloadCode(COMPLAINTS_BOARD);
-    preloadCode(COMPLAINTS_CATEGORIES);
+    preloadCode(TICKETS_BOARD);
+    preloadCode(TICKETS_CATEGORIES);
     preloadCode(DEPARTMENTS);
     preloadCode(USERS);
     // preloadCode(PROFILE);
@@ -38,17 +38,17 @@
       icon: ChartBarBig,
     },
     {
-      label: "Complaints",
+      label: "Tickets",
       icon: FolderKanban,
       children: [
         {
           label: "Board",
-          href: COMPLAINTS_BOARD,
+          href: TICKETS_BOARD,
           icon: FolderKanban,
         },
         {
           label: "Categories",
-          href: COMPLAINTS_CATEGORIES,
+          href: TICKETS_CATEGORIES,
           icon: Tag,
         },
       ],
