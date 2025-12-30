@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { Badge } from "$lib/components/ui/badge";
 	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
-	import type { Ticket, TicketStatuses } from "$lib/models/tickets/tickets.type";
+	import type { GetTicket, Ticket, TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { transformText } from "$lib/utils/texts.utils";
 	import TicketsCard from "../TicketsCard.svelte";
 
@@ -13,19 +13,19 @@
   };
 
   type BoardColumn = BoardColumnBase & {
-    items: Ticket[];
+    items: GetTicket[];
   };
 
   type Props = {
-    tickets: Ticket[];
+    tickets: GetTicket[];
     class: string;
-    onTicketClick?: ( ticket: Ticket ) => void;
+    onTicketClick?: ( ticket: GetTicket ) => void;
   }
 </script>
 
 <script lang="ts">
 	import { draggable, droppable } from "$lib/utils/drag-drop.utils";
-	import { SvelteMap } from "svelte/reactivity";
+	import { ticketsActions } from "$lib/store/tickets.store";
 
   let { tickets, class: className = "", onTicketClick }: Props = $props();
 
@@ -62,35 +62,22 @@
     },
   ]);
 
-  // Track status overrides for complaints that have been moved
-  let statusOverrides = new SvelteMap<string, TicketStatuses>();
-
   let columns = $derived<BoardColumn[]>(baseColumns.map((column) => ({
     ...column,
     items: tickets
       .filter((ticket) => {
-        const currentStatus = statusOverrides.get(ticket.id) ?? ticket.status;
-        return currentStatus === column.title;
+        return ticket.status === column.title;
       })
-      .map(ticket => ({
-        ...ticket,
-        status: statusOverrides.get(ticket.id) ?? ticket.status
-      })),
+      .map(ticket => ticket),
   })));
 
-  // Handle drop event
-  function handleDrop(draggedTicket: Ticket, targetColumnId: string) {
-    // Update the status based on the target column
+  async function handleDrop(draggedTicket: Ticket, targetColumnId: string) {
+    if (draggedTicket.status === targetColumnId) {
+      return;
+    }
+
     const newStatus = targetColumnId as TicketStatuses;
-    
-    // Update the status override using SvelteMap
-    statusOverrides.set(draggedTicket.id, newStatus);
-
-    console.log(`✅ Moved ticket "${draggedTicket.subject}" from ${draggedTicket.status} to ${newStatus}`);
-
-    // TODO: Here you would typically make an API call to persist the status change
-    // Example:
-    // await updateComplaintStatus(draggedComplaint.id, newStatus);
+    await ticketsActions.changeTicketStatus(draggedTicket.id, newStatus);
   }
 </script>
 
@@ -105,7 +92,7 @@
           <span class="text-sm font-medium">{transformText(column.title)}</span>
           <Badge variant="outline">{column.items.length}</Badge>
         </div>
-        <p class="text-xs text-gray-500 px-2">{column.description}</p>
+        <p class="text-xs text-gray-500">{column.description}</p>
       </div>
 
       <div class="flex-1 min-h-0 px-1 pb-1">
@@ -149,6 +136,6 @@
   .drop-zone.drag-over {
     background-color: rgba(59, 130, 246, 0.1);
     border: 1px dashed rgba(59, 130, 246, 0.5);
-    border-radius: 0.375rem;
+    border-radius: 2px;
   }
 </style>

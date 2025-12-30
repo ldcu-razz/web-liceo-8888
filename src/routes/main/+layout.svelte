@@ -17,7 +17,9 @@
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { browser } from '$app/environment';
 	import { usersActions } from '$lib/store/users.store';
-	import { authActions } from '$lib/store/auth.store';
+	import { authActions, authStore } from '$lib/store/auth.store';
+	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
+	import { meActions } from '$lib/store/me.store';
 
   let { children } = $props();
 
@@ -66,8 +68,10 @@
   ]);
 
   onMount(() => {
+    meActions.getMe();
     departmentsActions.getDepartments({ page: 1, size: 25 });
-    usersActions.getNonMemberUsers();
+    usersActions.getAllUsers();
+    ticketCategoriesActions.getAllTicketCategories();
   });
 
   async function handleLogout() {

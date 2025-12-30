@@ -14,7 +14,18 @@ export const ticketCategoriesPagination = writable<Pagination>({
 });
 export const ticketCategoriesTotalCount = writable<number>(0);
 
+export const ticketCategoriesAll = writable<TicketCategories[]>([]);
+
 export const ticketCategoriesActions = {
+  getAllTicketCategories: async () => {
+    try {
+      const data = await getTicketCategories();
+      ticketCategoriesAll.set(data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
   getTicketCategories: async (pagination: Pagination, q?: string, silentLoading?: boolean) => {
     try {
       if (!silentLoading) {
@@ -40,6 +51,7 @@ export const ticketCategoriesActions = {
     const toastId = toast.loading(`Creating ticket category...`);
     try {
       ticketCategoriesStore.update(prev => [payload, ...prev]);
+      ticketCategoriesAll.update(prev => [payload, ...prev]);
       await createTicketCategory(payload);
       toast.success(`Ticket category created successfully`, { id: toastId });
     } catch (error) {
@@ -57,6 +69,7 @@ export const ticketCategoriesActions = {
       await updateTicketCategory(payload);
       toast.success(`Ticket category updated successfully`, { id: toastId });
       ticketCategoriesStore.update(prev => prev.map(c => c.id === id ? {...c, ...payload} : c));
+      ticketCategoriesAll.update(prev => prev.map(c => c.id === id ? {...c, ...payload} : c));
     } catch (error) {
       console.error(error);
       if (currentUpdatedTicketCategory) {
@@ -72,6 +85,7 @@ export const ticketCategoriesActions = {
     try {
       const updatedAt = new Date().toISOString();
       ticketCategoriesStore.update(prev => prev.map(c => c.id === id ? {...c, status: BaseStatusEnumSchema.enum.archived, updatedAt} : c));
+      ticketCategoriesAll.update(prev => prev.map(c => c.id === id ? {...c, status: BaseStatusEnumSchema.enum.archived, updatedAt} : c));
       await archiveTicketCategory(id);
       toast.success(`Ticket category archived successfully`, { id: toastId });
     } catch (error) {

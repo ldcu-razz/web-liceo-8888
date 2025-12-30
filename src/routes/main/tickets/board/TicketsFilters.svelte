@@ -4,9 +4,10 @@
 	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
 	import type { TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { transformText } from "$lib/utils/texts.utils";
-	import { LoaderCircleIcon } from "@lucide/svelte";
+	import { LoaderCircleIcon, SearchIcon } from "@lucide/svelte";
 
   export type Props = {
+    searchQuery?: string;
     selectedDepartments?: string[];
     selectedUser?: string;
     selectedStatus?: TicketStatuses | undefined;
@@ -15,12 +16,16 @@
 </script>
 
 <script lang="ts">
+	import InputGroup from "$lib/components/ui/input-group/input-group.svelte";
+	import { InputGroupAddon, InputGroupInput } from "$lib/components/ui/input-group";
+	import { Input } from "$lib/components/ui/input";
 
   let {
+    searchQuery = $bindable(""),
     selectedDepartments = $bindable([]),
     selectedUser = $bindable(""),
     selectedStatus = $bindable(undefined),
-    loading = $bindable(true)
+    loading = $bindable(false)
   }: Props = $props();
 
   let statuses: { label: string, value: TicketStatuses | "" }[] = [
@@ -62,6 +67,13 @@
 </script>
 
 <div class="flex items-center gap-2">
+  <InputGroup>
+    <InputGroupInput bind:value={searchQuery} placeholder="Search by code, title" />
+    <InputGroupAddon>
+      <SearchIcon class="size-4" />
+    </InputGroupAddon>
+  </InputGroup>
+
   <Select type="multiple" bind:value={selectedDepartments}>
     <SelectTrigger class="min-w-56 max-w-56">
       <span class="text-ellipsis overflow-hidden whitespace-nowrap">

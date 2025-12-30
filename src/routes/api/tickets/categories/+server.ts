@@ -1,3 +1,4 @@
+import { TABLES } from "$lib/constants/tables.constants";
 import type { TicketCategories } from "$lib/models/tickets/categories/tickets-categories.type";
 import { supabase } from "$lib/supabase/client.js";
 
@@ -6,7 +7,7 @@ export const GET = async ({ url }) => {
   const size = Number(url.searchParams.get('size')) || 15;
   const q = url.searchParams.get('q') || '';
 
-  const response = await supabase.from('ticket_categories')
+  const response = await supabase.from(TABLES.TICKET_CATEGORIES)
     .select('*')
     .order('createdAt', { ascending: false })
     .range((page - 1) * size, page * size - 1)
@@ -17,7 +18,7 @@ export const GET = async ({ url }) => {
     return new Response(JSON.stringify({ error: response.error.message }), { status: 500 });
   }
 
-  const { count, error: countError } = await supabase.from('ticket_categories').select('*', { count: 'exact', head: true });
+  const { count, error: countError } = await supabase.from(TABLES.TICKET_CATEGORIES).select('*', { count: 'exact', head: true });
   if (countError) {
     return new Response(JSON.stringify({ error: countError.message }), { status: 500 });
   }
@@ -26,7 +27,7 @@ export const GET = async ({ url }) => {
 
 export const POST = async ({ request }) => {
   const body = await request.json();
-  const { data, error } = await supabase.from('ticket_categories').insert(body).select().single().overrideTypes<TicketCategories>();
+  const { data, error } = await supabase.from(TABLES.TICKET_CATEGORIES).insert(body).select().single().overrideTypes<TicketCategories>();
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }

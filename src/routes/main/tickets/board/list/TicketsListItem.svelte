@@ -4,20 +4,43 @@
 	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
 	import { ItemContent } from "$lib/components/ui/item";
 	import Item from "$lib/components/ui/item/item.svelte";
-  import type { Ticket } from "$lib/models/tickets/tickets.type";
+  import type { GetTicket, TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { TagIcon } from "@lucide/svelte";
+	import { DEFAULT_AVATAR } from "$lib/constants/avatar.constants";
+	import { allUsersStore } from "$lib/store/users.store";
+	import { departmentsStore } from "$lib/store/departments.store";
+	import { Tooltip, TooltipContent, TooltipTrigger } from "$lib/components/ui/tooltip";
+	import { ticketsActions } from "$lib/store/tickets.store";
 
   type Props = {
-    ticket: Ticket;
-    onClick?: ( ticket: Ticket ) => void;
+    ticket: GetTicket;
+    onClick?: ( ticket: GetTicket ) => void;
   }
 </script>
 
 <script lang="ts">
   let { ticket, onClick }: Props = $props();
 
+  let users = $derived($allUsersStore);
+
+  let departments = $derived($departmentsStore);
+
+  let assignedDepartment = $derived(departments?.find(department => department.id === ticket.current_department_assigned?.id));
+
+  let assignedDepartmentInitial = $derived(assignedDepartment ? assignedDepartment?.name.slice(0, 2).toUpperCase() : 'AD');
+
+  let assignedUser = $derived(users?.find(user => user.id === ticket.current_user_assigned?.id));
+
+  let assignedUserInitial = $derived(assignedUser ? assignedUser?.firstname.slice(0, 1).toUpperCase() + assignedUser?.lastname.slice(0, 1).toUpperCase() : 'AU');
+
+  let assignedUserAvatar = $derived(assignedUser?.avatar ?? DEFAULT_AVATAR);
+
   function handleClick() {
     onClick?.(ticket);
+  }
+
+  function handleStatusChangeTicketStatus(status: TicketStatuses) {
+    ticketsActions.changeTicketStatus(ticket.id, status);
   }
 </script>
 
@@ -30,16 +53,23 @@
             <TagIcon class="size-4 text-gray-500" />
           </div>
           <span class="text-sm font-medium text-ellipsis line-clamp-1">{ticket.code}</span>
-          <span class="text-sm font-medium text-ellipsis line-clamp-1">{ticket.subject}</span>
+          <span class="text-sm font-medium text-ellipsis line-clamp-1">{ticket.title}</span>
         </div>
 
         <div class="flex items-center gap-2">
-          <TicketStatusBadge status={ticket.status} size="sm" />
+          <TicketStatusBadge selectedStatus={ticket.status} size="sm" onStatusChange={handleStatusChangeTicketStatus} />
           <PriorityIcons priority={ticket.priority} />
-          <Avatar class="size-5">
-            <AvatarImage src={ticket.imageUrl} />
-            <AvatarFallback>{ticket.current_user_assigned?.slice(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger>
+              <Avatar class="size-6">
+                <AvatarImage src={assignedUser ? assignedUserAvatar: assignedDepartment?.avatar} />
+                <AvatarFallback class="text-xs">{assignedUser ? assignedUserInitial : assignedDepartmentInitial}</AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={4} hideArrow={true}>
+              <span class="text-xs">{assignedUser ? assignedUser.firstname + ' ' + assignedUser.lastname : assignedDepartment?.name}</span>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </div>
     </ItemContent>

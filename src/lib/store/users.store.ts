@@ -1,9 +1,10 @@
 import { derived, get, writable } from "svelte/store";
 import type { GetUserByUsernameResponse, PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
 import type { BaseStatusEnum, Pagination } from "$lib/models/common/common.type";
-import { archiveUser, checkUsername, createUser, deleteUser, getNonMemberUsers, getUser, getUsers, updateUser } from "$lib/services/users/users.service";
+import { archiveUser, checkUsername, createUser, deleteUser, getUser, getUsers, updateUser } from "$lib/services/users/users.service";
 import { toast } from "svelte-sonner";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
+import { UserRolesEnumSchema } from "$lib/models/users/users.schema";
 
 export const usersStore = writable<Users[]>([]);
 export const usersLoading = writable<boolean>(false);
@@ -12,6 +13,7 @@ export const usersTotalCount = writable<number>(0);
 export const usersError = writable<string | null>(null);
 export const hasUsersData = derived(usersStore, ($usersStore) => $usersStore.length > 0);
 
+export const allUsersStore = writable<Users[]>([]);
 export const nonMemberUsersStore = writable<Users[]>([]);
 
 export const currentSelectedUserId = writable<string | null>(null);
@@ -25,6 +27,24 @@ export const usersActions = {
 
   resetCurrentSelectedUserId: () => {
     currentSelectedUserId.set(null);
+  },
+
+  getAllUsers: async () => {
+    try {
+      const data = await getUsers();
+      allUsersStore.set(data.data);
+      const nonMemberUsers = data.data.filter(
+        (u) =>
+          u.role === UserRolesEnumSchema.enum.admin ||
+          u.role === UserRolesEnumSchema.enum.super_admin ||
+          u.role === UserRolesEnumSchema.enum.department_staff
+      );
+      nonMemberUsersStore.set(nonMemberUsers);
+      
+    } catch (error) {
+      console.error(error);
+      usersError.set((error as Error).message);
+    }
   },
 
   getUsers: async (pagination: Pagination, q?: string, silentLoading?: boolean) => {
@@ -64,8 +84,14 @@ export const usersActions = {
 
   getNonMemberUsers: async () => {
     try {
-      const data = await getNonMemberUsers();
-      nonMemberUsersStore.set(data.data);
+      const data = get(allUsersStore).filter(
+        (u) =>
+          u.role === UserRolesEnumSchema.enum.admin ||
+          u.role === UserRolesEnumSchema.enum.super_admin ||
+          u.role === UserRolesEnumSchema.enum.department_staff
+      );
+
+      nonMemberUsersStore.set(data);
     } catch (error) {
       console.error(error);
       usersError.set((error as Error).message);

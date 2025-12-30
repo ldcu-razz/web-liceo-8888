@@ -12,6 +12,6 @@
 </script>
 
 <div class="flex items-center gap-2">
-  <span class="text-sm font-normal w-[50%]">{title}</span>
+  <span class="text-sm font-normal w-42">{title}</span>
   {@render children?.()}
 </div>

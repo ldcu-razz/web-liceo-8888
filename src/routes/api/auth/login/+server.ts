@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import { generateAccessToken, generateRefreshToken } from '$lib/utils/jwt.utils';
 import { createSession } from '$lib/services/auth/session.service';
 import { MAX_AGE_ACCESS_TOKEN, MAX_AGE_REFRESH_TOKEN } from '$lib/constants/session.constants';
+import { TABLES } from '$lib/constants/tables.constants';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
@@ -13,7 +14,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
     // Find user by username
     const { data: user, error } = await supabase
-      .from('users')
+      .from(TABLES.USERS)
       .select('*')
       .eq('username', username)
       .single();

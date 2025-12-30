@@ -1,17 +1,19 @@
 <script lang="ts" module>
 	import TicketStatusBadge from "$lib/components/common/TicketStatusBadge.svelte";
 	import { Button } from "$lib/components/ui/button";
-  import type { Ticket } from "$lib/models/tickets/tickets.type";
+  import type { GetTicket, Ticket, TicketsPriorities, TicketStatuses } from "$lib/models/tickets/tickets.type";
 	import { Share2Icon, TagIcon, XIcon } from "@lucide/svelte";
-	import ComplainDetailItem from "./TicketsDetaiItem.svelte";
+	import TicketDetailItem from "./TicketsDetaiItem.svelte";
 	import PriorityIcons from "$lib/components/common/PriorityIcons.svelte";
 	import { transformText } from "$lib/utils/texts.utils";
 	import AssignedDepartmentBadge from "$lib/components/common/AssignedDepartmentBadge.svelte";
 	import AssignedUserBadge from "$lib/components/common/AssignedUserBadge.svelte";
 	import CreateCommentField from "$lib/components/common/CreateCommentField.svelte";
+	import { ticketsActions } from "$lib/store/tickets.store";
+	import TicketPriorityBadge from "$lib/components/common/TicketPriorityBadge.svelte";
 
   export type Props = {
-    ticket: Ticket;
+    ticket: GetTicket;
     close: () => void;
   }
 </script>
@@ -20,16 +22,32 @@
   let { ticket, close }: Props = $props();
 
   let commentValue = $state('');
+
+  function handleStatusChangeTicketStatus(status: TicketStatuses) {
+    ticketsActions.changeTicketStatus(ticket.id, status);
+  }
+
+  function handleDepartmentChangeAssignedDepartment(departmentId: string) {
+    ticketsActions.changeAssignedDepartment(ticket.id, departmentId);
+  }
+
+  function handleUserChangeAssignedUser(userId: string) {
+    ticketsActions.changeAssignedUser(ticket.id, userId);
+  }
+
+  function handlePriorityChangeTicketPriority(priority: TicketsPriorities) {
+    ticketsActions.changeTicketPriority(ticket.id, priority);
+  }
 </script>
 
 <section>
   <header class="flex justify-between">
     <div class="flex flex-col gap-1">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 mb-4">
         <TagIcon class="size-4 text-gray-500" />
-          <h1 class="text-sm font-semibold">{ticket.code}</h1>
+        <h1 class="text-sm font-semibold">{ticket.code}</h1>
       </div>
-      <h2 class="text-lg font-semibold">{ticket.subject}</h2>
+      <h2 class="text-lg font-semibold">{ticket.title}</h2>
     </div>
 
     <div class="flex gap-2">
@@ -56,30 +74,27 @@
       <div class="flex flex-col flex-1 border border-gray-200 rounded-xs p-4">
         <h3 class="text-sm font-semibold mb-2">Properties</h3>
         <div class="flex flex-col gap-3">
-          <ComplainDetailItem title="Status">
-            <TicketStatusBadge status={ticket.status} size="sm" />
-          </ComplainDetailItem>
+          <TicketDetailItem title="Status">
+            <TicketStatusBadge selectedStatus={ticket.status} size="sm" onStatusChange={handleStatusChangeTicketStatus} />
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Department Assigned">
-            <AssignedDepartmentBadge selectedDepartmentId={ticket.curent_department_assigned ?? ''} />
-          </ComplainDetailItem>
+          <TicketDetailItem title="Department Assigned">
+            <AssignedDepartmentBadge selectedDepartmentId={ticket.current_department_assigned?.id ?? ''} onDepartmentChange={handleDepartmentChangeAssignedDepartment} />
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Assigned to">
-            <AssignedUserBadge selectedUserId={ticket.current_user_assigned ?? ''} />
-          </ComplainDetailItem>
+          <TicketDetailItem title="Assigned to">
+            <AssignedUserBadge selectedUserId={ticket.current_user_assigned?.id ?? ''} onUserChange={handleUserChangeAssignedUser} />
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Reported by">
-            <AssignedUserBadge selectedUserId={ticket.current_user_assigned ?? ''} showOptions={false} />
-          </ComplainDetailItem>
+          <TicketDetailItem title="Reported by">
+            <AssignedUserBadge selectedUserId={ticket.reported_by?.id ?? ''} showOptions={false} />
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Priority">
-            <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
-              <PriorityIcons priority={ticket.priority} />
-              <span class="text-xs">{transformText(ticket.priority)}</span>
-            </div>
-          </ComplainDetailItem>
+          <TicketDetailItem title="Priority">
+            <TicketPriorityBadge selectedPriority={ticket.priority} onPriorityChange={handlePriorityChangeTicketPriority} />
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Created At">
+          <TicketDetailItem title="Created At">
             <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
               <span class="text-xs">{new Date(ticket.createdAt).toLocaleString('en-US', {
                 month: "short",
@@ -90,9 +105,9 @@
                 hour12: true,
               }).replace(', ', ' ').replace(/\s(AM|PM)/, '$1')}</span>
             </div>
-          </ComplainDetailItem>
+          </TicketDetailItem>
 
-          <ComplainDetailItem title="Updated At">
+          <TicketDetailItem title="Updated At">
             <div class="flex items-center gap-1 border border-gray-200 rounded-sm px-2.5 py-1">
               <span class="text-xs">{new Date(ticket.updatedAt).toLocaleDateString('en-US', {
                 month: "short",
@@ -103,7 +118,7 @@
                 hour12: true,
               }).replace(', ', ' ').replace(/\s(AM|PM)/, '$1')}</span>
             </div>
-          </ComplainDetailItem>
+          </TicketDetailItem>
         </div>
       </div>
     </div>

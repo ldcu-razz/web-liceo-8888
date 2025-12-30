@@ -5,8 +5,9 @@
 	import { ChevronDown } from "@lucide/svelte";
 
   type Props = {
-    status: TicketStatuses;
+    selectedStatus: TicketStatuses;
     size?: "sm" | "md" | "lg";
+    onStatusChange?: (status: TicketStatuses) => void;
   }
 </script>
 
@@ -15,7 +16,7 @@
 	import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
 
-  let { status, size = "md" }: Props = $props();
+  let { selectedStatus = $bindable(TicketStatusesSchema.enum.backlog), size = "md", onStatusChange }: Props = $props();
 
   const statusColors: Record<TicketStatuses, string> = {
     "backlog": "bg-gray-50",
@@ -24,6 +25,7 @@
     "in_review": "bg-purple-100",
     "done": "bg-green-100",
     "archived": "bg-rose-100",
+    "closed": "bg-red-100",
   }
 
   const borderColors: Record<TicketStatuses, string> = {
@@ -33,6 +35,7 @@
     "in_review": "border-purple-200",
     "done": "border-green-200",
     "archived": "border-rose-200",
+    "closed": "border-red-200",
   }
 
   let statuses: TicketStatuses[] = TicketStatusesSchema.options;
@@ -42,20 +45,25 @@
     md: "text-sm",
     lg: "text-lg",
   }
+  
+  function handleStatusSelect(status: TicketStatuses) {
+    selectedStatus = status;
+    onStatusChange?.(status);
+  }
 </script>
 
 <DropdownMenu>
   <DropdownMenuTrigger>
-    <div class={cn("border rounded-sm px-2.5 py-1.5 font-medium text-gray-700 cursor-pointer", sizeClasses[size], statusColors[status], borderColors[status])}>
+    <div class={cn("border rounded-sm px-2.5 py-1.5 font-medium text-gray-700 cursor-pointer", sizeClasses[size], statusColors[selectedStatus], borderColors[selectedStatus])}>
       <div class="flex items-center gap-2">
-        <span class="capitalize {sizeClasses[size]}">{transformText(status)}</span>
+        <span class="capitalize {sizeClasses[size]}">{transformText(selectedStatus)}</span>
         <ChevronDown class="size-4" />
       </div>
     </div>
   </DropdownMenuTrigger>
   <DropdownMenuContent>
     {#each statuses as status}
-      <DropdownMenuItem class="p-1.5">
+      <DropdownMenuItem class="p-1.5" onclick={() => handleStatusSelect(status)}>
         <span class="capitalize {sizeClasses[size]}">{transformText(status)}</span>
       </DropdownMenuItem>
     {/each}
