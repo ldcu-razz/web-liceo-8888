@@ -3,10 +3,12 @@ import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 import type { Pagination } from "$lib/models/common/common.type";
 import type { PaginatedTicketCategories, PostTicketCategories, PutTicketCategories, TicketCategories } from "$lib/models/tickets/categories/tickets-categories.type";
 
-export const getTicketCategories = async (pagination: Pagination, q?: string): Promise<PaginatedTicketCategories> => {
+export const getTicketCategories = async (pagination?: Pagination, q?: string): Promise<PaginatedTicketCategories> => {
   const url = new URL(API_TICKET_CATEGORIES, window.location.origin);
-  url.searchParams.set('page', pagination.page.toString());
-  url.searchParams.set('size', pagination.size.toString());
+  if (pagination) {
+    url.searchParams.set('page', pagination.page.toString());
+    url.searchParams.set('size', pagination.size.toString());
+  }
   if (q) {
     url.searchParams.set('q', q);
   }

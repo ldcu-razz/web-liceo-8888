@@ -3,8 +3,8 @@ import type { Users } from "$lib/models/users/users.type";
 import bcrypt from "bcrypt";
 
 export const GET = async ({ url }) => {
-  const page = Number(url.searchParams.get('page')) || 1;
-  const size = Number(url.searchParams.get('size')) || 25;
+  const page = Number(url.searchParams.get('page')) || undefined;
+  const size = Number(url.searchParams.get('size')) || undefined;
   const query = url.searchParams.get('q') || '';
   const userRoles = url.searchParams.get('userRoles');
   const userRolesArray = userRoles ? userRoles.split(',') : [];

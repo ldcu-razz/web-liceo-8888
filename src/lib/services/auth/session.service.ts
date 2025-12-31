@@ -1,5 +1,6 @@
 import { supabase } from '$lib/supabase/client';
 import type { Session } from '$lib/models/session/session.type';
+import { TABLES } from '$lib/constants/tables.constants';
 
 export async function createSession(
   sessionId: string,
@@ -25,7 +26,7 @@ export async function createSession(
   };
 
   const { data, error } = await supabase
-    .from('sessions')
+    .from(TABLES.SESSIONS)
     .insert(sessionData)
     .select()
     .single();
@@ -39,7 +40,7 @@ export async function createSession(
 
 export async function getSessionByRefreshToken(refreshToken: string): Promise<Session | null> {
   const { data, error } = await supabase
-    .from('sessions')
+    .from(TABLES.SESSIONS)
     .select('*')
     .eq('refresh_token', refreshToken)
     .eq('is_revoked', false)
@@ -52,7 +53,7 @@ export async function getSessionByRefreshToken(refreshToken: string): Promise<Se
 export async function revokeSession(sessionId: string): Promise<boolean> {
   try {
     const { error } = await supabase
-      .from('sessions')
+      .from(TABLES.SESSIONS)
       .update({ is_revoked: true, updatedAt: new Date().toISOString() })
       .eq('id', sessionId);
 
@@ -76,7 +77,7 @@ export async function updateSessionTokens(
 ): Promise<void> {
   const expiredAt = Date.now() + expiresIn * 1000;
   await supabase
-    .from('sessions')
+    .from(TABLES.SESSIONS)
     .update({
       access_token: accessToken,
       refresh_token: refreshToken,
@@ -88,7 +89,7 @@ export async function updateSessionTokens(
 
 export async function revokeAllUserSessions(userId: string): Promise<void> {
   await supabase
-    .from('sessions')
+  .from(TABLES.SESSIONS)
     .update({ is_revoked: true, updatedAt: new Date().toISOString() })
     .eq('user_id', userId);
 }
