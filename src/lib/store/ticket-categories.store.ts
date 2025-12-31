@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import type { PostTicketCategories, PutTicketCategories, TicketCategories } from "$lib/models/tickets/categories/tickets-categories.type";
 import type { Pagination } from "$lib/models/common/common.type";
 import { archiveTicketCategory, createTicketCategory, getTicketCategories, updateTicketCategory } from "$lib/services/tickets/ticket-categories.service";
@@ -15,6 +15,8 @@ export const ticketCategoriesPagination = writable<Pagination>({
 export const ticketCategoriesTotalCount = writable<number>(0);
 
 export const ticketCategoriesAll = writable<TicketCategories[]>([]);
+
+export const ticketCategoriesNonArchivedStore = derived(ticketCategoriesAll, (all) => all.filter(c => c.status !== BaseStatusEnumSchema.enum.archived));
 
 export const ticketCategoriesActions = {
   getAllTicketCategories: async () => {

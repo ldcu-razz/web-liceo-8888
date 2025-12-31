@@ -9,7 +9,7 @@
 	import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
 	import { Textarea } from "$lib/components/ui/textarea";
 	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
-	import { ticketCategoriesAll } from "$lib/store/ticket-categories.store";
+	import { ticketCategoriesAll, ticketCategoriesNonArchivedStore } from "$lib/store/ticket-categories.store";
 	import { 
 		validateForm, 
 		getFieldError, 
@@ -80,7 +80,7 @@
 
   let isFormTouched = $derived(Object.values(touchedFields).some((value) => value === true));
 
-  let ticketCategories = $derived($ticketCategoriesAll);
+  let ticketCategories = $derived($ticketCategoriesNonArchivedStore);
 
   let selectedCategory = $derived(ticketCategories.find((category) => category.id === formData.category_id));
 
