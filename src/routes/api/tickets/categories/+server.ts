@@ -7,22 +7,22 @@ export const GET = async ({ url }) => {
   const size = Number(url.searchParams.get('size')) || 15;
   const q = url.searchParams.get('q') || '';
 
-  const response = await supabase.from(TABLES.TICKET_CATEGORIES)
+  const { data, error } = await supabase.from(TABLES.TICKET_CATEGORIES)
     .select('*')
     .order('createdAt', { ascending: false })
     .range((page - 1) * size, page * size - 1)
     .or(`name.ilike.%${q}%`)
     .overrideTypes<TicketCategories>();
 
-  if (response.error) {
-    return new Response(JSON.stringify({ error: response.error.message }), { status: 500 });
+  if (error) {
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 
   const { count, error: countError } = await supabase.from(TABLES.TICKET_CATEGORIES).select('*', { count: 'exact', head: true });
   if (countError) {
     return new Response(JSON.stringify({ error: countError.message }), { status: 500 });
   }
-  return new Response(JSON.stringify({ data: response.data, count, page, size }), { status: 200 });
+  return new Response(JSON.stringify({ data, count, page, size }), { status: 200 });
 };
 
 export const POST = async ({ request }) => {

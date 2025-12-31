@@ -31,3 +31,6 @@ export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
 export const API_TICKETS = '/api/tickets';
 export const API_TICKETS_ID = '/api/tickets/{id}';
 export const API_TICKET_CATEGORIES = '/api/tickets/categories';
+export const API_TICKETS_UPDATES = '/api/tickets/updates';
+export const API_TICKETS_DEPARTMENT_ASSIGNS = '/api/tickets/assign/department';
+export const API_TICKETS_USER_ASSIGNS = '/api/tickets/assign/user';

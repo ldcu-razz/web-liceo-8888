@@ -22,7 +22,7 @@ export const GET = async ({ params }) => {
 export const PUT = async ({ params, request }) => {
   const { id } = params;
   const body = await request.json();
-  const { data, error } = await supabase.from('tickets').update(body).eq('id', id).select(`
+  const { data, error } = await supabase.from(TABLES.TICKETS).update(body).eq('id', id).select(`
     *,
     category:${TABLES.TICKET_CATEGORIES}!category_id(id, name),  
     current_department_assigned:${TABLES.DEPARTMENTS}!current_department_assigned(id, name, abbv),
@@ -38,9 +38,11 @@ export const PUT = async ({ params, request }) => {
 
 export const DELETE = async ({ params }) => {
   const { id } = params;
-  const { data, error } = await supabase.from('tickets').delete().eq('id', id).select().single().overrideTypes<Ticket>();
+  
+  const { error } = await supabase.from(TABLES.TICKETS).delete().eq('id', id).select().overrideTypes<Ticket>();
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
-  return new Response(JSON.stringify(data), { status: 200 });
+
+  return new Response(JSON.stringify(true), { status: 200 });
 }

@@ -11,6 +11,7 @@
     selectedDepartments?: string[];
     selectedUsers?: string[];
     selectedStatus?: TicketStatuses | undefined;
+    disabledDepartments?: boolean;
     loading?: boolean;
     navigateToList?: () => void;
   }
@@ -24,12 +25,15 @@
 	import { allUsersMap, allUsersStore } from "$lib/store/users.store";
 	import Input from "$lib/components/ui/input/input.svelte";
 	import { Button } from "$lib/components/ui/button";
+	import Page from "./+page.svelte";
+	import { untrack } from "svelte";
 
   let {
     searchQuery = $bindable(""),
     selectedDepartments = $bindable([]),
     selectedUsers = $bindable([]),
     selectedStatus = $bindable(undefined),
+    disabledDepartments = false,
     loading = $bindable(false),
     navigateToList
   }: Props = $props();
@@ -39,6 +43,14 @@
 
   let searchUsersQuery = $state("");
   let openUsersSelect = $state(false);
+
+  let allUserStore = $derived($allUsersStore);
+
+  let usersFilteredByDepartments = $derived(
+    selectedDepartments.length === 0 
+      ? allUserStore 
+      : allUserStore.filter(user => selectedDepartments.includes(user.department_id || ''))
+  );
   
   let statuses: { label: string, value: TicketStatuses | "" }[] = [
     ...TicketStatusesSchema.options.map((status) => ({
@@ -56,7 +68,7 @@
 
   let departmentsMapData = $derived($departmentsMap);
 
-  let users = $derived($allUsersStore.map(user => ({
+  let users = $derived(usersFilteredByDepartments.map(user => ({
     label: `${user.firstname} ${user.lastname}`,
     value: user.id,
   })));
@@ -64,6 +76,19 @@
   let filteredUsers = $derived(users.filter(user => user.label.toLowerCase().includes(searchUsersQuery.toLowerCase())));
 
   let usersMapData = $derived($allUsersMap);
+
+  $effect(() => {
+    selectedDepartments;
+
+    untrack(() => {
+      selectedUsers = [];
+    })
+  })
+
+
+  function handleDepartmentSelect(_: string) {
+    searchDepartmentsQuery = '';
+  }
 
   function handleClearDepartmentsSearch() {
     selectedDepartments = [];
@@ -95,7 +120,7 @@
     </InputGroupAddon>
   </InputGroup>
 
-  <Select type="multiple" bind:value={selectedDepartments} bind:open={openDepartmentsSelect}>
+  <Select type="multiple" bind:value={selectedDepartments} bind:open={openDepartmentsSelect} disabled={disabledDepartments}>
     <SelectTrigger class="min-w-48 max-w-48">
       <span class="text-ellipsis overflow-hidden whitespace-nowrap">
         {#if selectedDepartments.length === 0}
@@ -117,7 +142,7 @@
       <div class="max-h-62 overflow-y-auto mt-12">
         {#if filteredDepartments.length > 0}
           {#each filteredDepartments as department (department.value)}
-            <SelectItem value={department.value} class="flex items-center gap-2">
+            <SelectItem value={department.value} class="flex items-center gap-2" onclick={() => handleDepartmentSelect(department.value)}>
               <Avatar class="size-5 border border-gray-200">
                 <AvatarImage src={department.value} />
                 <AvatarFallback class="text-[10px]">{department.label.slice(0, 2).toUpperCase()}</AvatarFallback>

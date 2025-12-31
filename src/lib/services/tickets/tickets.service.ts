@@ -1,6 +1,6 @@
 import { API_TICKETS, API_TICKETS_ID } from "$lib/constants/routes.constants";
 import type { Pagination } from "$lib/models/common/common.type";
-import type { GetTicket, GetTicketsPaginated, PostTicket, PutTicket, TicketStatuses } from "$lib/models/tickets/tickets.type";
+import type { GetTicket, GetTicketsPaginated, PostTicket, PutTicket, Ticket, TicketStatuses } from "$lib/models/tickets/tickets.type";
 import { getRoute, getRouteWithParams } from "$lib/utils/routes.utils";
 
 export const getTickets = async (pagination: Pagination, q?: string, departmentsAssignedIds?: string[], usersAssignedIds?: string[], status?: TicketStatuses[]): Promise<GetTicketsPaginated> => {
@@ -48,6 +48,17 @@ export const updateTicket = async (id: string, ticket: PutTicket): Promise<GetTi
   const result = await fetch(url.toString(), {
     method: 'PUT',
     body: JSON.stringify(ticket),
+  });
+  if (!result.ok) {
+    throw new Error(result.statusText);
+  }
+  return result.json();
+};
+
+export const deleteTicket = async (id: string): Promise<Ticket> => {
+  const url = new URL(getRouteWithParams(API_TICKETS_ID, { id }), window.location.origin);
+  const result = await fetch(url.toString(), {
+    method: 'DELETE',
   });
   if (!result.ok) {
     throw new Error(result.statusText);

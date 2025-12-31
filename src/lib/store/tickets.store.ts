@@ -1,8 +1,9 @@
 import type { Pagination } from "$lib/models/common/common.type";
 import type { GetTicket, PostTicket, PutTicket, TicketsPriorities, TicketStatuses } from "$lib/models/tickets/tickets.type";
-import { createTicket, getTicket, getTickets, updateTicket } from "$lib/services/tickets/tickets.service";
+import { createTicket, deleteTicket, getTicket, getTickets, updateTicket } from "$lib/services/tickets/tickets.service";
 import { toast } from "svelte-sonner";
 import { get, writable } from "svelte/store";
+import { ticketUpdatesActions } from "./ticket-updates.store";
 
 export const ticketsStore = writable<GetTicket[]>([]);
 export const ticketsPagination = writable<Pagination>({ page: 1, size: 20 });
@@ -51,6 +52,10 @@ export const ticketsActions = {
       const data = await createTicket(ticket);
       toast.success(`Ticket created successfully`, { id: toastId });
       ticketsStore.set([data, ...get(ticketsStore)]);
+
+      const assignedId = data.current_department_assigned?.id || data.current_user_assigned?.id || '';
+      const postBody = await ticketUpdatesActions.getCreateTicketPostBody(data.id, assignedId);
+      ticketUpdatesActions.postTicketsUpdates(postBody);
     } catch (error) {
       console.error(error);
       ticketsError.set((error as Error).message);
@@ -79,6 +84,10 @@ export const ticketsActions = {
       ticketsStore.update(prev => prev.map(t => t.id === id ? {...currentTicket!, status} : t));
       await updateTicket(id, { status, updatedAt: new Date().toISOString() });
       toast.success(`Ticket status updated successfully`, { id: toastId });
+
+      const currentDepartmentAssigned = currentTicket?.current_department_assigned?.id || '';
+      const postBody = await ticketUpdatesActions.getStatusChangePostBody(id, currentDepartmentAssigned, status);
+      ticketUpdatesActions.postTicketsUpdates(postBody);
     } catch (error) {
       console.error(error);
       if (currentTicket) {
@@ -92,9 +101,13 @@ export const ticketsActions = {
     const toastId = toast.loading(`Updating ticket assigned user...`);
     const currentTicket = get(ticketsStore).find(t => t.id === id);
     try {
-      const data = await updateTicket(id, { current_user_assigned: userId, updatedAt: new Date().toISOString() });
+      const current_user_assigned = userId || null;
+      const data = await updateTicket(id, { current_user_assigned, updatedAt: new Date().toISOString() });
       ticketsStore.update(prev => prev.map(t => t.id === id ? data : t));
       toast.success(`Ticket assigned user updated successfully`, { id: toastId });
+
+      const postBody = await ticketUpdatesActions.getUserAssignPostBody(id, userId);
+      ticketUpdatesActions.postTicketsUpdates(postBody);
     } catch (error) {
       console.error(error);
       if (currentTicket) {
@@ -108,9 +121,14 @@ export const ticketsActions = {
     const toastId = toast.loading(`Updating ticket assigned department...`);
     const currentTicket = get(ticketsStore).find(t => t.id === id);
     try {
-      const data = await updateTicket(id, { current_department_assigned: departmentId, updatedAt: new Date().toISOString() });
+      const current_department_assigned = departmentId || null;
+      const data = await updateTicket(id, { current_department_assigned, updatedAt: new Date().toISOString() });
       ticketsStore.update(prev => prev.map(t => t.id === id ? data : t));
       toast.success(`Ticket assigned department updated successfully`, { id: toastId });
+
+      const postBody = await ticketUpdatesActions.getDepartmentAssignPostBody(id, departmentId);
+      ticketUpdatesActions.postTicketsUpdates(postBody);
+
     } catch (error) {
       console.error(error);
       if (currentTicket) {
@@ -127,12 +145,28 @@ export const ticketsActions = {
       const data = await updateTicket(id, { priority, updatedAt: new Date().toISOString() });
       ticketsStore.update(prev => prev.map(t => t.id === id ? data : t));
       toast.success(`Ticket priority updated successfully`, { id: toastId });
+
+      const currentDepartmentAssigned = currentTicket?.current_department_assigned;
+      const postBody = await ticketUpdatesActions.getPriorityChangePostBody(id, currentDepartmentAssigned?.id || '', priority);
+      ticketUpdatesActions.postTicketsUpdates(postBody);
     } catch (error) {
       console.error(error);
       if (currentTicket) {
         ticketsStore.update(prev => prev.map(t => t.id === id ? {...currentTicket} : t));
       }
       toast.error(`Failed to update ticket priority`, { id: toastId });
+    }
+  },
+
+  deleteTicket: async (id: string) => {
+    const toastId = toast.loading(`Deleting ticket...`);
+    try {
+      await deleteTicket(id);
+      toast.success(`Ticket deleted successfully`, { id: toastId });
+      ticketsStore.update(prev => prev.filter(t => t.id !== id));
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to delete ticket`, { id: toastId });
     }
   }
 }

@@ -27,7 +27,7 @@
 
   let avatar = $derived(selectedDepartment?.avatar ?? DEFAULT_AVATAR);
 
-  let departmentName = $derived(transformText(selectedDepartment?.name ?? 'Assigned Department'));
+  let departmentName = $derived(transformText(selectedDepartment?.name ?? 'Assign Department'));
 
   let openMenu = $state(false);
 
@@ -36,6 +36,13 @@
     openMenu = false;
     search = '';
     onDepartmentChange?.(departmentId);
+  }
+
+  function handleUnassignedSelect() {
+    selectedDepartmentId = null;
+    openMenu = false;
+    search = '';
+    onDepartmentChange?.("");
   }
 </script>
 
@@ -55,6 +62,18 @@
     </div>
     <div class="mt-12 max-w-62 max-h-62 overflow-y-auto">
       {#if filteredDepartments.length > 0}
+        <DropdownMenuItem onclick={() => handleUnassignedSelect()}>
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5">
+                <Avatar class="size-5 border border-gray-200">
+                  <AvatarFallback class="text-[10px]">UN</AvatarFallback>
+                </Avatar>
+              </div>
+              <div class="capitalize text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">Unassigned</div>
+            </div>
+          </div>
+        </DropdownMenuItem>
         {#each filteredDepartments as department}
           <DropdownMenuItem onclick={() => handleDepartmentSelect(department.id)}>
             <div class="flex items-center justify-between gap-2">

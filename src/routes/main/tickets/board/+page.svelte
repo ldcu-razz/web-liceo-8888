@@ -16,6 +16,7 @@
 	import { uuid } from "$lib/utils/uuid.util";
 	import { meStore } from "$lib/store/me.store";
 	import { debounce } from "$lib/utils/reactive.utils";
+	import { UserRolesEnumSchema } from "$lib/models/users/users.schema";
 
   let tickets = $derived($ticketsStore);
   let loading = $derived($ticketsLoading);
@@ -39,19 +40,35 @@
   let activeTab = $state("board");
 
   let me = $derived($meStore);
+  let isMeRoleDepartmentStaff = $derived(me?.role === UserRolesEnumSchema.enum.department_staff);
+
+  let disabledDeleteTicketButton = $derived(me?.role === UserRolesEnumSchema.enum.department_staff || me?.role === UserRolesEnumSchema.enum.user);
 
   let isFirstMount = $state(true);
 
-  const debouncedSearch = debounce((query: string) => {
-    ticketsActions.getTickets({ page: 1, size: 20 }, query);
+  const debouncedSearch = debounce(({ query, departmentsAssignedIds, usersAssignedIds, status }: { query: string, departmentsAssignedIds?: string[], usersAssignedIds?: string[], status?: TicketStatuses[] }) => {
+    ticketsActions.getTickets({ page: 1, size: 20 }, query, departmentsAssignedIds, usersAssignedIds, status);
   }, 500);
+
+  $effect(() => {
+    if (isMeRoleDepartmentStaff) {
+      selectedDepartments = [me?.department_id || ''];
+    }
+  });
 
   $effect(() => {
     if (isFirstMount) {
       return;
     }
 
-    debouncedSearch(searchQuery);
+    const q = searchQuery;
+    
+    untrack(() => {
+      const departmentsAssignedIds = selectedDepartments;
+      const usersAssignedIds = selectedUsers;
+      const status = selectedStatus ? [selectedStatus] : [];
+      debouncedSearch({ query: q, departmentsAssignedIds, usersAssignedIds, status });
+    })
   });
 
   $effect(() => {
@@ -64,6 +81,8 @@
   });
 
   onMount(() => {
+    
+
     isFirstMount = false;
   });
 
@@ -114,7 +133,15 @@
     </div>
   </div>
   <div class="flex justify-between items-center gap-4">
-    <TicketsFilters bind:searchQuery bind:selectedDepartments bind:selectedUsers bind:selectedStatus loading={loading} navigateToList={handleNavigateToList} />
+    <TicketsFilters
+      bind:searchQuery
+      bind:selectedDepartments
+      bind:selectedUsers
+      bind:selectedStatus
+      disabledDepartments={isMeRoleDepartmentStaff}
+      loading={loading}
+      navigateToList={handleNavigateToList}
+    />
 
     <div class="flex items-center gap-2">
       <span class="text-sm text-gray-500">{tickets.length}/{totalCount} tickets</span>
@@ -147,9 +174,9 @@
 </div>
 
 <Dialog bind:open={showTicketDetails}>
-  <DialogContent showCloseButton={false} class="sm:max-w-6xl">
+  <DialogContent showCloseButton={false} class="sm:max-w-6xl min-h-[80vh] max-h-[90vh]">
     {#if selectedTicket}
-      <TicketsDetails ticket={selectedTicket} close={() => showTicketDetails = false} />
+      <TicketsDetails ticket={selectedTicket} disabledDeleteTicketButton={disabledDeleteTicketButton} close={() => showTicketDetails = false} />
     {/if}
   </DialogContent>
 </Dialog>

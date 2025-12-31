@@ -30,7 +30,7 @@
 
   let avatar = $derived(selectedUser?.avatar ?? DEFAULT_AVATAR);
 
-  let userFullName = $derived(selectedUser ? transformText(`${selectedUser?.firstname} ${selectedUser?.lastname}`) : 'Assigned User');
+  let userFullName = $derived(selectedUser ? transformText(`${selectedUser?.firstname} ${selectedUser?.lastname}`) : 'Assign User');
 
   let openMenu = $state(false);
 
@@ -41,6 +41,13 @@
   function handleUserSelect(userId: string) {
     selectedUserId = userId;
     onUserChange?.(userId);
+    openMenu = false;
+    search = '';
+  }
+
+  function handleUnassignedSelect() {
+    selectedUserId = null;
+    onUserChange?.("");
     openMenu = false;
     search = '';
   }
@@ -63,6 +70,14 @@
       </div>
       <div class="mt-12 max-h-62 overflow-y-auto">
         {#if filteredUsers.length > 0}
+          <DropdownMenuItem onclick={() => handleUnassignedSelect()}>
+            <div class="flex items-center gap-1.5">
+              <Avatar class="size-6 border border-gray-200">
+                <AvatarFallback class="text-xs">UN</AvatarFallback>
+              </Avatar>
+              <span class="capitalize text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">Unassigned</span>
+            </div>
+          </DropdownMenuItem>
           {#each filteredUsers as user}
             <DropdownMenuItem onclick={() => handleUserSelect(user.id)}>
               <div class="flex items-center gap-1.5">
