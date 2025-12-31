@@ -21,7 +21,7 @@
   import { cn } from "$lib/utils.js";
 	import { ChevronDownIcon } from "@lucide/svelte";
   
-  let { options, value, noItemsMessage = "No items found", inputPlaceholder = "Select an item", searchInputPlaceholder = "Search" }: Props = $props();
+  let { options, value = $bindable(), noItemsMessage = "No items found", inputPlaceholder = "Select an item", searchInputPlaceholder = "Search" }: Props = $props();
 
   let triggerRef = $state<HTMLButtonElement>(null!);
   
@@ -53,7 +53,7 @@
     <Button
      {...props}
      variant="outline"
-     class="w-[200px] justify-between font-normal"
+     class="w-full justify-between font-normal"
      role="combobox"
      aria-expanded={open}
     >

@@ -5,7 +5,7 @@ import { DepartmentsSchema } from "../departments/departments.schema";
 import { UsersSchema } from "../users/users.schema";
 import { FilesSchema } from "../files/files.schema";
 
-export const TicketsPrioritiesSchema = z.enum(["low","lowest", "medium", "high", "highest"]);
+export const TicketsPrioritiesSchema = z.enum(["highest", "high", "medium", "low", "lowest"]);
 
 export const TicketStatusesSchema = z.enum(["backlog", "ready", "in_progress", "in_review", "done", "archived", "closed"]);
 

@@ -14,6 +14,11 @@ export const usersError = writable<string | null>(null);
 export const hasUsersData = derived(usersStore, ($usersStore) => $usersStore.length > 0);
 
 export const allUsersStore = writable<Users[]>([]);
+export const allUsersMap = derived(allUsersStore, ($allUsersStore) => $allUsersStore.reduce((acc, user) => {
+  acc[user.id] = user;
+  return acc;
+}, {} as Record<string, Users>));
+
 export const nonMemberUsersStore = writable<Users[]>([]);
 
 export const currentSelectedUserId = writable<string | null>(null);

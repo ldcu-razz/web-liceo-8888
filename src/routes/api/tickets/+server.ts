@@ -6,8 +6,9 @@ import { supabase } from "$lib/supabase/client";
 export const GET = async ({ url }) => {
   const page = Number(url.searchParams.get('page')) || 1;
   const size = Number(url.searchParams.get('size')) || 20;
-  const departmentAssignedId = url.searchParams.get('departmentAssignedId') || '';
-  const userAssignedId = url.searchParams.get('userAssignedId') || '';
+  const departmentsAssignedIds = url.searchParams.get('departmentsAssignedIds')?.split(',') || [];
+  const usersAssignedIds = url.searchParams.get('usersAssignedIds')?.split(',') || [];
+  const status = url.searchParams.get('status') || '';
   const q = url.searchParams.get('q') || '';
 
   let query = supabase.from(TABLES.TICKETS)
@@ -22,16 +23,25 @@ export const GET = async ({ url }) => {
     .order('createdAt', { ascending: false })
     .range((page - 1) * size, page * size - 1);
 
+  let countQuery = supabase.from(TABLES.TICKETS).select('*', { count: 'exact', head: true });
+
   if (q) {
     query = query.ilike('title', `%${q}%`);
   }
 
-  if (departmentAssignedId) {
-    query = query.eq('current_department_assigned', departmentAssignedId);
+  if (departmentsAssignedIds.length > 0) {
+    query = query.in('current_department_assigned', departmentsAssignedIds);
+    countQuery = countQuery.in('current_department_assigned', departmentsAssignedIds);
   }
 
-  if (userAssignedId) {
-    query = query.eq('current_user_assigned', userAssignedId);
+  if (usersAssignedIds.length > 0) {
+    query = query.in('current_user_assigned', usersAssignedIds);
+    countQuery = countQuery.in('current_user_assigned', usersAssignedIds);
+  }
+
+  if (status) {
+    query = query.eq('status', status);
+    countQuery = countQuery.eq('status', status);
   }
 
   const { data, error } = await query.overrideTypes<GetTicketsPaginated>();
@@ -39,7 +49,7 @@ export const GET = async ({ url }) => {
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
-  const { count, error: countError } = await supabase.from(TABLES.TICKETS).select('*', { count: 'exact', head: true });
+  const { count, error: countError } = await countQuery;
   if (countError) {
     return new Response(JSON.stringify({ error: countError.message }), { status: 500 });
   }

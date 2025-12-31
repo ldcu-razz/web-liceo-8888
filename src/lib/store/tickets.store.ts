@@ -15,12 +15,12 @@ export const currentTicketLoading = writable<boolean>(false);
 export const currentTicketError = writable<string | null>(null);
 
 export const ticketsActions = {
-  getTickets: async (pagination: Pagination, q?: string, departmentAssignedId?: string, userAssignedId?: string) => {
+  getTickets: async (pagination: Pagination, q?: string, departmentsAssignedIds?: string[], usersAssignedIds?: string[], status?: TicketStatuses[]) => {
     ticketsLoading.set(true);
     try {
       ticketsPagination.set(pagination);
 
-      const data = await getTickets(pagination, q, departmentAssignedId, userAssignedId);
+      const data = await getTickets(pagination, q, departmentsAssignedIds, usersAssignedIds, status);
       ticketsStore.set(data.data);
 
       ticketsPagination.update(prev => ({ ...prev, page: pagination.page, size: pagination.size }));

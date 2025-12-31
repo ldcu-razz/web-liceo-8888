@@ -60,17 +60,35 @@
       <span class="text-xs font-semibold text-ellipsis line-clamp-1">{ticket.code}</span>
     </div>
 
-    <Tooltip delayDuration={0}>
-      <TooltipTrigger>
-        <Avatar class="size-5">
-          <AvatarImage src={assignedUser ? assignedUserAvatar: assignedDepartment?.avatar} />
-          <AvatarFallback class="text-[8px]">{assignedUser ? assignedUserInitial : departmentInitial}</AvatarFallback>
-        </Avatar>
-      </TooltipTrigger>
-      <TooltipContent sideOffset={4} hideArrow={true}>
-        <span class="text-xs">{assignedUser ? assignedUser?.firstname + ' ' + assignedUser?.lastname : assignedDepartment?.name}</span>
-      </TooltipContent>
-    </Tooltip>
+    <div class="flex items-center gap-0.5">
+      {#if assignedDepartment}
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>
+            <Avatar class="size-5">
+              <AvatarImage src={assignedDepartment?.avatar} />
+              <AvatarFallback class="text-[8px]">{departmentInitial}</AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent sideOffset={4} hideArrow={true}>
+            <span class="text-xs">{assignedDepartment?.name}</span>
+          </TooltipContent>
+        </Tooltip>
+      {/if}
+
+      {#if assignedUser}
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger>
+            <Avatar class="size-5">
+              <AvatarImage src={assignedUserAvatar} />
+              <AvatarFallback class="text-[8px]">{assignedUserInitial}</AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent sideOffset={4} hideArrow={true}>
+            <span class="text-xs">{`${assignedUser?.firstname} ${assignedUser?.lastname}`}</span>
+          </TooltipContent>
+        </Tooltip>
+      {/if}
+    </div>
   </div>
 
   <div class="flex items-center justify-between gap-2">

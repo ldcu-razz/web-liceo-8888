@@ -54,25 +54,31 @@
       <Input bind:value={search} placeholder="Search departments" class="text-xs px-2 py-1 w-full" />
     </div>
     <div class="mt-12 max-w-62 max-h-62 overflow-y-auto">
-      {#each filteredDepartments as department}
-        <DropdownMenuItem onclick={() => handleDepartmentSelect(department.id)}>
-          <div class="flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <div class="flex items-center gap-1.5">
-                <Avatar class="size-5 border border-gray-200">
-                  <AvatarImage src={department.avatar} />
-                  <AvatarFallback class="text-[10px]">{department.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
+      {#if filteredDepartments.length > 0}
+        {#each filteredDepartments as department}
+          <DropdownMenuItem onclick={() => handleDepartmentSelect(department.id)}>
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5">
+                  <Avatar class="size-5 border border-gray-200">
+                    <AvatarImage src={department.avatar} />
+                    <AvatarFallback class="text-[10px]">{department.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                </div>
+                <div class="capitalize text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">{department.name}</div>
               </div>
-              <div class="capitalize text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">{department.name}</div>
+    
+              {#if department.id === selectedDepartmentId}
+                <CheckIcon class="size-4 text-green-700" />
+              {/if}
             </div>
-  
-            {#if department.id === selectedDepartmentId}
-              <CheckIcon class="size-4 text-green-700" />
-            {/if}
-          </div>
+          </DropdownMenuItem>
+        {/each}
+      {:else}
+        <DropdownMenuItem class="text-center text-sm text-gray-500">
+          <span>No departments found</span>
         </DropdownMenuItem>
-      {/each}
+      {/if}
     </div>
   </DropdownMenuContent>
 </DropdownMenu>

@@ -1,16 +1,17 @@
 import { API_TICKETS, API_TICKETS_ID } from "$lib/constants/routes.constants";
 import type { Pagination } from "$lib/models/common/common.type";
-import type { GetTicket, GetTicketsPaginated, PostTicket, PutTicket } from "$lib/models/tickets/tickets.type";
+import type { GetTicket, GetTicketsPaginated, PostTicket, PutTicket, TicketStatuses } from "$lib/models/tickets/tickets.type";
 import { getRoute, getRouteWithParams } from "$lib/utils/routes.utils";
 
-export const getTickets = async (pagination: Pagination, q?: string, departmentAssignedId?: string, userAssignedId?: string): Promise<GetTicketsPaginated> => {
+export const getTickets = async (pagination: Pagination, q?: string, departmentsAssignedIds?: string[], usersAssignedIds?: string[], status?: TicketStatuses[]): Promise<GetTicketsPaginated> => {
   const url = new URL(getRoute(API_TICKETS, {}), window.location.origin);
   url.searchParams.set('page', pagination.page.toString());
   url.searchParams.set('size', pagination.size.toString());
 
   if (q) url.searchParams.set('q', q);
-  if (departmentAssignedId) url.searchParams.set('departmentAssignedId', departmentAssignedId);
-  if (userAssignedId) url.searchParams.set('userAssignedId', userAssignedId);
+  if (departmentsAssignedIds && departmentsAssignedIds.length > 0) url.searchParams.set('departmentsAssignedIds', departmentsAssignedIds.join(','));
+  if (usersAssignedIds && usersAssignedIds.length > 0) url.searchParams.set('usersAssignedIds', usersAssignedIds.join(','));
+  if (status && status.length > 0) url.searchParams.set('status', status.join(','));
 
   const result = await fetch(url.toString());
   if (!result.ok) {

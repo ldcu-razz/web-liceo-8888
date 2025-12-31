@@ -45,7 +45,7 @@
 </script>
 
 <div class="complaint-list-item cursor-pointer">
-  <Item variant="outline" class="p-3 hover:bg-slate-50" onclick={handleClick}>
+  <Item variant="outline" class="px-3 py-2 hover:bg-slate-50" onclick={handleClick}>
     <ItemContent>
       <div class="flex justify-between gap-4">
         <div class="flex items-center gap-2">

@@ -36,7 +36,7 @@
       {:else}
         <ListStartIcon class="size-5 text-gray-500" />
       {/if}
-      <span class="capitalize">{priorityName || 'Priority'}</span>
+      <span class="capitalize text-xs">{priorityName || 'Priority'}</span>
     </div>
   </DropdownMenuTrigger>
   <DropdownMenuContent class="min-w-62 p-2" side="bottom">
