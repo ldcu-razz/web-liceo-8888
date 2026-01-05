@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import AssignedDepartmentBadge from "$lib/components/common/AssignedDepartmentBadge.svelte";
 	import AssignedUserBadge from "$lib/components/common/AssignedUserBadge.svelte";
+	import RichTextEditor from "$lib/components/common/RichTextEditor.svelte";
 	import TicketPriorityBadge from "$lib/components/common/TicketPriorityBadge.svelte";
 	import TicketStatusBadge from "$lib/components/common/TicketStatusBadge.svelte";
 	import { Button } from "$lib/components/ui/button";
@@ -9,7 +10,7 @@
 	import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
 	import { Textarea } from "$lib/components/ui/textarea";
 	import { TicketStatusesSchema } from "$lib/models/tickets/tickets.schema";
-	import { ticketCategoriesAll, ticketCategoriesNonArchivedStore } from "$lib/store/ticket-categories.store";
+	import { ticketCategoriesNonArchivedStore } from "$lib/store/ticket-categories.store";
 	import { 
 		validateForm, 
 		getFieldError, 
@@ -162,12 +163,12 @@
       <FieldLabel for="description" class="gap-1">
         <span>Description</span>
       </FieldLabel>
-      <Textarea 
-        id="description" 
-        bind:value={formData.description} 
-        rows={8}
-        onblur={() => handleFieldBlur('description')}
-        class={hasFieldError('description', touchedFields, errors) ? 'border-red-500 focus-visible:ring-red-500' : ''}
+      <RichTextEditor
+        bind:value={formData.description}
+        placeholder="Write a description"
+        hideAvatar={true}
+        onBlur={() => handleFieldBlur('description')}
+        className={hasFieldError('description', touchedFields, errors) ? 'border-red-500 focus-visible:ring-red-500' : ''}
       />
       {#if getFieldError('description', touchedFields, errors)}
         <p class="text-sm text-red-500 mt-1">{getFieldError('description', touchedFields, errors)}</p>

@@ -16,6 +16,7 @@ export const TicketsUpdatesSchema = z.object({
   type: TicketsUpdatesTypesSchema,
   title: z.string(),
   message: z.string(),
+  is_visible_to_public: z.boolean().default(false),
   updated_by: UUIDSchema,
   updated_at: z.string(),
 });

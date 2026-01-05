@@ -35,3 +35,5 @@ export const DeleteUsersSchema = UsersSchema.pick({ id: true });
 export const GetUserByUsernameResponseSchema = z.object({
   exists: z.boolean(),
 });
+
+export const MentionedUsersSchema = UsersSchema.pick({ id: true, firstname: true, lastname: true, username: true });

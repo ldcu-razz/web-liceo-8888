@@ -4,6 +4,7 @@ export const TABLES = {
   TICKET_CATEGORIES: 'ticket_categories',
   TICKETS_DEPARTMMENT_ASSIGNS: 'tickets_department_assigns',
   TICKETS_UPDATES: 'tickets_updates',
+  TICKET_COMMENTS: 'ticket_comments',
   DEPARTMENTS: 'departments',
   USERS: 'users',
   COMMENTS: 'comments',

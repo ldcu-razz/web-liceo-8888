@@ -6,12 +6,14 @@
 	import TicketDetailItem from "./TicketsDetaiItem.svelte";
 	import AssignedDepartmentBadge from "$lib/components/common/AssignedDepartmentBadge.svelte";
 	import AssignedUserBadge from "$lib/components/common/AssignedUserBadge.svelte";
-	import CreateCommentField from "$lib/components/common/CreateCommentField.svelte";
 	import { ticketsActions } from "$lib/store/tickets.store";
 	import TicketPriorityBadge from "$lib/components/common/TicketPriorityBadge.svelte";
   import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
   import TicketHistory from "$lib/components/common/TicketHistory.svelte";
   import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
+	import { ticketCommentsActions } from "$lib/store/ticket-comments.store";
+	import { onMount } from "svelte";
+	import TicketCommentSection from "./TicketCommentSection.svelte";
 
   export type Props = {
     ticket: GetTicket;
@@ -26,11 +28,13 @@
 <script lang="ts">
   let { ticket, disabledDeleteTicketButton = false, close }: Props = $props();
 
-  let commentValue = $state('');
-
   let activeTab = $state(propertiesTab);
 
   let showDeleteTicketModal = $state(false);
+
+  onMount(() => {
+    ticketCommentsActions.getTicketComments(ticket.id);
+  });
 
   function handleStatusChangeTicketStatus(status: TicketStatuses) {
     ticketsActions.changeTicketStatus(ticket.id, status);
@@ -58,8 +62,8 @@
   }
 </script>
 
-<section class="h-full flex flex-col">
-  <header class="flex justify-between">
+<section class="flex flex-col min-h-0 max-h-[80vh]">
+  <header class="flex justify-between shrink-0">
     <div class="flex flex-col gap-1">
       <div class="flex items-center gap-2 mb-4">
         <TagIcon class="size-4 text-gray-500" />
@@ -67,16 +71,20 @@
       </div>
       <div class="flex flex-col gap-0.5">
         <h2 class="text-lg font-semibold">{ticket.title}</h2>
-        <div class="border border-gray-300 rounded-sm p-1 w-fit">
-          <div class="text-[10px] font-semibold">{ticket.category?.name}</div>
-        </div>
+        {#if ticket.category}
+          <div class="border border-gray-300 rounded-sm p-1 w-fit">
+            <div class="text-[10px] font-semibold">{ticket.category?.name}</div>
+          </div>
+        {/if}
       </div>
     </div>
 
     <div class="flex gap-1">
-      <Button variant="outline" size="icon-sm" onclick={handleOpenDeleteTicketModal}>
-        <TrashIcon class="size-3" />
-      </Button>
+      {#if !disabledDeleteTicketButton}
+        <Button variant="outline" size="icon-sm" onclick={handleOpenDeleteTicketModal}>
+          <TrashIcon class="size-3" />
+        </Button>
+      {/if}
       <Button variant="outline" size="icon-sm">
         <Share2Icon class="size-3" />
       </Button>
@@ -86,20 +94,20 @@
     </div>
   </header>
 
-  <section class="grid grid-cols-10 gap-4 mt-4 h-full">
-    <div class="flex flex-col col-span-6">
-      <h3 class="text-sm font-semibold">Description</h3>
-      <div class="min-h-46 mb-4">
-        <p class="text-sm text-gray-500">{@html ticket.description}</p>
+  <section class="grid grid-cols-10 gap-4 mt-4 flex-1 max-h-full overflow-hidden">
+    <div class="flex flex-col col-span-6 pr-3 overflow-y-auto">
+      <h3 class="text-sm font-semibold shrink-0 mb-2">Description</h3>
+      <div class="mb-4 min-h-32 shrink-0">
+        <p class="text-sm whitespace-pre-line">{@html ticket.description}</p>
       </div>
 
-      <div class="mt-auto">
-        <CreateCommentField bind:value={commentValue} />
+      <div class="mt-auto pt-8 flex-1 min-h-0">
+        <TicketCommentSection ticketId={ticket.id} />
       </div>
     </div>
 
-    <div class="col-span-4 flex flex-col gap-2">
-      <div class="flex flex-col flex-1 border border-gray-200 rounded-sm p-4">
+    <div class="col-span-4 flex flex-col gap-2 overflow-hidden">
+      <div class="flex flex-col flex-1 border border-gray-200 rounded-sm p-4 overflow-y-auto">
         <div class="mb-6">
           <ButtonGroup>
             <ButtonGroup>

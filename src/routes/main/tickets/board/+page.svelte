@@ -174,7 +174,7 @@
 </div>
 
 <Dialog bind:open={showTicketDetails}>
-  <DialogContent showCloseButton={false} class="sm:max-w-6xl min-h-[80vh] max-h-[90vh]">
+  <DialogContent showCloseButton={false} class="sm:max-w-7xl min-h-[80vh] max-h-[90vh]">
     {#if selectedTicket}
       <TicketsDetails ticket={selectedTicket} disabledDeleteTicketButton={disabledDeleteTicketButton} close={() => showTicketDetails = false} />
     {/if}
