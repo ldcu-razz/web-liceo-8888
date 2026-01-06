@@ -26,7 +26,7 @@ export const GET = async ({ url }) => {
   let countQuery = supabase.from(TABLES.TICKETS).select('*', { count: 'exact', head: true });
 
   if (q) {
-    query = query.ilike('title', `%${q}%`);
+    query = query.or(`title.ilike.%${q}%,code.ilike.%${q}%`);
   }
 
   if (departmentsAssignedIds.length > 0) {

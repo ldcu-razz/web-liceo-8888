@@ -6,6 +6,7 @@ export const MAIN = '/main';
 export const DASHBOARD = '/main/dashboard';
 export const TICKETS_BOARD = '/main/tickets/board';
 export const TICKETS_CATEGORIES = '/main/tickets/categories';
+export const TICKETS_DETAILS = '/main/tickets/{id}';
 export const DEPARTMENTS = '/main/departments';
 export const USERS = '/main/users';
 export const CREATE_USER = '/main/users/create';

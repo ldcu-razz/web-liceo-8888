@@ -29,7 +29,8 @@
   let selectedStatus = $state<TicketStatuses | undefined>(undefined);
 
   let showTicketDetails = $state(false);
-  let selectedTicket = $state<GetTicket | null>(null);
+  let selectedTicketId = $state<string | null>(null);
+  let selectedTicket = $derived(tickets.find(t => t.id === selectedTicketId));
 
   let showCreateTicketForm = $state(false);
   let createTicketFormData = $state<CreateTicketFormData>({ ...initialFormData });
@@ -87,7 +88,7 @@
   });
 
   function handleTicketClick(ticket: GetTicket) {
-    selectedTicket = ticket;
+    selectedTicketId = ticket.id;
     showTicketDetails = true;
   }
 
@@ -166,7 +167,7 @@
 
   <div class="h-full flex-1 flex flex-col min-h-0 min-w-0 max-w-full">
     {#if activeTab === "board"}
-      <TicketsBoard tickets={tickets} class="flex-1 min-h-0" onTicketClick={handleTicketClick} />
+      <TicketsBoard tickets={tickets} loading={loading} class="flex-1 min-h-0" onTicketClick={handleTicketClick} />
     {:else}
       <TicketsList tickets={tickets} onTicketClick={handleTicketClick} />
     {/if}
@@ -174,7 +175,7 @@
 </div>
 
 <Dialog bind:open={showTicketDetails}>
-  <DialogContent showCloseButton={false} class="sm:max-w-7xl min-h-[80vh] max-h-[90vh]">
+  <DialogContent showCloseButton={false} class="sm:max-w-7xl min-h-[80vh] max-h-[90vh]" trapFocus={false}>
     {#if selectedTicket}
       <TicketsDetails ticket={selectedTicket} disabledDeleteTicketButton={disabledDeleteTicketButton} close={() => showTicketDetails = false} />
     {/if}

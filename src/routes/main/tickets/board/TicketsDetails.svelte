@@ -14,10 +14,14 @@
 	import { ticketCommentsActions } from "$lib/store/ticket-comments.store";
 	import { onMount } from "svelte";
 	import TicketCommentSection from "./TicketCommentSection.svelte";
+	import RichTextEditor from "$lib/components/common/RichTextEditor.svelte";
+	import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "$lib/components/ui/tooltip";
 
   export type Props = {
     ticket: GetTicket;
     disabledDeleteTicketButton?: boolean;
+    hideCloseButton?: boolean;
+    hideShareButton?: boolean;
     close: () => void;
   }
 
@@ -26,11 +30,15 @@
 </script>
 
 <script lang="ts">
-  let { ticket, disabledDeleteTicketButton = false, close }: Props = $props();
+  let { ticket, disabledDeleteTicketButton = false, hideCloseButton = false, hideShareButton = false, close }: Props = $props();
 
   let activeTab = $state(propertiesTab);
 
   let showDeleteTicketModal = $state(false);
+
+  let isEditDescription = $state(false);
+
+  let descriptionValue = $state("");
 
   onMount(() => {
     ticketCommentsActions.getTicketComments(ticket.id);
@@ -60,6 +68,29 @@
     ticketsActions.deleteTicket(ticket.id);
     close();
   }
+
+  function handleEditDescription() {
+    isEditDescription = true;
+    descriptionValue = ticket.description;
+  }
+
+  function handleDescriptionKeydown(event: KeyboardEvent) {
+    if (isEditDescription) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleEditDescription();
+    }
+  }
+
+  function handleSaveEditDescription() {
+    ticketsActions.updateTicketDescription(ticket.id, descriptionValue);
+    isEditDescription = false;
+    descriptionValue = "";
+  }
+
+  function handleCopyTicketLink() {
+    ticketsActions.copyTicketLink(ticket.id);
+  }
 </script>
 
 <section class="flex flex-col min-h-0 max-h-[80vh]">
@@ -79,27 +110,66 @@
       </div>
     </div>
 
-    <div class="flex gap-1">
+    <div class="flex gap-1 h-fit">
       {#if !disabledDeleteTicketButton}
-        <Button variant="outline" size="icon-sm" onclick={handleOpenDeleteTicketModal}>
-          <TrashIcon class="size-3" />
-        </Button>
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button variant="outline" size="icon-sm" onclick={handleOpenDeleteTicketModal}>
+              <TrashIcon class="size-3" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={4} hideArrow={true}>
+            Delete Ticket
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       {/if}
-      <Button variant="outline" size="icon-sm">
-        <Share2Icon class="size-3" />
-      </Button>
-      <Button variant="outline" size="icon-sm" onclick={close}>
-        <XIcon class="size-3" />
-      </Button>
+      {#if !hideShareButton}
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button variant="outline" size="icon-sm" onclick={handleCopyTicketLink}>
+              <Share2Icon class="size-3" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="top" sideOffset={4} hideArrow={true}>
+            Copy Ticket Link
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      {/if}
+      {#if !hideCloseButton}
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger>
+              <Button variant="outline" size="icon-sm" onclick={close}>
+                <XIcon class="size-3" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={4} hideArrow={true}>
+              Close Ticket
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      {/if}
     </div>
   </header>
 
   <section class="grid grid-cols-10 gap-4 mt-4 flex-1 max-h-full overflow-hidden">
     <div class="flex flex-col col-span-6 pr-3 overflow-y-auto">
       <h3 class="text-sm font-semibold shrink-0 mb-2">Description</h3>
-      <div class="mb-4 min-h-32 shrink-0">
-        <p class="text-sm whitespace-pre-line">{@html ticket.description}</p>
-      </div>
+      {#if isEditDescription}
+        <RichTextEditor bind:value={descriptionValue} placeholder="Edit description" hideAvatar={true} />
+        <div class="flex gap-2 justify-end mt-2">
+          <Button variant="outline" size="sm" onclick={() => isEditDescription = false}>Cancel</Button>
+          <Button variant="secondary" size="sm" onclick={handleSaveEditDescription}>Save</Button>
+        </div>
+      {:else}
+        <div class="mb-4 min-h-32 shrink-0 hover:bg-gray-100 rounded-sm p-1 cursor-pointer" role="button" tabindex="0" onclick={handleEditDescription} onkeydown={handleDescriptionKeydown}>
+          <p class="text-sm whitespace-pre-line">{@html ticket.description}</p>
+        </div>
+      {/if}
 
       <div class="mt-auto pt-8 flex-1 min-h-0">
         <TicketCommentSection ticketId={ticket.id} />

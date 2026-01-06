@@ -4,6 +4,8 @@ import { createTicket, deleteTicket, getTicket, getTickets, updateTicket } from 
 import { toast } from "svelte-sonner";
 import { get, writable } from "svelte/store";
 import { ticketUpdatesActions } from "./ticket-updates.store";
+import { getRoute } from "$lib/utils/routes.utils";
+import { TICKETS_DETAILS } from "$lib/constants/routes.constants";
 
 export const ticketsStore = writable<GetTicket[]>([]);
 export const ticketsPagination = writable<Pagination>({ page: 1, size: 20 });
@@ -35,13 +37,14 @@ export const ticketsActions = {
   },
 
   getTicket: async (id: string) => {
+    currentTicketLoading.set(true);
     try {
-      currentTicketLoading.set(true);
       const data = await getTicket(id);
       currentTicket.set(data);
     } catch (error) {
       console.error(error);
       currentTicketError.set((error as Error).message);
+    } finally {
       currentTicketLoading.set(false);
     }
   },
@@ -74,6 +77,23 @@ export const ticketsActions = {
       console.error(error);
       ticketsError.set((error as Error).message);
       toast.error(`Failed to update ticket`, { id: toastId });
+    }
+  },
+
+  updateTicketDescription: async (id: string, description: string) => {
+    const toastId = toast.loading(`Updating ticket description...`);
+    const currentTicket = get(ticketsStore).find(t => t.id === id);
+    try {
+      const updatedTicket = { description, updatedAt: new Date().toISOString() };
+      ticketsStore.update(prev => prev.map(t => t.id === id ? {...t, ...updatedTicket} : t));
+      await updateTicket(id, updatedTicket);
+      toast.success(`Ticket description updated successfully`, { id: toastId });
+    } catch (error) {
+      console.error(error);
+      if (currentTicket) {
+        ticketsStore.update(prev => prev.map(t => t.id === id ? {...currentTicket} : t));
+      }
+      toast.error(`Failed to update ticket description`, { id: toastId });
     }
   },
 
@@ -168,5 +188,17 @@ export const ticketsActions = {
       console.error(error);
       toast.error(`Failed to delete ticket`, { id: toastId });
     }
-  }
+  },
+
+  copyTicketLink: async (id: string) => {
+    const toastId = toast.loading(`Copying ticket link...`);
+    try {
+      const link = window.location.origin + `${getRoute(TICKETS_DETAILS, { id })}`;
+      await navigator.clipboard.writeText(link);
+      toast.success(`Ticket link copied successfully`, { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to copy ticket link`, { id: toastId });
+    }
+  },
 }

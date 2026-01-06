@@ -26,13 +26,4 @@
       <TicketsListItem ticket={ticket} onClick={onTicketClick} />
     {/each}
   {/if}
-
-  {#if !emptyData}
-    <div class="flex justify-center">
-      <Button variant="ghost" size="sm">
-        <ChevronDownIcon class="size-4" />
-        Show more
-      </Button>
-    </div>
-  {/if}
 </div>

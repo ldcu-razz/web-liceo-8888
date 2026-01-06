@@ -26,7 +26,7 @@ export const TicketSchema = z.object({
 
 export const PostTicketSchema = TicketSchema;
 
-export const PutTicketSchema = PostTicketSchema.partial();
+export const PutTicketSchema = TicketSchema.partial();
 
 export const GetTicketSchema = TicketSchema.extend({
   category: TicketCategoriesSchema.pick({ id: true, name: true }),

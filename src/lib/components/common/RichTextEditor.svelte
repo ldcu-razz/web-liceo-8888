@@ -353,6 +353,7 @@
 		if (mentionPopoverOpen) {
 			if (key === "arrowdown" && filteredMentionUsers.length > 0) {
 				event.preventDefault();
+				event.stopPropagation();
 				mentionHighlightIndex =
 					(mentionHighlightIndex + 1) % filteredMentionUsers.length;
 				return;
@@ -360,6 +361,7 @@
 
 			if (key === "arrowup" && filteredMentionUsers.length > 0) {
 				event.preventDefault();
+				event.stopPropagation();
 				mentionHighlightIndex =
 					(mentionHighlightIndex - 1 + filteredMentionUsers.length) %
 					filteredMentionUsers.length;
@@ -368,6 +370,7 @@
 
 			if (key === "enter" && !event.shiftKey) {
 				event.preventDefault();
+				event.stopPropagation();
 				const user = filteredMentionUsers[mentionHighlightIndex];
 				if (user) selectMentionUser(user);
 				return;
@@ -375,6 +378,7 @@
 
 			if (key === "escape") {
 				event.preventDefault();
+				event.stopPropagation();
 				closeMentionPopover();
 				return;
 			}
@@ -382,36 +386,42 @@
 
 		if (meta && key === "z" && !event.shiftKey) {
 			event.preventDefault();
+			event.stopPropagation();
 			undo();
 			return;
 		}
 
 		if ((meta && key === "y") || (meta && key === "z" && event.shiftKey)) {
 			event.preventDefault();
+			event.stopPropagation();
 			redo();
 			return;
 		}
 
 		if (meta && key === "b") {
 			event.preventDefault();
+			event.stopPropagation();
 			applyFormat("bold");
 			return;
 		}
 
 		if (meta && key === "i") {
 			event.preventDefault();
+			event.stopPropagation();
 			applyFormat("italic");
 			return;
 		}
 
 		if (meta && key === "u") {
 			event.preventDefault();
+			event.stopPropagation();
 			applyFormat("underline");
 			return;
 		}
 
 		if (event.key === "Enter" && !event.shiftKey && !meta) {
 			event.preventDefault();
+			event.stopPropagation();
 			submitComment();
 		}
 	}
@@ -610,7 +620,7 @@
 		{/if}
 
 		<div
-			class={cn("rich-comment-editor w-full min-h-[96px] rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-3 focus-visible:ring-gray-200 focus-visible:border-gray-300", className)}
+			class={cn("rich-comment-editor w-full whitespace-pre-line min-h-[96px] rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 outline-none focus-visible:border-gray-300", className)}
 			contenteditable="true"
 			role="textbox"
 			tabindex={0}

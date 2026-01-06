@@ -18,6 +18,7 @@
 
   type Props = {
     tickets: GetTicket[];
+    loading?: boolean;
     class: string;
     onTicketClick?: ( ticket: GetTicket ) => void;
   }
@@ -26,8 +27,9 @@
 <script lang="ts">
 	import { draggable, droppable } from "$lib/utils/drag-drop.utils";
 	import { ticketsActions } from "$lib/store/tickets.store";
+	import { Skeleton } from "$lib/components/ui/skeleton";
 
-  let { tickets, class: className = "", onTicketClick }: Props = $props();
+  let { tickets, loading = false, class: className = "", onTicketClick }: Props = $props();
 
   let baseColumns = $state<BoardColumnBase[]>([
     {
@@ -103,21 +105,32 @@
             onDrop: handleDrop
           }}
         >
-          {#each column.items as ticket (ticket.id)}
-            <div 
-              class="card"
-              use:draggable={{
-                data: ticket
-              }}
-            >
-              <TicketsCard ticket={ticket} onClick={onTicketClick} />
-            </div>
-          {/each}
+          {#if loading}
+            {@render loadingSkeleton()}
+          {:else}
+            {#each column.items as ticket (ticket.id)}
+              <div 
+                class="card"
+                use:draggable={{
+                  data: ticket
+                }}
+              >
+                <TicketsCard ticket={ticket} onClick={onTicketClick} />
+              </div>
+            {/each}
+          {/if}
         </div>
       </div>
     </div>
   {/each}
 </section>
+
+{#snippet loadingSkeleton()}
+  <div class="flex flex-col h-full gap-2">
+    <Skeleton class="w-full h-20 rounded-md" />
+    <Skeleton class="w-full h-20 rounded-md" />
+  </div>
+{/snippet}
 
 <style>
   .card {

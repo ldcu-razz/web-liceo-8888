@@ -1,5 +1,4 @@
 <script lang="ts" module>
-  import type { Departments } from "$lib/models/departments/departments.type";
 	import { transformText } from "$lib/utils/texts.utils";
 	import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 	import { DEFAULT_AVATAR } from "$lib/constants/avatar.constants";
@@ -84,7 +83,7 @@
                     <AvatarFallback class="text-[10px]">{department.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                   </Avatar>
                 </div>
-                <div class="capitalize text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">{department.name}</div>
+                <div class="text-ellipsis text-xs overflow-hidden whitespace-nowrap max-w-50">{department.name}</div>
               </div>
     
               {#if department.id === selectedDepartmentId}
