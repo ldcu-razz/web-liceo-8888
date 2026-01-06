@@ -1,15 +1,17 @@
-import { API_USERS, API_USERS_CHECK_USERNAME, API_USERS_ID } from "$lib/constants";
+import { API_USERS, API_USERS_CHECK_USERNAME, API_USERS_ID, API_USERS_ME } from "$lib/constants";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 import type { Pagination } from "$lib/models/common/common.type";
 import { UserRolesEnumSchema } from "$lib/models/users/users.schema";
 import type { GetUserByUsernameResponse, PaginatedUsers, PostUsers, PutUsers, Users } from "$lib/models/users/users.type";
-import { getRoute, getRouteWithParams, getRouteWithQuery } from "$lib/utils/routes.utils";
+import { getRouteWithParams } from "$lib/utils/routes.utils";
 
-export async function getUsers(pagination: Pagination, q?: string): Promise<PaginatedUsers> {
+export async function getUsers(pagination?: Pagination, q?: string): Promise<PaginatedUsers> {
   try {
     const url = new URL(API_USERS, window.location.origin);
-    url.searchParams.set('page', pagination.page.toString());
-    url.searchParams.set('size', pagination.size.toString());
+    if (pagination) {
+      url.searchParams.set('page', pagination.page.toString());
+      url.searchParams.set('size', pagination.size.toString());
+    }
     if (q) {
       url.searchParams.set('q', q);
     }
@@ -29,6 +31,20 @@ export async function getUsers(pagination: Pagination, q?: string): Promise<Pagi
 export async function getUser(id: string): Promise<Users> {
   try {
     const result = await fetch(getRouteWithParams(API_USERS_ID, { id }));
+    if (!result.ok) {
+      throw new Error(result.statusText);
+    }
+    return result.json();
+  }
+  catch (error) {
+    console.error(error);
+    throw new Error((error as Error).message);
+  }
+}
+
+export async function getMe(): Promise<Users> {
+  try {
+    const result = await fetch(API_USERS_ME);
     if (!result.ok) {
       throw new Error(result.statusText);
     }
