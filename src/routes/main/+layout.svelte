@@ -4,7 +4,7 @@
 	import SidebarMenu from '$lib/components/ui/sidebar/sidebar-menu.svelte';
 	import Sidebar from '$lib/components/ui/sidebar/sidebar.svelte';
 	import type { SidebarModel } from '$lib/models/sidebar/sidebar.model';
-	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Tag, Users } from '@lucide/svelte';
+	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Tag, User, Users } from '@lucide/svelte';
 	import AppNavbar from './AppNavbar.svelte';
 	import { page } from '$app/stores';
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
@@ -68,6 +68,11 @@
       href: USERS,
       icon: Users,
     },
+    {
+      label: "Profile",
+      href: PROFILE,
+      icon: User,
+    },
   ]);
 
   onMount(async () => {
@@ -115,9 +120,6 @@
           </PopoverTrigger>
           <PopoverContent class="w-48 p-1">
             <div class="flex flex-col">
-              <Button variant="ghost" href={PROFILE} class="justify-start w-full">
-                Profile
-              </Button>
               <Button 
                 variant="ghost" 
                 class="justify-start w-full text-destructive hover:text-destructive"
@@ -137,7 +139,7 @@
             <SidebarTrigger />
           {/snippet}
         </AppNavbar>
-        <div class="p-4 flex-1">
+        <div class="p-4 flex-1 h-full">
           {@render children?.()}
         </div>
       </div>

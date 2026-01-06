@@ -12,7 +12,12 @@ export const USERS = '/main/users';
 export const CREATE_USER = '/main/users/create';
 export const USER_DETAILS = '/main/users/{id}';
 export const PROFILE = '/main/profile';
+export const PROFILE_ACCOUNT = '/main/profile/account';
+export const PROFILE_NOTIFICATIONS = '/main/profile/notifications';
+export const PROFILE_SESSIONS = '/main/profile/sessions';
 
+
+/** REGION: API URLS */
 export const API_BASE_URL = '/api';
 
 // Auth
@@ -27,6 +32,7 @@ export const API_USERS = '/api/users';
 export const API_USERS_ID = '/api/users/{id}';
 export const API_USERS_ME = '/api/users/me';
 export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
+export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
 
 // Tickets
 export const API_TICKETS = '/api/tickets';
