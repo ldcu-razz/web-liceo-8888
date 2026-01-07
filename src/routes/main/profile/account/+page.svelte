@@ -3,18 +3,25 @@
 	import { DialogContent, DialogDescription, DialogTitle } from "$lib/components/ui/dialog";
 	import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import { meActions, meStore } from "$lib/store/me.store";
-	import { transformText } from "$lib/utils/texts.utils";
 	import { CircleDotIcon, UserCog, UserIcon, UserLockIcon } from "@lucide/svelte";
 	import ChangePasswordForm, { type FormData as ChangePasswordFormData } from "./ChangePasswordForm.svelte";
 	import DialogHeader from "$lib/components/ui/dialog/dialog-header.svelte";
+	import UserRoleBadge from "$lib/components/common/UserRoleBadge.svelte";
+	import { type UserRolesEnum } from "$lib/models/users/users.type";
+	import type { BaseStatusEnum } from "$lib/models/common/common.type";
+	import StatusBadge from "$lib/components/common/StatusBadge.svelte";
+	import ChangeUsernameForm ,{ initialFormData as initialChangeUsernameFormData, type FormData as ChangeUsernameFormData } from "./ChangeUsernameForm.svelte";
 
   let me = $derived($meStore);
 
   let changePasswordDialogOpen = $state(false);
-
   let isChangingPassword = $state(false);
-
   let errorMessage = $state<string>("");
+
+  let changeUsernameFormData = $state<ChangeUsernameFormData>(initialChangeUsernameFormData);
+  let changeUsernameDialogOpen = $state(false);
+  let isChangingUsername = $state(false);
+  let errorChangeUsernameMessage = $state<string>("");
 
   function handleToggleChangePasswordDialog() {
     changePasswordDialogOpen = !changePasswordDialogOpen;
@@ -32,6 +39,28 @@
       isChangingPassword = false;
     }
   }
+
+  function handleToggleChangeUsernameDialog() {
+    changeUsernameDialogOpen = !changeUsernameDialogOpen;
+    if (changeUsernameDialogOpen) {
+      changeUsernameFormData = {
+        username: me?.username ?? '',
+      };
+    }
+  }
+
+  async function handleSubmitChangeUsername(formData: ChangeUsernameFormData) {
+    try {
+      isChangingUsername = true;
+      await meActions.changeUsername(formData.username, me?.id ?? '');
+      changeUsernameDialogOpen = false;
+    } catch (error) {
+      console.error(error);
+      errorChangeUsernameMessage = (error as Error).message;
+    } finally {
+      isChangingUsername = false;
+    }
+  }
 </script>
 
 <div class="flex flex-col py-4">
@@ -45,17 +74,7 @@
       <span class="text-sm">@{me?.username ?? ''}</span>
     </div>
     <div class="flex flex-col gap-2">
-      <Button variant="outline" size="sm" class="text-xs p-2">Change Username</Button>
-    </div>
-  </div>
-
-  <div class="flex align-items justify-between p-3 border-border border border-b-0">
-    <div class="flex items-center gap-2">
-      <CircleDotIcon class="size-5" />
-      <span class="text-sm">Active</span>
-    </div>
-    <div class="flex flex-col gap-2">
-      <Button variant="outline" size="sm" class="text-xs p-2">Change Status</Button>
+      <Button variant="outline" size="sm" class="text-xs p-2" onclick={handleToggleChangeUsernameDialog}>Change Username</Button>
     </div>
   </div>
 
@@ -69,13 +88,23 @@
     </div>
   </div>
 
+  <div class="flex align-items justify-between p-3 border-border border border-b-0">
+    <div class="flex items-center gap-2">
+      <CircleDotIcon class="size-5" />
+      <span class="text-sm">Status</span>
+    </div>
+    <div class="flex flex-col gap-2">
+      <StatusBadge status={me?.status as BaseStatusEnum} />
+    </div>
+  </div>
+
   <div class="flex align-items justify-between p-3 border-border border rounded-b-lg">
     <div class="flex items-center gap-2">
       <UserCog class="size-5" /> 
-      <span class="text-sm">{transformText(me?.role ?? '')}</span>
+      <span class="text-sm">Role</span>
     </div>
     <div class="flex flex-col gap-2">
-      <Button variant="outline" size="sm" class="text-xs p-2" disabled>Change Role</Button>
+      <UserRoleBadge role={me?.role as UserRolesEnum} />
     </div>
   </div>
 </div>
@@ -88,6 +117,18 @@
     </DialogHeader>
     <div class="mt-4">
       <ChangePasswordForm {errorMessage} onCancel={handleToggleChangePasswordDialog} onSubmit={handleSubmitChangePassword} />
+    </div>
+  </DialogContent>
+</Dialog>
+
+<Dialog bind:open={changeUsernameDialogOpen}>
+  <DialogContent class="sm:max-w-lg">
+    <DialogHeader>
+      <DialogTitle>Change Username</DialogTitle>
+      <DialogDescription>Change the username for your account</DialogDescription>
+    </DialogHeader>
+    <div class="mt-4">
+      <ChangeUsernameForm bind:formData={changeUsernameFormData} errorMessage={errorChangeUsernameMessage} loading={isChangingUsername} onCancel={handleToggleChangeUsernameDialog} onSubmit={handleSubmitChangeUsername} />
     </div>
   </DialogContent>
 </Dialog>

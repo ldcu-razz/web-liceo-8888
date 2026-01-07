@@ -3,6 +3,7 @@
 	import Avatar from "$lib/components/ui/avatar/avatar.svelte";
 	import { Button } from "$lib/components/ui/button";
 	import { meStore } from "$lib/store/me.store";
+	import { transformText } from "$lib/utils/texts.utils";
 
   let me = $derived($meStore);
 </script>
@@ -46,7 +47,7 @@
 
       <div class="flex flex-col gap-1 col-span-4">
         <span class="text-xs text-gray-500">Sex</span>
-        <span class="text-sm">{me?.sex ?? ''}</span>
+        <span class="text-sm">{transformText(me?.sex ?? '')}</span>
       </div>
 
       <div class="flex flex-col gap-1 col-span-4">

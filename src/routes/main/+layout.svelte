@@ -4,7 +4,7 @@
 	import SidebarMenu from '$lib/components/ui/sidebar/sidebar-menu.svelte';
 	import Sidebar from '$lib/components/ui/sidebar/sidebar.svelte';
 	import type { SidebarModel } from '$lib/models/sidebar/sidebar.model';
-	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Tag, User, Users } from '@lucide/svelte';
+	import { Building2, ChartBarBig, ChevronsUpDown, FolderKanban, Tag, User, UserCog, Users } from '@lucide/svelte';
 	import AppNavbar from './AppNavbar.svelte';
 	import { page } from '$app/stores';
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
@@ -71,7 +71,7 @@
     {
       label: "Profile",
       href: PROFILE,
-      icon: User,
+      icon: UserCog,
     },
   ]);
 
@@ -148,3 +148,7 @@
 {:else}
   <ScreenLoader />
 {/if}
+
+<svelte:head>
+  <title>Liceo 8888</title>
+</svelte:head>

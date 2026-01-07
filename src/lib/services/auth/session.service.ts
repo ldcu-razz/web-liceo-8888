@@ -1,6 +1,28 @@
 import { supabase } from '$lib/supabase/client';
-import type { Session } from '$lib/models/session/session.type';
+import type { GetSessionsPaginated, Session } from '$lib/models/session/session.type';
 import { TABLES } from '$lib/constants/tables.constants';
+import { API_AUTH_SESSION } from '$lib/constants/routes.constants';
+import type { Pagination } from '$lib/models/common/common.type';
+
+export async function getPaginatedSessions(pagination?: Pagination): Promise<GetSessionsPaginated> {
+  try {
+    const url = new URL(API_AUTH_SESSION, window.location.origin);
+    if (pagination) { 
+      url.searchParams.set('page', pagination.page.toString());
+      url.searchParams.set('size', pagination.size.toString());
+    }
+
+    const result = await fetch(url.toString());
+    if (!result.ok) {
+      const error = await result.json();
+      throw new Error(error.message);
+    }
+    return result.json();
+  } catch (error) {
+    console.error(error);
+    throw new Error((error as Error).message);
+  }
+}
 
 export async function createSession(
   sessionId: string,

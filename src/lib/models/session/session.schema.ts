@@ -1,5 +1,5 @@
 import z from "zod";
-import { UUIDSchema } from "../common/common.schema";
+import { PaginatedSchema, UUIDSchema } from "../common/common.schema";
 import { UserRolesEnumSchema, UsersSchema } from "../users/users.schema";
 
 export const SessionSchema = z.object({
@@ -12,6 +12,10 @@ export const SessionSchema = z.object({
   is_revoked: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
+});
+
+export const GetSessionsPaginatedSchema = PaginatedSchema.extend({
+  data: z.array(SessionSchema),
 });
 
 export const TokenPayloadSchema = z.object({

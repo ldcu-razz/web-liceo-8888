@@ -33,6 +33,7 @@ export const API_USERS_ID = '/api/users/{id}';
 export const API_USERS_ME = '/api/users/me';
 export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
 export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
+export const API_USERS_CHANGE_USERNAME = '/api/users/change-username';
 
 // Tickets
 export const API_TICKETS = '/api/tickets';
