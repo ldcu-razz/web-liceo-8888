@@ -4,8 +4,8 @@ import type { ColumnDef } from "@tanstack/table-core";
 import StatusBadge from "$lib/components/common/StatusBadge.svelte";
 import DepartmentsDataTableActions from "./DepartmentsDataTableActions.svelte";
 import KeywordsCell from "./KeywordsCell.svelte";
-import NameCell from "./NameCell.svelte";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
+import NameCell from "$lib/components/common/NameCell.svelte";
 
 export function createColumns(onView?: (id: string) => void, onArchive?: (id: string) => void): ColumnDef<Departments>[] {
   return [
@@ -13,7 +13,7 @@ export function createColumns(onView?: (id: string) => void, onArchive?: (id: st
       header: "Name",
       accessorKey: "name",
       cell: ({ row }) => {
-        return renderComponent(NameCell, { name: row.original.name, id: row.original.id, onView });
+        return renderComponent(NameCell, { name: row.original.name, id: row.original.id, avatar: row.original.avatar ?? '', showAvatar: true, onView });
       },
     },
     {

@@ -35,7 +35,7 @@ export const meActions = {
   uploadAvatar: async (file: File) => {
     const toastId = toast.loading("Uploading avatar...");
     try {
-      const response = await filesActions.uploadFile({ file, owner_id: get(meStore)?.id ?? '' });
+      const response = await filesActions.uploadFile({ file, user_id: get(meStore)?.id ?? '', ticket_id: null });
       meStore.update(prev => prev ? {...prev, avatar: response.path} : prev);
       await updateUser(get(meStore)?.id ?? '', { avatar: response.path });
       toast.success("Avatar uploaded successfully", { id: toastId });

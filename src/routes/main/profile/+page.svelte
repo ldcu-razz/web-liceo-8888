@@ -4,6 +4,7 @@
 	import { Button } from "$lib/components/ui/button";
 	import { meActions, meStore } from "$lib/store/me.store";
 	import { transformText } from "$lib/utils/texts.utils";
+  import { useSignedUrl } from "$lib/hooks/use-signed-url.svelte";
 
   let me = $derived($meStore);
   let meInitial = $derived(`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`);
@@ -26,12 +27,16 @@
   function handleRemoveAvatar() {
     meActions.removeAvatar();
   }
+
+  // Get signed URL for avatar dynamically
+  const avatarSignedUrl = useSignedUrl(() => me?.avatar);
+  console.log(avatarSignedUrl);
 </script>
 
 <div class="flex flex-col gap-6 py-4">
   <div class="flex items-center gap-5">
     <Avatar class="size-28 border-3">
-      <AvatarImage src={me?.avatar ?? ''} class="object-cover" />
+      <AvatarImage src={avatarSignedUrl.url} class="object-cover" />
       <AvatarFallback>
         <div class="text-4xl font-bold">
           {meInitial}

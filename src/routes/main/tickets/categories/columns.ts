@@ -22,7 +22,7 @@ export function createTicketsCategoriesColumns(onView?: (id: string) => void, on
       accessorKey: "default_department",
       cell: ({ row }) => {
         const department = get(departmentsMap)[row.original.department_id ?? ''];
-        return renderComponent(NameCell, { name: department?.abbv ?? '', id: row.original.id, onView });
+        return department?.abbv ?? '';
       },
     },
     {

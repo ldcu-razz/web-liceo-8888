@@ -11,18 +11,18 @@ import StatusBadge from "$lib/components/common/StatusBadge.svelte";
 export function createUsersTableColumns(onView?: (id: string) => void, onArchive?: (id: string) => void): ColumnDef<Users>[] {
   return [
     {
-      header: "RFID #",
-      accessorKey: "rfid_number",
-      cell: ({ row }) => {
-        const name = row.original.rfid_number;
-        return renderComponent(NameCell, { name, id: row.original.id, onView });
-      },
-    },
-    {
       header: "Name",
       accessorKey: "name",
       cell: ({ row }) => {
         const name = `${row.original.firstname} ${row.original.lastname}`;
+        return renderComponent(NameCell, { name, id: row.original.id, avatar: row.original.avatar, showAvatar: true, onView });
+      },
+    },
+    {
+      header: "RFID #",
+      accessorKey: "rfid_number",
+      cell: ({ row }) => {
+        const name = row.original.rfid_number;
         return renderComponent(NameCell, { name, id: row.original.id, onView });
       },
     },

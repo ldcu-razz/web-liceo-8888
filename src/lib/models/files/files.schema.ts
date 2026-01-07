@@ -5,16 +5,18 @@ export const FileTypesSchema = z.enum(["image", "video", "audio", "document", "p
 
 export const FilesSchema = z.object({
   id: UUIDSchema,
-  owner_id: UUIDSchema,
   path: z.string(),
   type: FileTypesSchema,
   size: z.number(),
   extension: z.string(),
   mime_type: z.string(),
   createdAt: z.string(),
+  user_id: UUIDSchema.optional().nullable().default(null),
+  ticket_id: UUIDSchema.optional().nullable().default(null),
+  department_id: UUIDSchema.optional().nullable().default(null),
 });
 
-export const PostFileSchema = FilesSchema.pick({ owner_id: true }).extend({
+export const  PostFileSchema = FilesSchema.pick({ user_id: true, ticket_id: true, department_id: true }).partial().extend({
   file: z.instanceof(File),
 });
 

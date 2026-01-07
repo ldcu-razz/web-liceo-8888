@@ -8,15 +8,22 @@ import { uuid } from "$lib/utils/uuid.util.js";
 export const POST = async ({ request }) => {
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
-  const ownerId = formData.get("owner_id") as string | null;
+  const user_id = formData.get("user_id") as string | null;
+  const ticket_id = formData.get("ticket_id") as string | null;
+  const department_id = formData.get("department_id") as string | null;
 
-  if (!file || !ownerId) {
-    return new Response(JSON.stringify({ error: "file and owner_id are required" }), { status: 400 });
+  if (!file) {
+    return new Response(JSON.stringify({ error: "file is required" }), { status: 400 });
+  }
+
+  if (!user_id && !ticket_id && !department_id) {
+    return new Response(JSON.stringify({ error: "user_id, ticket_id, or department_id is required" }), { status: 400 });
   }
 
   // Derive metadata from the file object
   const fileExt = file.name.split(".").pop() ?? "";
-  const filePath = `${ownerId}/${uuid()}.${fileExt}`;
+  const id = user_id ?? ticket_id ?? department_id;
+  const filePath = `${id}/${uuid()}.${fileExt}`;
 
   const { data, error } = await supabase.storage.from(BUCKETS.FILES).upload(filePath, file, {
     contentType: file.type,
@@ -27,18 +34,13 @@ export const POST = async ({ request }) => {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 
-  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-    .from(BUCKETS.FILES)
-    .createSignedUrl(data.path, 60 * 60 * 24 * 365 * 10); // 10 years
-
-  if (signedUrlError || !signedUrlData) {
-    return new Response(JSON.stringify({ error: "Failed to generate file URL" }), { status: 500 });
-  }
-
+  // Store the storage path (not the URL) for dynamic URL generation
   const fileProperties: PostFileProperties = {
     id: uuid(),
-    owner_id: ownerId,
-    path: signedUrlData.signedUrl,
+    user_id: user_id,
+    ticket_id: ticket_id,
+    department_id: department_id,
+    path: data.path, // Store storage path like "userId/uuid.ext"
     type: detectFileType(file.type, fileExt),
     size: file.size,
     extension: fileExt,
