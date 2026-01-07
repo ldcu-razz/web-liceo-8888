@@ -1,9 +1,18 @@
 import type { Users } from "$lib/models/users/users.type";
-import { getMe } from "$lib/services/users/users.service";
+import { changePassword, changeUsername, getMe } from "$lib/services/users/users.service";
 import { writable } from "svelte/store";
 import { toast } from "svelte-sonner";
+import type { Session } from "$lib/models/session/session.type";
+import type { Pagination } from "$lib/models/common/common.type";
+import { getPaginatedSessions } from "$lib/services/auth/session.service";
 
 export const meStore = writable<Users | null>(null);
+
+export const meSessionsStore = writable<Session[]>([]);
+export const meSessionsPagination = writable<Pagination>({ page: 1, size: 10 });
+export const meSessionsTotalCount = writable<number>(0);
+export const meSessionsLoading = writable<boolean>(false);
+export const meSessionsError = writable<string | null>(null);
 
 export const meActions = {
   getMe: async () => {
@@ -20,5 +29,52 @@ export const meActions = {
 
   setMe: (user: Users) => {
     meStore.set(user);
-  }
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string, userId: string) => {
+    const toastId = toast.loading("Changing password...");
+    try {
+      const response = await changePassword(currentPassword, newPassword, userId);
+      toast.success("Password changed successfully", { id: toastId });
+      return response;
+    } catch (error) {
+      toast.error("Failed to change password");
+      console.error(error);
+      throw new Error((error as Error).message);
+    }
+  },
+
+  changeUsername: async (username: string, userId: string) => {
+    const toastId = toast.loading("Changing username...");
+    try {
+      const response = await changeUsername(username, userId);
+      meStore.update(prev => prev ? {...prev, username} : prev);
+      toast.success("Username changed successfully", { id: toastId });
+      return response;
+    } catch (error) {
+      console.error(error);
+      meStore.update(prev => prev ? {...prev, username: prev.username} : prev);
+      toast.error("Failed to change username");
+      throw new Error((error as Error).message);
+    } finally {
+      toast.dismiss(toastId);
+    }
+  },
+
+  getSessions: async (pagination: Pagination, silentLoading?: boolean) => {
+    try {
+      if (!silentLoading) {
+        meSessionsLoading.set(true);
+      }
+      const data = await getPaginatedSessions(pagination);
+      meSessionsStore.set(data.data);
+      meSessionsPagination.update(prev => ({ ...prev, page: pagination.page, size: pagination.size }));
+      meSessionsTotalCount.update(() => data.count);
+    } catch (error) {
+      console.error(error);
+      meSessionsError.set((error as Error).message);
+    } finally {
+      meSessionsLoading.set(false);
+    }
+  },
 }

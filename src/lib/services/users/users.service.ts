@@ -1,4 +1,4 @@
-import { API_USERS, API_USERS_CHECK_USERNAME, API_USERS_ID, API_USERS_ME } from "$lib/constants";
+import { API_USERS, API_USERS_CHANGE_PASSWORD, API_USERS_CHANGE_USERNAME, API_USERS_CHECK_USERNAME, API_USERS_ID, API_USERS_ME } from "$lib/constants";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 import type { Pagination } from "$lib/models/common/common.type";
 import { UserRolesEnumSchema } from "$lib/models/users/users.schema";
@@ -143,6 +143,42 @@ export async function checkUsername(username: string): Promise<GetUserByUsername
     url.searchParams.set('username', username);
     
     const result = await fetch(url.toString());
+    if (!result.ok) {
+      throw new Error(result.statusText);
+    }
+    return result.json();
+  }
+  catch (error) {
+    console.error(error);
+    throw new Error((error as Error).message);
+  }
+}
+
+export async function changePassword(currentPassword: string, newPassword: string, userId: string): Promise<boolean> {
+  try {    
+    const result = await fetch(API_USERS_CHANGE_PASSWORD, {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword, newPassword, userId }),
+    });
+    
+    if (!result.ok) {
+      const error = await result.json();
+      throw new Error(error.error);
+    }
+    return result.json();
+  } catch (error) {
+    console.error(error);
+    throw new Error((error as Error).message);
+  }
+}
+
+export async function changeUsername(username: string, userId: string): Promise<boolean> {
+  try {
+    const result = await fetch(API_USERS_CHANGE_USERNAME, {
+      method: 'POST',
+      body: JSON.stringify({ username, userId }),
+    });
+
     if (!result.ok) {
       throw new Error(result.statusText);
     }
