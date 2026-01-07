@@ -5,7 +5,7 @@ export const FileTypesSchema = z.enum(["image", "video", "audio", "document", "p
 
 export const FilesSchema = z.object({
   id: UUIDSchema,
-  ownder_id: UUIDSchema,
+  owner_id: UUIDSchema,
   path: z.string(),
   type: FileTypesSchema,
   size: z.number(),
@@ -14,7 +14,11 @@ export const FilesSchema = z.object({
   createdAt: z.string(),
 });
 
-export const PostFileSchema = FilesSchema;
+export const PostFileSchema = FilesSchema.pick({ owner_id: true }).extend({
+  file: z.instanceof(File),
+});
+
+export const PostFilePropertiesSchema = FilesSchema;
 
 export const PutFileSchema = PostFileSchema.partial();
 

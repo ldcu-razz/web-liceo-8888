@@ -13,6 +13,6 @@
 </script>
 
 <Avatar class={sizeClass}>
-  <AvatarImage src={imageLink} />
+  <AvatarImage src={imageLink} class="object-cover" />
   <AvatarFallback>{name.charAt(0)}</AvatarFallback>
 </Avatar>

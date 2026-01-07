@@ -19,12 +19,16 @@
 	import { usersActions } from '$lib/store/users.store';
 	import { authActions, authStore } from '$lib/store/auth.store';
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
-	import { meActions } from '$lib/store/me.store';
+	import { meActions, meStore } from '$lib/store/me.store';
 	import ScreenLoader from './ScreenLoader.svelte';
 
   let { children } = $props();
 
   let neededDataLoaded = $state(false);
+
+  let me = $derived($meStore);
+  let meInitial = $derived(`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`);
+  let meAvatar = $derived(me?.avatar ?? '');
 
   if (browser) {
     preloadCode(DASHBOARD);
@@ -114,8 +118,8 @@
       <SidebarFooter class="p-2 mb-2 flex flex-row items-center gap-2">
         <Popover>
           <PopoverTrigger class="flex flex-row items-center gap-2 hover:bg-gray-100 rounded-md p-2 cursor-pointer w-full">
-            <UserAvatar name="John Doe" />
-            <span class="text-sm font-medium">John Doe</span>
+            <UserAvatar name={meInitial} imageLink={meAvatar} />
+            <span class="text-sm font-medium">{me?.firstname ?? ''} {me?.lastname ?? ''}</span>
             <ChevronsUpDown class="size-4 ml-auto" />
           </PopoverTrigger>
           <PopoverContent class="w-48 p-1">

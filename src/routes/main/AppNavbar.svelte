@@ -1,10 +1,15 @@
 <script lang="ts">
 	import UserAvatar from "$lib/components/common/UserAvatar.svelte";
 	import { Button } from "$lib/components/ui/button";
+	import { meStore } from "$lib/store/me.store";
 	import { BellDotIcon, BellIcon } from "@lucide/svelte";
   import type { Snippet } from "svelte";
 
   let { sidebarTrigger }: { sidebarTrigger?: Snippet } = $props();
+
+  let me = $derived($meStore);
+  let meInitial = $derived(`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`);
+  let meAvatar = $derived(me?.avatar ?? '');
 </script>
 
 <div class="flex items-center justify-between border-b border-border p-2">
@@ -17,7 +22,7 @@
       <Button variant="ghost" size="icon">
         <BellIcon class="size-5" />
       </Button>
-      <UserAvatar name="John Doe" sizeClass="size-6" />
+      <UserAvatar name={meInitial} imageLink={meAvatar} sizeClass="size-6" />
     </div>
   </div>
 </div>

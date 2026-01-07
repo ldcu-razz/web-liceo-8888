@@ -2,26 +2,54 @@
 	import { AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
 	import Avatar from "$lib/components/ui/avatar/avatar.svelte";
 	import { Button } from "$lib/components/ui/button";
-	import { meStore } from "$lib/store/me.store";
+	import { meActions, meStore } from "$lib/store/me.store";
 	import { transformText } from "$lib/utils/texts.utils";
 
   let me = $derived($meStore);
+  let meInitial = $derived(`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`);
+
+  let fileInput: HTMLInputElement | null = null;
+
+  const openImagePicker = () => {
+    fileInput?.click();
+  };
+
+  const handleImageSelected = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+
+    if (!target.files?.length) return;
+
+    const [file] = target.files;
+    await meActions.uploadAvatar(file);
+  };
+
+  function handleRemoveAvatar() {
+    meActions.removeAvatar();
+  }
 </script>
 
 <div class="flex flex-col gap-6 py-4">
   <div class="flex items-center gap-5">
     <Avatar class="size-28 border-3">
-      <AvatarImage src={me?.avatar ?? ''} />
+      <AvatarImage src={me?.avatar ?? ''} class="object-cover" />
       <AvatarFallback>
         <div class="text-4xl font-bold">
-          JD
+          {meInitial}
         </div>
       </AvatarFallback>
     </Avatar>
 
     <div class="flex gap-2">
-      <Button variant="outline" size="sm" class="text-xs p-2">Upload Picture</Button>
-      <Button variant="outline" size="sm" class="text-xs p-2">Delete Picture</Button>
+      <input
+        accept="image/*"
+        bind:this={fileInput}
+        class="hidden"
+        type="file"
+        onchange={handleImageSelected}
+      />
+
+      <Button variant="outline" size="sm" class="text-xs p-2" onclick={openImagePicker}>Upload Picture</Button>
+      <Button variant="outline" size="sm" class="text-xs p-2" onclick={handleRemoveAvatar}>Delete Picture</Button>
     </div>
   </div>
 

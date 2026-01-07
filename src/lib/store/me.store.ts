@@ -1,10 +1,11 @@
 import type { Users } from "$lib/models/users/users.type";
-import { changePassword, changeUsername, getMe } from "$lib/services/users/users.service";
-import { writable } from "svelte/store";
+import { changePassword, changeUsername, getMe, updateUser } from "$lib/services/users/users.service";
+import { get, writable } from "svelte/store";
 import { toast } from "svelte-sonner";
 import type { Session } from "$lib/models/session/session.type";
 import type { Pagination } from "$lib/models/common/common.type";
 import { getPaginatedSessions } from "$lib/services/auth/session.service";
+import { filesActions } from "./files.store";
 
 export const meStore = writable<Users | null>(null);
 
@@ -29,6 +30,32 @@ export const meActions = {
 
   setMe: (user: Users) => {
     meStore.set(user);
+  },
+
+  uploadAvatar: async (file: File) => {
+    const toastId = toast.loading("Uploading avatar...");
+    try {
+      const response = await filesActions.uploadFile({ file, owner_id: get(meStore)?.id ?? '' });
+      meStore.update(prev => prev ? {...prev, avatar: response.path} : prev);
+      await updateUser(get(meStore)?.id ?? '', { avatar: response.path });
+      toast.success("Avatar uploaded successfully", { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to upload avatar", { id: toastId });
+      throw new Error((error as Error).message);
+    }
+  },
+
+  removeAvatar: async () => {
+    const toastId = toast.loading("Removing avatar...");
+    try {
+      await updateUser(get(meStore)?.id ?? '', { avatar: "" });
+      meStore.update(prev => prev ? {...prev, avatar: ""} : prev);
+      toast.success("Avatar removed successfully", { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove avatar", { id: toastId });
+    }
   },
 
   changePassword: async (currentPassword: string, newPassword: string, userId: string) => {
