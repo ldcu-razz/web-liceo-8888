@@ -15,6 +15,7 @@
 	import { uuid } from "$lib/utils/uuid.util";
 	import { debounce } from "$lib/utils/reactive.utils";
 	import { onMount } from "svelte";
+	import AvatarUploader from "$lib/components/common/AvatarUploader.svelte";
 
   let data: Departments[] = $derived($departmentsStore);
   let loading = $derived($departmentsLoading);
@@ -25,6 +26,10 @@
   let activeDepartment: Departments | null = $derived(data.find(d => d.id === activeDepartmentId) ?? null);
   let showDeleteDepartmentAlertDialog = $state(false);
   let hasLoadedData = $derived($hasDepartmentsLoaded);
+
+  let departmentLogoFileInput = $state<File | null>(null);
+  let activeDepartmentAvatar = $derived(activeDepartment?.avatar ?? '');
+  let activeDepartmentAbbv = $derived(activeDepartment?.abbv ?? '');
 
   let formData: FormData = $state({ ...defaultFormData });
   
@@ -126,6 +131,22 @@
     }
     activeDepartmentId = null;
   }
+
+  function handleDepartmentLogoSelected(event: Event) {
+    const target = event.target as HTMLInputElement;
+    if (target.files?.length) {
+      const file = target.files[0];
+      if (activeDepartmentId) {
+        departmentsActions.uploadDepartmentLogo(activeDepartmentId, file);
+      }
+    }
+  }
+
+  function handleRemoveDepartmentLogo() {
+    if (activeDepartmentId) {
+      departmentsActions.removeDepartmentLogo(activeDepartmentId);
+    }
+  }
 </script>
 
 <div class="flex flex-col gap-4 container mx-auto">
@@ -154,7 +175,12 @@
           </SheetDescription>
         </SheetHeader>
         <div class="px-4">
-          <DepartmentForm bind:formData={formData} onSubmit={handleSubmitDepartmentForm} onCancel={handleCancelDepartmentForm} />
+          {#if activeDepartment}
+            <div class="flex flex-col gap-4 mb-6">
+              <AvatarUploader avatar={activeDepartmentAvatar} name={activeDepartmentAbbv} handleImageSelected={handleDepartmentLogoSelected} handleRemoveAvatar={handleRemoveDepartmentLogo} />
+            </div>
+          {/if}
+          <DepartmentForm bind:formData={formData} avatar={activeDepartment?.avatar ?? ''} onSubmit={handleSubmitDepartmentForm} onCancel={handleCancelDepartmentForm} />
         </div>
       </SheetContent>
     </Sheet>

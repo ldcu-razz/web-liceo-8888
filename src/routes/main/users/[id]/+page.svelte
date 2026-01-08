@@ -19,6 +19,7 @@
 	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
 	import { DEFAULT_AVATAR } from "$lib/constants/avatar.constants";
 	import { transformText } from "$lib/utils/texts.utils";
+	import { useSignedUrl } from "$lib/hooks/use-signed-url.svelte";
 
   let isEditUserInfoSheetOpen = $state(false);
   let showArchiveUserAlertDialog = $state(false);
@@ -30,7 +31,7 @@
 
   let currentUserInitialData: UserFormDataUpdate = { ...defaultFormData };
 
-  let userAvatar = $derived(currentUser?.avatar || DEFAULT_AVATAR);
+  let userAvatar = useSignedUrl(() => currentUser?.avatar ?? DEFAULT_AVATAR);
 
   let userFullName = $derived(transformText(`${currentUser?.firstname} ${currentUser?.lastname}`));
 
@@ -100,7 +101,7 @@
         <div class="flex items-center justify-between">
           <div class="rounded-full bg-gray-50 p-1 w-32 h-32 flex border border-gray-200 -mt-18">
             <Avatar class="size-full">
-              <AvatarImage src={userAvatar} />
+              <AvatarImage src={userAvatar.url} />
               <AvatarFallback>
                 <div class="text-2xl font-bold">
                   {userFullName.slice(0, 2).toUpperCase()}

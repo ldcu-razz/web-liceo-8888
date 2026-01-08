@@ -16,6 +16,9 @@
 		createInitialTouched,
 		markAllFieldsTouched
 	} from "$lib/utils/form.utils";
+	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar";
+	import { useSignedUrl } from "$lib/hooks/use-signed-url.svelte";
+	import AvatarUploader from "$lib/components/common/AvatarUploader.svelte";
 
   export const formSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -39,13 +42,14 @@
     formData?: FormData;
     disabledPositiveButton?: boolean;
     invalid?: boolean;
+    avatar?: string;
     onSubmit?: (formData: FormData) => void;
     onCancel?: () => void;
   };
 </script>
 
 <script lang="ts">
-  let { formData = $bindable(defaultFormData),  invalid = $bindable(true), disabledPositiveButton = false, onSubmit = () => {}, onCancel = () => {} }: Props = $props();
+  let { formData = $bindable(defaultFormData),  invalid = $bindable(true), disabledPositiveButton = false, avatar = $bindable(''), onSubmit = () => {}, onCancel = () => {} }: Props = $props();
   
 	let touched = $state<Record<keyof FormData, boolean>>(
 		createInitialTouched(formData)

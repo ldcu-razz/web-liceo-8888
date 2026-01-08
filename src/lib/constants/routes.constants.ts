@@ -41,3 +41,8 @@ export const API_TICKETS_ID = '/api/tickets/{id}';
 export const API_TICKET_CATEGORIES = '/api/tickets/categories';
 export const API_TICKETS_UPDATES = '/api/tickets/updates';
 export const API_TICKETS_ID_COMMENT = '/api/tickets/{id}/comment';
+
+// Files
+export const API_FILES = '/api/files';
+export const API_FILES_UPLOAD = '/api/files/upload';
+export const API_FILES_SIGNED_URL = '/api/files/signed-url';

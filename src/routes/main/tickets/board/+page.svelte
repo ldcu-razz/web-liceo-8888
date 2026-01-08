@@ -58,13 +58,13 @@
   });
 
   $effect(() => {
-    if (isFirstMount) {
-      return;
-    }
-
     const q = searchQuery;
     
     untrack(() => {
+      if (isFirstMount) {
+        return;
+      }
+
       const departmentsAssignedIds = selectedDepartments;
       const usersAssignedIds = selectedUsers;
       const status = selectedStatus ? [selectedStatus] : [];
@@ -82,8 +82,6 @@
   });
 
   onMount(() => {
-    
-
     isFirstMount = false;
   });
 

@@ -4,6 +4,7 @@ import { createDepartment, archiveDepartment, getDepartments, updateDepartment }
 import { toast } from "svelte-sonner";
 import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
 import type { Pagination } from "$lib/models/common/common.type";
+import { filesActions } from "./files.store";
 
 export const departmentsStore = writable<Departments[]>([]);
 export const departmentsLoading = writable(false);
@@ -86,6 +87,31 @@ export const departmentsActions = {
         departmentsStore.set(get(departmentsStore).map(d => d.id === id ? {...currentDeletedDepartment} : d));
       }
       toast.error(`Failed to archive department`, { id: toastId });
+    }
+  },
+
+  uploadDepartmentLogo: async (id: string, file: File) => {
+    const toastId = toast.loading(`Uploading department logo...`);
+    try {
+      const response = await filesActions.uploadFile({ file, department_id: id });
+      await updateDepartment(id, { id, avatar: response.path });
+      departmentsStore.update(prev => prev.map(d => d.id === id ? {...d, avatar: response.path} : d));
+      toast.success(`Department logo uploaded successfully`, { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to upload department logo`, { id: toastId });
+    }
+  },
+
+  removeDepartmentLogo: async (id: string) => {
+    const toastId = toast.loading(`Removing department logo...`);
+    try {
+      await updateDepartment(id, { id, avatar: null });
+      departmentsStore.update(prev => prev.map(d => d.id === id ? {...d, avatar: null} : d));
+      toast.success(`Department logo removed successfully`, { id: toastId });
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to remove department logo`, { id: toastId });
     }
   },
 }
