@@ -1,5 +1,12 @@
-import type z from "zod";
-import type { GetSessionsPaginatedSchema, LoginPayloadSchema, LoginResponseSchema, LogoutResponseSchema, SessionSchema, TokenPayloadSchema } from "./session.schema";
+import type z from 'zod';
+import type {
+	GetSessionsPaginatedSchema,
+	LoginPayloadSchema,
+	LoginResponseSchema,
+	LogoutResponseSchema,
+	SessionSchema,
+	TokenPayloadSchema
+} from './session.schema';
 
 export type Session = z.infer<typeof SessionSchema>;
 export type GetSessionsPaginated = z.infer<typeof GetSessionsPaginatedSchema>;

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Skeleton } from "$lib/components/ui/skeleton";
+	import { Skeleton } from '$lib/components/ui/skeleton';
 </script>
 
 <div class="flex flex-col gap-2">
-  <Skeleton class="w-full h-42 rounded-md" />
-  <Skeleton class="w-full h-20 rounded-md" />
-  <Skeleton class="w-full h-20 rounded-md" />
+	<Skeleton class="h-42 w-full rounded-md" />
+	<Skeleton class="h-20 w-full rounded-md" />
+	<Skeleton class="h-20 w-full rounded-md" />
 </div>

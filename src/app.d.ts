@@ -5,11 +5,11 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			user?: {
-        userId: string;
-        username: string;
-        role: string;
-        sessionId: string;
-      };
+				userId: string;
+				username: string;
+				role: string;
+				sessionId: string;
+			};
 		}
 		// interface PageData {}
 		// interface PageState {}

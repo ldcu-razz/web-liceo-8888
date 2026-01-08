@@ -30,7 +30,20 @@
 			return `${diffInMonths} months ago`;
 		} else {
 			// Format as "Dec 13, 2025 at 8:30 PM"
-			const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+			const months = [
+				'Jan',
+				'Feb',
+				'Mar',
+				'Apr',
+				'May',
+				'Jun',
+				'Jul',
+				'Aug',
+				'Sep',
+				'Oct',
+				'Nov',
+				'Dec'
+			];
 			const month = months[past.getMonth()];
 			const day = past.getDate();
 			const year = past.getFullYear();
@@ -38,7 +51,7 @@
 			const minutes = past.getMinutes().toString().padStart(2, '0');
 			const ampm = hours >= 12 ? 'PM' : 'AM';
 			hours = hours % 12 || 12;
-			
+
 			return `${month} ${day}, ${year} at ${hours}:${minutes} ${ampm}`;
 		}
 	}
@@ -47,4 +60,3 @@
 </script>
 
 <span>{formattedDate}</span>
-

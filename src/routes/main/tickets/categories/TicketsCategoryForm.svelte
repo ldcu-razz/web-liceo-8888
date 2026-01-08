@@ -1,9 +1,9 @@
 <script lang="ts" module>
-	import { Field, FieldGroup, FieldLabel, FieldError } from "$lib/components/ui/field";
-	import { Input } from "$lib/components/ui/input";
-	import { Select, SelectContent, SelectItem, SelectTrigger } from "$lib/components/ui/select";
-	import { BaseStatusEnumSchema } from "$lib/models/common/common.schema";
-	import { transformText } from "$lib/utils/texts.utils";
+	import { Field, FieldGroup, FieldLabel, FieldError } from '$lib/components/ui/field';
+	import { Input } from '$lib/components/ui/input';
+	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+	import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
+	import { transformText } from '$lib/utils/texts.utils';
 	import {
 		validateForm,
 		validateField,
@@ -11,198 +11,198 @@
 		hasFieldError,
 		createInitialTouched,
 		markAllFieldsTouched
-	} from "$lib/utils/form.utils";
-  import z from "zod";
-	import { Button } from "$lib/components/ui/button";
-	import { departmentsMap, departmentsStore } from "$lib/store/departments.store";
-	import type { Departments } from "$lib/models/departments/departments.type";
+	} from '$lib/utils/form.utils';
+	import z from 'zod';
+	import { Button } from '$lib/components/ui/button';
+	import { departmentsMap, departmentsStore } from '$lib/store/departments.store';
+	import type { Departments } from '$lib/models/departments/departments.type';
 
-  export const formSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    department_id: z.string().nullable(),
-    status: BaseStatusEnumSchema,
-  });
+	export const formSchema = z.object({
+		name: z.string().min(1, 'Name is required'),
+		department_id: z.string().nullable(),
+		status: BaseStatusEnumSchema
+	});
 
-  export type FormData = z.infer<typeof formSchema>;
+	export type FormData = z.infer<typeof formSchema>;
 
-  export type Mode = "create" | "update";
+	export type Mode = 'create' | 'update';
 
-  export const defaultFormData: FormData = {
-    name: "",
-    department_id: null,
-    status: BaseStatusEnumSchema.enum.active,
-  };
+	export const defaultFormData: FormData = {
+		name: '',
+		department_id: null,
+		status: BaseStatusEnumSchema.enum.active
+	};
 
-  export type Props = {
-    mode?: Mode
-    invalid?: boolean;
-    formData?: FormData;
-    onSubmit?: (formData: FormData) => void;
-    onCancel?: () => void;
-  };
+	export type Props = {
+		mode?: Mode;
+		invalid?: boolean;
+		formData?: FormData;
+		onSubmit?: (formData: FormData) => void;
+		onCancel?: () => void;
+	};
 </script>
 
 <script lang="ts">
-  let { 
-    mode = "create",
-    invalid = $bindable(true),
-    formData = $bindable(defaultFormData), 
-    onSubmit = () => {}, 
-    onCancel = () => {} 
-  }: Props = $props();
+	let {
+		mode = 'create',
+		invalid = $bindable(true),
+		formData = $bindable(defaultFormData),
+		onSubmit = () => {},
+		onCancel = () => {}
+	}: Props = $props();
 
-  const statusOptions = BaseStatusEnumSchema.options;
+	const statusOptions = BaseStatusEnumSchema.options;
 
-  const initialFormData: FormData = formData;
+	const initialFormData: FormData = formData;
 
-  let departments = $state<Departments[]>($departmentsStore);
+	let departments = $state<Departments[]>($departmentsStore);
 
-  let departmentsMapData = $derived($departmentsMap);
+	let departmentsMapData = $derived($departmentsMap);
 
-  let selectedDepartment = $derived(departmentsMapData[formData.department_id ?? ""]);
+	let selectedDepartment = $derived(departmentsMapData[formData.department_id ?? '']);
 
-  let touched = $state<Record<keyof FormData, boolean>>(
-    createInitialTouched(initialFormData)
-  );
+	let touched = $state<Record<keyof FormData, boolean>>(createInitialTouched(initialFormData));
 
-  let errors = $state<Partial<Record<keyof FormData, string>>>({});
+	let errors = $state<Partial<Record<keyof FormData, string>>>({});
 
-  // Validate on mount to set initial invalid state
-  $effect(() => {
-    validateFormData();
-  });
+	// Validate on mount to set initial invalid state
+	$effect(() => {
+		validateFormData();
+	});
 
-  function validateFormData() {
-    const result = validateForm(formData, formSchema);
-    errors = result.errors;
-    invalid = result.invalid;
-  }
+	function validateFormData() {
+		const result = validateForm(formData, formSchema);
+		errors = result.errors;
+		invalid = result.invalid;
+	}
 
-  function validateFieldData(field: keyof FormData) {
-    const result = validateField(field, formData, formSchema, errors);
-    errors = result.errors;
-    invalid = result.invalid;
-  }
+	function validateFieldData(field: keyof FormData) {
+		const result = validateField(field, formData, formSchema, errors);
+		errors = result.errors;
+		invalid = result.invalid;
+	}
 
-  function markTouched(field: keyof FormData) {
-    touched[field] = true;
-    validateFieldData(field);
-  }
+	function markTouched(field: keyof FormData) {
+		touched[field] = true;
+		validateFieldData(field);
+	}
 
-  function handleInputChange(field: keyof FormData, value: string) {
-    formData[field] = value as never;
-    if (touched[field]) {
-      validateFieldData(field);
-    }
-  }
+	function handleInputChange(field: keyof FormData, value: string) {
+		formData[field] = value as never;
+		if (touched[field]) {
+			validateFieldData(field);
+		}
+	}
 
-  function handleSelectClose(field: "department_id" | "status") {
-    if (formData[field]) {
-      touched[field] = true;
-      validateFieldData(field);
-    } else if (field === "status") {
-      // Status is required, so mark as touched even if empty
-      touched[field] = true;
-      validateFieldData(field);
-    }
-  }
+	function handleSelectClose(field: 'department_id' | 'status') {
+		if (formData[field]) {
+			touched[field] = true;
+			validateFieldData(field);
+		} else if (field === 'status') {
+			// Status is required, so mark as touched even if empty
+			touched[field] = true;
+			validateFieldData(field);
+		}
+	}
 
-  function getFieldErrorMessage(field: keyof FormData): string | undefined {
-    return getFieldError(field, touched, errors);
-  }
+	function getFieldErrorMessage(field: keyof FormData): string | undefined {
+		return getFieldError(field, touched, errors);
+	}
 
-  function hasFieldErrorMessage(field: keyof FormData): boolean {
-    return hasFieldError(field, touched, errors);
-  }
+	function hasFieldErrorMessage(field: keyof FormData): boolean {
+		return hasFieldError(field, touched, errors);
+	}
 
-  function markAllFieldsTouchedData() {
-    touched = markAllFieldsTouched(initialFormData);
-  }
+	function markAllFieldsTouchedData() {
+		touched = markAllFieldsTouched(initialFormData);
+	}
 
-  function handleSubmit(e: SubmitEvent) {
-    e.preventDefault();
-    validateFormData();
-    markAllFieldsTouchedData();
-    if (invalid) {
-      return;
-    }
-    onSubmit?.(formData);
-  }
+	function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+		validateFormData();
+		markAllFieldsTouchedData();
+		if (invalid) {
+			return;
+		}
+		onSubmit?.(formData);
+	}
 </script>
 
 <form class="px-4" onsubmit={handleSubmit}>
-  <FieldGroup>
-    <Field>
-      <FieldLabel for="name" class="gap-1">Name <span class="text-red-500">*</span></FieldLabel>
-      <Input 
-        id="name" 
-        bind:value={formData.name}
-        aria-invalid={hasFieldErrorMessage("name")}
-        onblur={() => markTouched("name")}
-        oninput={(e) => handleInputChange("name", e.currentTarget.value)}
-      />
-      {#if getFieldErrorMessage("name")}
-        <FieldError errors={[{ message: getFieldErrorMessage("name") }]} />
-      {/if}
-    </Field>
+	<FieldGroup>
+		<Field>
+			<FieldLabel for="name" class="gap-1">Name <span class="text-red-500">*</span></FieldLabel>
+			<Input
+				id="name"
+				bind:value={formData.name}
+				aria-invalid={hasFieldErrorMessage('name')}
+				onblur={() => markTouched('name')}
+				oninput={(e) => handleInputChange('name', e.currentTarget.value)}
+			/>
+			{#if getFieldErrorMessage('name')}
+				<FieldError errors={[{ message: getFieldErrorMessage('name') }]} />
+			{/if}
+		</Field>
 
-    <Field>
-      <FieldLabel for="default_department">Department</FieldLabel>
-      <Select 
-        type="single" 
-        bind:value={formData.department_id as string | undefined}
-        onOpenChange={(open) => {
-          if (!open) {
-            handleSelectClose("department_id");
-          }
-        }}
-      >
-        <SelectTrigger aria-invalid={hasFieldErrorMessage("department_id")}>
-          {#if formData.department_id}
-            <span>{selectedDepartment ? selectedDepartment.name : "Select a department"}</span>
-          {:else}
-            <span class="text-gray-400">Select a department</span>
-          {/if}
-        </SelectTrigger>
-        <SelectContent>
-          {#each departments as department (department.id)}
-            <SelectItem value={department.id}>{transformText(department.name)}</SelectItem>
-          {/each}
-        </SelectContent>
-      </Select>
-      {#if getFieldErrorMessage("department_id")}
-        <FieldError errors={[{ message: getFieldErrorMessage("department_id") }]} />
-      {/if}
-    </Field>
+		<Field>
+			<FieldLabel for="default_department">Department</FieldLabel>
+			<Select
+				type="single"
+				bind:value={formData.department_id as string | undefined}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleSelectClose('department_id');
+					}
+				}}
+			>
+				<SelectTrigger aria-invalid={hasFieldErrorMessage('department_id')}>
+					{#if formData.department_id}
+						<span>{selectedDepartment ? selectedDepartment.name : 'Select a department'}</span>
+					{:else}
+						<span class="text-gray-400">Select a department</span>
+					{/if}
+				</SelectTrigger>
+				<SelectContent>
+					{#each departments as department (department.id)}
+						<SelectItem value={department.id}>{transformText(department.name)}</SelectItem>
+					{/each}
+				</SelectContent>
+			</Select>
+			{#if getFieldErrorMessage('department_id')}
+				<FieldError errors={[{ message: getFieldErrorMessage('department_id') }]} />
+			{/if}
+		</Field>
 
-    <Field>
-      <FieldLabel for="status" class="gap-1">Status <span class="text-red-500">*</span></FieldLabel>
-      <Select 
-        type="single" 
-        bind:value={formData.status}
-        onOpenChange={(open) => {
-          if (!open) {
-            handleSelectClose("status");
-          }
-        }}
-      >
-        <SelectTrigger aria-invalid={hasFieldErrorMessage("status")}>
-          {formData.status ? transformText(formData.status) : "Select a status"}
-        </SelectTrigger>
-        <SelectContent>
-          {#each statusOptions as option (option)}
-            <SelectItem value={option}>{transformText(option)}</SelectItem>
-          {/each}
-        </SelectContent>
-      </Select>
-      {#if getFieldErrorMessage("status")}
-        <FieldError errors={[{ message: getFieldErrorMessage("status") }]} />
-      {/if}
-    </Field>
+		<Field>
+			<FieldLabel for="status" class="gap-1">Status <span class="text-red-500">*</span></FieldLabel>
+			<Select
+				type="single"
+				bind:value={formData.status}
+				onOpenChange={(open) => {
+					if (!open) {
+						handleSelectClose('status');
+					}
+				}}
+			>
+				<SelectTrigger aria-invalid={hasFieldErrorMessage('status')}>
+					{formData.status ? transformText(formData.status) : 'Select a status'}
+				</SelectTrigger>
+				<SelectContent>
+					{#each statusOptions as option (option)}
+						<SelectItem value={option}>{transformText(option)}</SelectItem>
+					{/each}
+				</SelectContent>
+			</Select>
+			{#if getFieldErrorMessage('status')}
+				<FieldError errors={[{ message: getFieldErrorMessage('status') }]} />
+			{/if}
+		</Field>
 
-    <div class="flex gap-2">
-      <Button type="button" variant="outline" class="flex-1 bg-gray-50" onclick={() => onCancel?.()}>Cancel</Button>
-      <Button type="submit" variant="secondary" class="flex-1">Save</Button>
-    </div>
-  </FieldGroup>
+		<div class="flex gap-2">
+			<Button type="button" variant="outline" class="flex-1 bg-gray-50" onclick={() => onCancel?.()}
+				>Cancel</Button
+			>
+			<Button type="submit" variant="secondary" class="flex-1">Save</Button>
+		</div>
+	</FieldGroup>
 </form>

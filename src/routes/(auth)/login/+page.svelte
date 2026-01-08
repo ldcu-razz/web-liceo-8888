@@ -31,7 +31,7 @@
 	}
 </script>
 
-<div class="flex flex-col h-full w-full items-center justify-center">
+<div class="flex h-full w-full flex-col items-center justify-center">
 	<div class="absolute top-8 left-8">
 		<MainAvatar />
 	</div>
@@ -41,8 +41,8 @@
 	</div>
 	<div class="w-full max-w-sm">
 		{#if errorMessage}
-			<div class="p-4 bg-rose-100 mb-4 rounded-md w-full flex items-start gap-2">
-				<TriangleAlertIcon class="size-4 text-rose-500 mt-0.5" />
+			<div class="mb-4 flex w-full items-start gap-2 rounded-md bg-rose-100 p-4">
+				<TriangleAlertIcon class="mt-0.5 size-4 text-rose-500" />
 				<p class="text-sm text-rose-500">
 					{errorMessage}
 				</p>

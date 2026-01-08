@@ -16,7 +16,6 @@ export const PROFILE_ACCOUNT = '/main/profile/account';
 export const PROFILE_NOTIFICATIONS = '/main/profile/notifications';
 export const PROFILE_SESSIONS = '/main/profile/sessions';
 
-
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
 

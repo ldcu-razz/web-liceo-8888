@@ -133,4 +133,3 @@ export const droppable = <T = unknown>(node: HTMLElement, options: DroppableOpti
 		}
 	};
 };
-
