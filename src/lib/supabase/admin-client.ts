@@ -7,14 +7,9 @@ import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
  * ⚠️ ONLY use this on the server side (API routes, hooks)
  * NEVER expose this client to the client-side
  */
-export const supabaseAdmin = createClient(
-  PUBLIC_SUPABASE_URL,
-  SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
-
+export const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+	auth: {
+		autoRefreshToken: false,
+		persistSession: false
+	}
+});

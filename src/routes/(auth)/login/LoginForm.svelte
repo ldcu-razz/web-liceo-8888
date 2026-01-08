@@ -23,7 +23,12 @@
 	import InputGroup from '$lib/components/ui/input-group/input-group.svelte';
 	import { LoaderCircle, LockIcon, UserIcon } from '@lucide/svelte';
 
-	let { loading = false, onLogin = () => {}, onForgotPassword = () => {}, onSignUp = () => {} }: Props = $props();
+	let {
+		loading = false,
+		onLogin = () => {},
+		onForgotPassword = () => {},
+		onSignUp = () => {}
+	}: Props = $props();
 
 	let formData = $state<FormData>({
 		username: '',
@@ -59,12 +64,18 @@
 		</Field>
 
 		<Field>
-			<Button type="submit" variant="secondary" class="w-full" disabled={loading} onclick={() => onLogin(formData)}>
+			<Button
+				type="submit"
+				variant="secondary"
+				class="w-full"
+				disabled={loading}
+				onclick={() => onLogin(formData)}
+			>
 				{#if loading}
 					<LoaderCircle class="size-4 animate-spin" />
 				{/if}
-        Login
-      </Button>
+				Login
+			</Button>
 		</Field>
 
 		<FieldSeparator>Or create an account</FieldSeparator>

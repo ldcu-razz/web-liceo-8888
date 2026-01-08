@@ -5,113 +5,113 @@ import { API_AUTH_SESSION } from '$lib/constants/routes.constants';
 import type { Pagination } from '$lib/models/common/common.type';
 
 export async function getPaginatedSessions(pagination?: Pagination): Promise<GetSessionsPaginated> {
-  try {
-    const url = new URL(API_AUTH_SESSION, window.location.origin);
-    if (pagination) { 
-      url.searchParams.set('page', pagination.page.toString());
-      url.searchParams.set('size', pagination.size.toString());
-    }
+	try {
+		const url = new URL(API_AUTH_SESSION, window.location.origin);
+		if (pagination) {
+			url.searchParams.set('page', pagination.page.toString());
+			url.searchParams.set('size', pagination.size.toString());
+		}
 
-    const result = await fetch(url.toString());
-    if (!result.ok) {
-      const error = await result.json();
-      throw new Error(error.message);
-    }
-    return result.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error((error as Error).message);
-  }
+		const result = await fetch(url.toString());
+		if (!result.ok) {
+			const error = await result.json();
+			throw new Error(error.message);
+		}
+		return result.json();
+	} catch (error) {
+		console.error(error);
+		throw new Error((error as Error).message);
+	}
 }
 
 export async function createSession(
-  sessionId: string,
-  userId: string,
-  accessToken: string,
-  refreshToken: string,
-  userAgent: string,
-  expiresIn: number
+	sessionId: string,
+	userId: string,
+	accessToken: string,
+	refreshToken: string,
+	userAgent: string,
+	expiresIn: number
 ): Promise<Session> {
-  const now = new Date().toISOString();
-  const expiredAt = Date.now() + expiresIn * 1000;
+	const now = new Date().toISOString();
+	const expiredAt = Date.now() + expiresIn * 1000;
 
-  const sessionData = {
-    id: sessionId,
-    user_id: userId,
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    user_agent: userAgent,
-    expiredAt,
-    is_revoked: false,
-    createdAt: now,
-    updatedAt: now
-  };
+	const sessionData = {
+		id: sessionId,
+		user_id: userId,
+		access_token: accessToken,
+		refresh_token: refreshToken,
+		user_agent: userAgent,
+		expiredAt,
+		is_revoked: false,
+		createdAt: now,
+		updatedAt: now
+	};
 
-  const { data, error } = await supabase
-    .from(TABLES.SESSIONS)
-    .insert(sessionData)
-    .select()
-    .single();
+	const { data, error } = await supabase
+		.from(TABLES.SESSIONS)
+		.insert(sessionData)
+		.select()
+		.single();
 
-  if (error) {
-    console.error('Failed to create session:', error);
-    throw new Error(error.message);
-  };
-  return data as Session;
+	if (error) {
+		console.error('Failed to create session:', error);
+		throw new Error(error.message);
+	}
+	return data as Session;
 }
 
 export async function getSessionByRefreshToken(refreshToken: string): Promise<Session | null> {
-  const { data, error } = await supabase
-    .from(TABLES.SESSIONS)
-    .select('*')
-    .eq('refresh_token', refreshToken)
-    .eq('is_revoked', false)
-    .single();
+	const { data, error } = await supabase
+		.from(TABLES.SESSIONS)
+		.select('*')
+		.eq('refresh_token', refreshToken)
+		.eq('is_revoked', false)
+		.single();
 
-  if (error || !data) return null;
-  return data as Session;
+	if (error || !data) return null;
+	return data as Session;
 }
 
 export async function revokeSession(sessionId: string): Promise<boolean> {
-  try {
-    const { error } = await supabase
-      .from(TABLES.SESSIONS)
-      .update({ is_revoked: true, updatedAt: new Date().toISOString() })
-      .eq('id', sessionId);
+	try {
+		const { error } = await supabase
+			.from(TABLES.SESSIONS)
+			.update({ is_revoked: true, updatedAt: new Date().toISOString() })
+			.eq('id', sessionId);
 
-    if (error) {
-      console.error('Failed to revoke session:', error);
-      return false;
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Failed to revoke session:', error);
-    throw new Error(error as string);
-  }
+		if (error) {
+			console.error('Failed to revoke session:', error);
+			return false;
+		}
+
+		return true;
+	} catch (error) {
+		console.error('Failed to revoke session:', error);
+		throw new Error(error as string);
+	}
 }
 
 export async function updateSessionTokens(
-  sessionId: string,
-  accessToken: string,
-  refreshToken: string,
-  expiresIn: number
+	sessionId: string,
+	accessToken: string,
+	refreshToken: string,
+	expiresIn: number
 ): Promise<void> {
-  const expiredAt = Date.now() + expiresIn * 1000;
-  await supabase
-    .from(TABLES.SESSIONS)
-    .update({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      expiredAt,
-      updatedAt: new Date().toISOString()
-    })
-    .eq('id', sessionId);
+	const expiredAt = Date.now() + expiresIn * 1000;
+	await supabase
+		.from(TABLES.SESSIONS)
+		.update({
+			access_token: accessToken,
+			refresh_token: refreshToken,
+			expiredAt,
+			updatedAt: new Date().toISOString()
+		})
+		.eq('id', sessionId);
 }
 
 export async function revokeAllUserSessions(userId: string): Promise<void> {
-  await supabase
-  .from(TABLES.SESSIONS)
-    .update({ is_revoked: true, updatedAt: new Date().toISOString() })
-    .eq('user_id', userId);
+	await supabase
+		.from(TABLES.SESSIONS)
+		.update({ is_revoked: true, updatedAt: new Date().toISOString() })
+		.eq('user_id', userId);
 }

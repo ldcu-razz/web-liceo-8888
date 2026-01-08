@@ -1,5 +1,11 @@
-import type z from "zod";
-import type { BaseStatusEnumSchema, PaginatedSchema, PaginationSchema, SexEnumSchema, UUIDSchema } from "./common.schema";
+import type z from 'zod';
+import type {
+	BaseStatusEnumSchema,
+	PaginatedSchema,
+	PaginationSchema,
+	SexEnumSchema,
+	UUIDSchema
+} from './common.schema';
 
 export type BaseStatusEnum = z.infer<typeof BaseStatusEnumSchema>;
 

@@ -1,5 +1,12 @@
-import type z from "zod";
-import type { FilesSchema, FileTypesSchema, GetFileSchema, GetFilesPaginatedSchema, PostFilePropertiesSchema, PostFileSchema } from "./files.schema";
+import type z from 'zod';
+import type {
+	FilesSchema,
+	FileTypesSchema,
+	GetFileSchema,
+	GetFilesPaginatedSchema,
+	PostFilePropertiesSchema,
+	PostFileSchema
+} from './files.schema';
 
 export type Files = z.infer<typeof FilesSchema>;
 export type FileTypes = z.infer<typeof FileTypesSchema>;

@@ -1,12 +1,12 @@
 <script lang="ts" module>
-	import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-	import { Button } from "../ui/button";
-	import { Bold, Code, Italic, Quote, Strikethrough, Underline } from "@lucide/svelte";
-	import { DEFAULT_AVATAR } from "$lib/constants/avatar.constants";
-	import { onMount, tick } from "svelte";
-	import { cn } from "$lib/utils";
-	import type { MentionedUsers, Users } from "$lib/models/users/users.type";
-	import { allUsersStore } from "$lib/store/users.store";
+	import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+	import { Button } from '../ui/button';
+	import { Bold, Code, Italic, Quote, Strikethrough, Underline } from '@lucide/svelte';
+	import { DEFAULT_AVATAR } from '$lib/constants/avatar.constants';
+	import { onMount, tick } from 'svelte';
+	import { cn } from '$lib/utils';
+	import type { MentionedUsers, Users } from '$lib/models/users/users.type';
+	import { allUsersStore } from '$lib/store/users.store';
 
 	export type Props = {
 		value?: string;
@@ -21,18 +21,18 @@
 
 <script lang="ts">
 	let {
-		value = $bindable(""),
+		value = $bindable(''),
 		className,
-		placeholder = "Write",
+		placeholder = 'Write',
 		hideAvatar = false,
 		mentionedUsers = $bindable<MentionedUsers[]>([]),
 		onSubmit,
-		onBlur,
+		onBlur
 	}: Props = $props();
 
 	let avatar = $derived(DEFAULT_AVATAR);
 
-	let userFullName = $derived("John Doe");
+	let userFullName = $derived('John Doe');
 
 	let editorRef: HTMLDivElement | null = null;
 	let editorContainerRef: HTMLDivElement | null = null;
@@ -40,17 +40,17 @@
 	const HISTORY_LIMIT = 50;
 	const MAX_MENTION_SUGGESTIONS = 5;
 
-	let history = $state<string[]>([value ?? ""]);
+	let history = $state<string[]>([value ?? '']);
 	let historyIndex = $state(0);
 	let isApplyingHistory = false;
 	let toolbarState = $state({
 		bold: false,
 		italic: false,
 		underline: false,
-		strike: false,
+		strike: false
 	});
 
-	let mentionQuery = $state("");
+	let mentionQuery = $state('');
 	let mentionPopoverOpen = $state(false);
 	let mentionHighlightIndex = $state(0);
 	let mentionPosition = $state({ left: 0, top: 0 });
@@ -61,10 +61,7 @@
 		const results = term
 			? users.filter((user) => {
 					const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
-					return (
-						user.username.toLowerCase().includes(term) ||
-						fullName.includes(term)
-					);
+					return user.username.toLowerCase().includes(term) || fullName.includes(term);
 				})
 			: users;
 
@@ -101,7 +98,7 @@
 	}
 
 	function getTextBeforeCaret(selection: Selection) {
-		if (!editorRef || selection.rangeCount === 0) return "";
+		if (!editorRef || selection.rangeCount === 0) return '';
 
 		const range = selection.getRangeAt(0).cloneRange();
 		range.collapse(true);
@@ -117,13 +114,13 @@
 		const containerRect = editorContainerRef.getBoundingClientRect();
 		mentionPosition = {
 			left: rect.left - containerRect.left,
-			top: rect.bottom - containerRect.top,
+			top: rect.bottom - containerRect.top
 		};
 	}
 
 	function closeMentionPopover() {
 		mentionPopoverOpen = false;
-		mentionQuery = "";
+		mentionQuery = '';
 		mentionHighlightIndex = 0;
 	}
 
@@ -136,14 +133,14 @@
 		}
 
 		const textBefore = getTextBeforeCaret(selection);
-		const atIndex = textBefore.lastIndexOf("@");
+		const atIndex = textBefore.lastIndexOf('@');
 
 		if (atIndex === -1) {
 			closeMentionPopover();
 			return;
 		}
 
-		const charBefore = atIndex > 0 ? textBefore[atIndex - 1] : "";
+		const charBefore = atIndex > 0 ? textBefore[atIndex - 1] : '';
 		if (charBefore && !/[\s\u00A0]/.test(charBefore)) {
 			closeMentionPopover();
 			return;
@@ -172,7 +169,7 @@
 	}
 
 	function createMentionNode(user: Users) {
-		const mentionNode = document.createElement("span");
+		const mentionNode = document.createElement('span');
 		const displayName = `${user.firstname} ${user.lastname}`.trim();
 		mentionNode.textContent = `@${displayName}`;
 		mentionNode.dataset.mentionId = user.id;
@@ -180,15 +177,15 @@
 		mentionNode.dataset.firstname = user.firstname;
 		mentionNode.dataset.lastname = user.lastname;
 		mentionNode.className =
-			"mention-chip inline-flex items-center gap-1 rounded-sm bg-blue-50 px-1 text-xs font-semibold text-blue-700";
-		mentionNode.contentEditable = "false";
+			'mention-chip inline-flex items-center gap-1 rounded-sm bg-blue-50 px-1 text-xs font-semibold text-blue-700';
+		mentionNode.contentEditable = 'false';
 		return mentionNode;
 	}
 
 	function syncMentionedUsersFromDOM() {
 		if (!editorRef) return;
 
-		const nodes = editorRef.querySelectorAll<HTMLElement>("[data-mention-id]");
+		const nodes = editorRef.querySelectorAll<HTMLElement>('[data-mention-id]');
 		const uniqueMentions: Record<string, MentionedUsers> = {};
 
 		nodes.forEach((node) => {
@@ -199,9 +196,9 @@
 
 			uniqueMentions[id] = {
 				id,
-				firstname: node.dataset.firstname ?? mappedUser?.firstname ?? "",
-				lastname: node.dataset.lastname ?? mappedUser?.lastname ?? "",
-				username: node.dataset.username ?? mappedUser?.username ?? "",
+				firstname: node.dataset.firstname ?? mappedUser?.firstname ?? '',
+				lastname: node.dataset.lastname ?? mappedUser?.lastname ?? '',
+				username: node.dataset.username ?? mappedUser?.username ?? ''
 			};
 		});
 
@@ -223,8 +220,7 @@
 
 		if (startContainer.nodeType !== Node.TEXT_NODE && startContainer.childNodes.length > 0) {
 			const candidateIndex = Math.max(0, startOffset - 1);
-			const candidate =
-				startContainer.childNodes[candidateIndex] ?? startContainer.childNodes[0];
+			const candidate = startContainer.childNodes[candidateIndex] ?? startContainer.childNodes[0];
 
 			if (candidate?.nodeType === Node.TEXT_NODE) {
 				startContainer = candidate;
@@ -244,7 +240,7 @@
 		mentionRange.deleteContents();
 
 		const mentionNode = createMentionNode(user);
-		const spaceNode = document.createTextNode("\u00A0");
+		const spaceNode = document.createTextNode('\u00A0');
 		const fragment = document.createDocumentFragment();
 		fragment.appendChild(mentionNode);
 		fragment.appendChild(spaceNode);
@@ -272,10 +268,10 @@
 		}
 
 		toolbarState = {
-			bold: document.queryCommandState("bold"),
-			italic: document.queryCommandState("italic"),
-			underline: document.queryCommandState("underline"),
-			strike: document.queryCommandState("strikeThrough"),
+			bold: document.queryCommandState('bold'),
+			italic: document.queryCommandState('italic'),
+			underline: document.queryCommandState('underline'),
+			strike: document.queryCommandState('strikeThrough')
 		};
 	}
 
@@ -298,15 +294,15 @@
 		if (!sanitizedValue) return;
 
 		onSubmit?.(sanitizedValue, mentionedUsers);
-		value = "";
+		value = '';
 		mentionedUsers = [];
-		history = [""];
+		history = [''];
 		historyIndex = 0;
 		closeMentionPopover();
 		resetToolbarState();
 	}
 
-	function wrapSelectionWith(tagName: "code") {
+	function wrapSelectionWith(tagName: 'code') {
 		const selection = window.getSelection();
 
 		if (!selection || selection.rangeCount === 0 || selection.isCollapsed) return;
@@ -327,17 +323,17 @@
 		selection.addRange(range);
 	}
 
-	function applyFormat(format: "bold" | "italic" | "underline" | "quote" | "code" | "strike") {
+	function applyFormat(format: 'bold' | 'italic' | 'underline' | 'quote' | 'code' | 'strike') {
 		if (!editorRef) return;
 
 		editorRef.focus();
 
-		if (format === "quote") {
-			document.execCommand("formatBlock", false, "blockquote");
-		} else if (format === "strike") {
-			document.execCommand("strikeThrough");
-		} else if (format === "code") {
-			wrapSelectionWith("code");
+		if (format === 'quote') {
+			document.execCommand('formatBlock', false, 'blockquote');
+		} else if (format === 'strike') {
+			document.execCommand('strikeThrough');
+		} else if (format === 'code') {
+			wrapSelectionWith('code');
 		} else {
 			document.execCommand(format);
 		}
@@ -351,24 +347,22 @@
 		const key = event.key.toLowerCase();
 
 		if (mentionPopoverOpen) {
-			if (key === "arrowdown" && filteredMentionUsers.length > 0) {
+			if (key === 'arrowdown' && filteredMentionUsers.length > 0) {
 				event.preventDefault();
 				event.stopPropagation();
-				mentionHighlightIndex =
-					(mentionHighlightIndex + 1) % filteredMentionUsers.length;
+				mentionHighlightIndex = (mentionHighlightIndex + 1) % filteredMentionUsers.length;
 				return;
 			}
 
-			if (key === "arrowup" && filteredMentionUsers.length > 0) {
+			if (key === 'arrowup' && filteredMentionUsers.length > 0) {
 				event.preventDefault();
 				event.stopPropagation();
 				mentionHighlightIndex =
-					(mentionHighlightIndex - 1 + filteredMentionUsers.length) %
-					filteredMentionUsers.length;
+					(mentionHighlightIndex - 1 + filteredMentionUsers.length) % filteredMentionUsers.length;
 				return;
 			}
 
-			if (key === "enter" && !event.shiftKey) {
+			if (key === 'enter' && !event.shiftKey) {
 				event.preventDefault();
 				event.stopPropagation();
 				const user = filteredMentionUsers[mentionHighlightIndex];
@@ -376,7 +370,7 @@
 				return;
 			}
 
-			if (key === "escape") {
+			if (key === 'escape') {
 				event.preventDefault();
 				event.stopPropagation();
 				closeMentionPopover();
@@ -384,42 +378,42 @@
 			}
 		}
 
-		if (meta && key === "z" && !event.shiftKey) {
+		if (meta && key === 'z' && !event.shiftKey) {
 			event.preventDefault();
 			event.stopPropagation();
 			undo();
 			return;
 		}
 
-		if ((meta && key === "y") || (meta && key === "z" && event.shiftKey)) {
+		if ((meta && key === 'y') || (meta && key === 'z' && event.shiftKey)) {
 			event.preventDefault();
 			event.stopPropagation();
 			redo();
 			return;
 		}
 
-		if (meta && key === "b") {
+		if (meta && key === 'b') {
 			event.preventDefault();
 			event.stopPropagation();
-			applyFormat("bold");
+			applyFormat('bold');
 			return;
 		}
 
-		if (meta && key === "i") {
+		if (meta && key === 'i') {
 			event.preventDefault();
 			event.stopPropagation();
-			applyFormat("italic");
+			applyFormat('italic');
 			return;
 		}
 
-		if (meta && key === "u") {
+		if (meta && key === 'u') {
 			event.preventDefault();
 			event.stopPropagation();
-			applyFormat("underline");
+			applyFormat('underline');
 			return;
 		}
 
-		if (event.key === "Enter" && !event.shiftKey && !meta) {
+		if (event.key === 'Enter' && !event.shiftKey && !meta) {
 			event.preventDefault();
 			event.stopPropagation();
 			submitComment();
@@ -430,7 +424,7 @@
 		if (!mentionPopoverOpen) return;
 
 		// avoid selectionchange re-computing on held arrow keys
-		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+		if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
 			event.preventDefault();
 		}
 	}
@@ -448,7 +442,7 @@
 
 	$effect(() => {
 		if (!editorRef) return;
-		const desired = value ?? "";
+		const desired = value ?? '';
 		if (editorRef.innerHTML !== desired) {
 			editorRef.innerHTML = desired;
 			moveCaretToEnd(editorRef);
@@ -524,10 +518,12 @@
 	{/if}
 
 	<div class="relative flex-1" {@attach attachEditorContainer}>
-		<div class="flex justify-between items-center border border-gray-200 border-b-0 rounded-t-md p-1">
-      <div class="text-sm text-gray-500 ml-2">
-        {placeholder}
-      </div>
+		<div
+			class="flex items-center justify-between rounded-t-md border border-b-0 border-gray-200 p-1"
+		>
+			<div class="ml-2 text-sm text-gray-500">
+				{placeholder}
+			</div>
 			<div
 				class="flex items-center gap-1"
 				role="toolbar"
@@ -538,8 +534,8 @@
 				<Button
 					variant="ghost"
 					size="sm"
-					class={cn("p-0", toolbarState.bold ? "bg-gray-100 text-gray-900" : "")}
-					onclick={() => applyFormat("bold")}
+					class={cn('p-0', toolbarState.bold ? 'bg-gray-100 text-gray-900' : '')}
+					onclick={() => applyFormat('bold')}
 					aria-label="Bold (Ctrl/Cmd + B)"
 				>
 					<Bold class="size-4" />
@@ -547,8 +543,8 @@
 				<Button
 					variant="ghost"
 					size="icon-sm"
-					class={toolbarState.italic ? "bg-gray-100 text-gray-900" : ""}
-					onclick={() => applyFormat("italic")}
+					class={toolbarState.italic ? 'bg-gray-100 text-gray-900' : ''}
+					onclick={() => applyFormat('italic')}
 					aria-label="Italic (Ctrl/Cmd + I)"
 				>
 					<Italic class="size-4" />
@@ -556,8 +552,8 @@
 				<Button
 					variant="ghost"
 					size="icon-sm"
-					class={toolbarState.underline ? "bg-gray-100 text-gray-900" : ""}
-					onclick={() => applyFormat("underline")}
+					class={toolbarState.underline ? 'bg-gray-100 text-gray-900' : ''}
+					onclick={() => applyFormat('underline')}
 					aria-label="Underline (Ctrl/Cmd + U)"
 				>
 					<Underline class="size-4" />
@@ -565,16 +561,26 @@
 				<Button
 					variant="ghost"
 					size="icon-sm"
-					class={toolbarState.strike ? "bg-gray-100 text-gray-900" : ""}
-					onclick={() => applyFormat("strike")}
+					class={toolbarState.strike ? 'bg-gray-100 text-gray-900' : ''}
+					onclick={() => applyFormat('strike')}
 					aria-label="Strikethrough"
 				>
 					<Strikethrough class="size-4" />
 				</Button>
-				<Button variant="ghost" size="icon-sm" onclick={() => applyFormat("quote")} aria-label="Quote">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					onclick={() => applyFormat('quote')}
+					aria-label="Quote"
+				>
 					<Quote class="size-4" />
 				</Button>
-				<Button variant="ghost" size="icon-sm" onclick={() => applyFormat("code")} aria-label="Code">
+				<Button
+					variant="ghost"
+					size="icon-sm"
+					onclick={() => applyFormat('code')}
+					aria-label="Code"
+				>
 					<Code class="size-4" />
 				</Button>
 			</div>
@@ -595,8 +601,8 @@
 									<button
 										type="button"
 										class={cn(
-											"flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-2 text-left text-xs hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200",
-											index === mentionHighlightIndex ? "bg-gray-100" : ""
+											'flex w-full cursor-pointer items-center justify-between rounded-sm px-2 py-2 text-left text-xs hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:outline-none',
+											index === mentionHighlightIndex ? 'bg-gray-100' : ''
 										)}
 										role="option"
 										aria-selected={index === mentionHighlightIndex}
@@ -606,7 +612,11 @@
 										<div class="flex items-center gap-1.5">
 											<Avatar class="size-4 border border-gray-200">
 												<AvatarImage src={user.avatar} />
-												<AvatarFallback class="text-[10px]">{user.firstname.slice(0, 1).toUpperCase()}{user.lastname.slice(0, 1).toUpperCase()}</AvatarFallback>
+												<AvatarFallback class="text-[10px]"
+													>{user.firstname.slice(0, 1).toUpperCase()}{user.lastname
+														.slice(0, 1)
+														.toUpperCase()}</AvatarFallback
+												>
 											</Avatar>
 											<span class="text-xs">{user.firstname} {user.lastname}</span>
 										</div>
@@ -620,7 +630,10 @@
 		{/if}
 
 		<div
-			class={cn("rich-comment-editor w-full whitespace-pre-line min-h-[96px] rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 outline-none focus-visible:border-gray-300", className)}
+			class={cn(
+				'rich-comment-editor min-h-[96px] w-full rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 whitespace-pre-line outline-none focus-visible:border-gray-300',
+				className
+			)}
 			contenteditable="true"
 			role="textbox"
 			tabindex={0}

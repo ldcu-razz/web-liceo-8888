@@ -1,5 +1,12 @@
-import type z from "zod";
-import type { GetTicketCommentsPaginatedSchema, PostTicketCommentSchema, DeleteTicketCommentSchema, PutTicketCommentSchema, TicketCommentsSchema, GetTicketCommentSchema } from "./ticket-comments.schema";
+import type z from 'zod';
+import type {
+	GetTicketCommentsPaginatedSchema,
+	PostTicketCommentSchema,
+	DeleteTicketCommentSchema,
+	PutTicketCommentSchema,
+	TicketCommentsSchema,
+	GetTicketCommentSchema
+} from './ticket-comments.schema';
 
 export type TicketComment = z.infer<typeof TicketCommentsSchema>;
 export type GetTicketComment = z.infer<typeof GetTicketCommentSchema>;

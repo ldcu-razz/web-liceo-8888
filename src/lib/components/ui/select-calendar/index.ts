@@ -1,3 +1,3 @@
-import SelectCalendar from "./SelectCalendar.svelte";
+import SelectCalendar from './SelectCalendar.svelte';
 
 export { SelectCalendar };

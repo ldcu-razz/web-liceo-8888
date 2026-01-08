@@ -1,203 +1,239 @@
 <script lang="ts">
-	import { Button } from "$lib/components/ui/button";
-	import { PlusIcon, SearchIcon } from "@lucide/svelte";
-	import DeaprtmentsDataTable from "./DeaprtmentsDataTable.svelte";
-	import { createColumns } from "./columns";
-	import type { Departments } from "$lib/models/departments/departments.type";
-	import { InputGroup, InputGroupAddon, InputGroupInput } from "$lib/components/ui/input-group";
-	import Sheet from "$lib/components/ui/sheet/sheet.svelte";
-	import { SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "$lib/components/ui/sheet";
-	import DepartmentForm, { type FormData, defaultFormData } from "./DepartmentForm.svelte";
-	import AlertDialog from "$lib/components/ui/alert-dialog/alert-dialog.svelte";
-	import AlertDialogContent from "$lib/components/ui/alert-dialog/alert-dialog-content.svelte";
-	import { AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "$lib/components/ui/alert-dialog";
-	import { departmentsActions, departmentsLoading, departmentsStore, hasDepartmentsLoaded } from "$lib/store/departments.store";
-	import { uuid } from "$lib/utils/uuid.util";
-	import { debounce } from "$lib/utils/reactive.utils";
-	import { onMount } from "svelte";
-	import AvatarUploader from "$lib/components/common/AvatarUploader.svelte";
+	import { Button } from '$lib/components/ui/button';
+	import { PlusIcon, SearchIcon } from '@lucide/svelte';
+	import DeaprtmentsDataTable from './DeaprtmentsDataTable.svelte';
+	import { createColumns } from './columns';
+	import type { Departments } from '$lib/models/departments/departments.type';
+	import { InputGroup, InputGroupAddon, InputGroupInput } from '$lib/components/ui/input-group';
+	import Sheet from '$lib/components/ui/sheet/sheet.svelte';
+	import {
+		SheetContent,
+		SheetDescription,
+		SheetHeader,
+		SheetTitle,
+		SheetTrigger
+	} from '$lib/components/ui/sheet';
+	import DepartmentForm, { type FormData, defaultFormData } from './DepartmentForm.svelte';
+	import AlertDialog from '$lib/components/ui/alert-dialog/alert-dialog.svelte';
+	import AlertDialogContent from '$lib/components/ui/alert-dialog/alert-dialog-content.svelte';
+	import {
+		AlertDialogDescription,
+		AlertDialogFooter,
+		AlertDialogHeader,
+		AlertDialogTitle
+	} from '$lib/components/ui/alert-dialog';
+	import {
+		departmentsActions,
+		departmentsLoading,
+		departmentsStore,
+		hasDepartmentsLoaded
+	} from '$lib/store/departments.store';
+	import { uuid } from '$lib/utils/uuid.util';
+	import { debounce } from '$lib/utils/reactive.utils';
+	import { onMount } from 'svelte';
+	import AvatarUploader from '$lib/components/common/AvatarUploader.svelte';
 
-  let data: Departments[] = $derived($departmentsStore);
-  let loading = $derived($departmentsLoading);
+	let data: Departments[] = $derived($departmentsStore);
+	let loading = $derived($departmentsLoading);
 
-  let search = $state("");
-  let showDepartmentFormSheet = $state(false);
-  let activeDepartmentId: string | null = $state(null);
-  let activeDepartment: Departments | null = $derived(data.find(d => d.id === activeDepartmentId) ?? null);
-  let showDeleteDepartmentAlertDialog = $state(false);
-  let hasLoadedData = $derived($hasDepartmentsLoaded);
+	let search = $state('');
+	let showDepartmentFormSheet = $state(false);
+	let activeDepartmentId: string | null = $state(null);
+	let activeDepartment: Departments | null = $derived(
+		data.find((d) => d.id === activeDepartmentId) ?? null
+	);
+	let showDeleteDepartmentAlertDialog = $state(false);
+	let hasLoadedData = $derived($hasDepartmentsLoaded);
 
-  let departmentLogoFileInput = $state<File | null>(null);
-  let activeDepartmentAvatar = $derived(activeDepartment?.avatar ?? '');
-  let activeDepartmentAbbv = $derived(activeDepartment?.abbv ?? '');
+	let departmentLogoFileInput = $state<File | null>(null);
+	let activeDepartmentAvatar = $derived(activeDepartment?.avatar ?? '');
+	let activeDepartmentAbbv = $derived(activeDepartment?.abbv ?? '');
 
-  let formData: FormData = $state({ ...defaultFormData });
-  
-  let isFirstMount = $state(true);
+	let formData: FormData = $state({ ...defaultFormData });
 
-  const columns = $derived(createColumns(handleView, handleArchive));
-  
-  const debouncedSearch = debounce((query: string) => {
-    const silentLoading = hasLoadedData && !query;
-    departmentsActions.getDepartments({ page: 1, size: 25 }, query, silentLoading);
-  }, 500);
+	let isFirstMount = $state(true);
 
-  $effect(() => {
-    if (!showDepartmentFormSheet) {
-      activeDepartmentId = null;
-      formData = { ...defaultFormData };
-    } else if (showDepartmentFormSheet && !activeDepartmentId) {
-      formData = { ...defaultFormData };
-    }
-  });
+	const columns = $derived(createColumns(handleView, handleArchive));
 
-  $effect(() => {
-    const query = search.trim();
-    if (isFirstMount) {
-      return;
-    }
-    
-    debouncedSearch(query);
-  });
+	const debouncedSearch = debounce((query: string) => {
+		const silentLoading = hasLoadedData && !query;
+		departmentsActions.getDepartments({ page: 1, size: 25 }, query, silentLoading);
+	}, 500);
 
-  onMount(() => {
-    isFirstMount = false;
-  });
+	$effect(() => {
+		if (!showDepartmentFormSheet) {
+			activeDepartmentId = null;
+			formData = { ...defaultFormData };
+		} else if (showDepartmentFormSheet && !activeDepartmentId) {
+			formData = { ...defaultFormData };
+		}
+	});
 
-  function handleView(id: string) {
-    const department = data.find(d => d.id === id);
-    if (department) {
-      activeDepartmentId = id;
-      formData = {
-        name: department.name,
-        abbreviation: department.abbv,
-        description: department.description || "",
-        keywords: department.keywords || [],
-        status: department.status,
-      };
-      showDepartmentFormSheet = true;
-    }
-  }
+	$effect(() => {
+		const query = search.trim();
+		if (isFirstMount) {
+			return;
+		}
 
-  function handleArchive(id: string) {
-    activeDepartmentId = id;
-    showDeleteDepartmentAlertDialog = true;
-  }
+		debouncedSearch(query);
+	});
 
-  function handleCancelDepartmentForm() {
-    showDepartmentFormSheet = false;
-    activeDepartmentId = null;
-    formData = { ...defaultFormData };
-  }
+	onMount(() => {
+		isFirstMount = false;
+	});
 
-  function handleSubmitDepartmentForm(submittedFormData: FormData) {
-    if (activeDepartmentId) {
-      const index = data.findIndex(d => d.id === activeDepartmentId);
-      if (index !== -1) {
-        data[index] = {
-          ...data[index],
-          name: submittedFormData.name,
-          abbv: submittedFormData.abbreviation,
-          description: submittedFormData.description,
-          keywords: submittedFormData.keywords,
-          status: submittedFormData.status,
-          updatedAt: new Date().toISOString(),
-        };
-      }
+	function handleView(id: string) {
+		const department = data.find((d) => d.id === id);
+		if (department) {
+			activeDepartmentId = id;
+			formData = {
+				name: department.name,
+				abbreviation: department.abbv,
+				description: department.description || '',
+				keywords: department.keywords || [],
+				status: department.status
+			};
+			showDepartmentFormSheet = true;
+		}
+	}
 
-      departmentsActions.updateDepartment(activeDepartmentId, data[index]);
-    } else {
-      const newDepartment: Departments = {
-        id: uuid(),
-        name: submittedFormData.name,
-        abbv: submittedFormData.abbreviation,
-        description: submittedFormData.description,
-        keywords: submittedFormData.keywords,
-        status: submittedFormData.status,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+	function handleArchive(id: string) {
+		activeDepartmentId = id;
+		showDeleteDepartmentAlertDialog = true;
+	}
 
-      departmentsActions.createDepartment(newDepartment);
-    }
+	function handleCancelDepartmentForm() {
+		showDepartmentFormSheet = false;
+		activeDepartmentId = null;
+		formData = { ...defaultFormData };
+	}
 
-    handleCancelDepartmentForm();
-  }
+	function handleSubmitDepartmentForm(submittedFormData: FormData) {
+		if (activeDepartmentId) {
+			const index = data.findIndex((d) => d.id === activeDepartmentId);
+			if (index !== -1) {
+				data[index] = {
+					...data[index],
+					name: submittedFormData.name,
+					abbv: submittedFormData.abbreviation,
+					description: submittedFormData.description,
+					keywords: submittedFormData.keywords,
+					status: submittedFormData.status,
+					updatedAt: new Date().toISOString()
+				};
+			}
 
-  function handleDeleteDepartment() {
-    showDeleteDepartmentAlertDialog = false;
-    if (activeDepartmentId) {
-      departmentsActions.archiveDepartment(activeDepartmentId);
-    }
-    activeDepartmentId = null;
-  }
+			departmentsActions.updateDepartment(activeDepartmentId, data[index]);
+		} else {
+			const newDepartment: Departments = {
+				id: uuid(),
+				name: submittedFormData.name,
+				abbv: submittedFormData.abbreviation,
+				description: submittedFormData.description,
+				keywords: submittedFormData.keywords,
+				status: submittedFormData.status,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			};
 
-  function handleDepartmentLogoSelected(event: Event) {
-    const target = event.target as HTMLInputElement;
-    if (target.files?.length) {
-      const file = target.files[0];
-      if (activeDepartmentId) {
-        departmentsActions.uploadDepartmentLogo(activeDepartmentId, file);
-      }
-    }
-  }
+			departmentsActions.createDepartment(newDepartment);
+		}
 
-  function handleRemoveDepartmentLogo() {
-    if (activeDepartmentId) {
-      departmentsActions.removeDepartmentLogo(activeDepartmentId);
-    }
-  }
+		handleCancelDepartmentForm();
+	}
+
+	function handleDeleteDepartment() {
+		showDeleteDepartmentAlertDialog = false;
+		if (activeDepartmentId) {
+			departmentsActions.archiveDepartment(activeDepartmentId);
+		}
+		activeDepartmentId = null;
+	}
+
+	function handleDepartmentLogoSelected(event: Event) {
+		const target = event.target as HTMLInputElement;
+		if (target.files?.length) {
+			const file = target.files[0];
+			if (activeDepartmentId) {
+				departmentsActions.uploadDepartmentLogo(activeDepartmentId, file);
+			}
+		}
+	}
+
+	function handleRemoveDepartmentLogo() {
+		if (activeDepartmentId) {
+			departmentsActions.removeDepartmentLogo(activeDepartmentId);
+		}
+	}
 </script>
 
-<div class="flex flex-col gap-4 container mx-auto">
-  <div class="flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <h1 class="text-2xl font-semibold">Departments</h1>
-      <InputGroup>
-        <InputGroupInput bind:value={search} placeholder="Search by name, abbv." />
-        <InputGroupAddon>
-          <SearchIcon class="size-4" />
-        </InputGroupAddon>
-      </InputGroup>
-    </div>
-    <Sheet bind:open={showDepartmentFormSheet}>
-      <SheetTrigger>
-        <Button variant="secondary">
-          <PlusIcon class="size-4" />
-          Add Department
-        </Button>
-      </SheetTrigger>
-      <SheetContent class="min-w-lg" interactOutsideBehavior="ignore">
-        <SheetHeader>
-          <SheetTitle>{activeDepartmentId ? "Edit Department" : "Add Department"}</SheetTitle>
-          <SheetDescription>
-            {activeDepartmentId ? "Update the department information." : "Add a new department to the system."}
-          </SheetDescription>
-        </SheetHeader>
-        <div class="px-4">
-          {#if activeDepartment}
-            <div class="flex flex-col gap-4 mb-6">
-              <AvatarUploader avatar={activeDepartmentAvatar} name={activeDepartmentAbbv} handleImageSelected={handleDepartmentLogoSelected} handleRemoveAvatar={handleRemoveDepartmentLogo} />
-            </div>
-          {/if}
-          <DepartmentForm bind:formData={formData} avatar={activeDepartment?.avatar ?? ''} onSubmit={handleSubmitDepartmentForm} onCancel={handleCancelDepartmentForm} />
-        </div>
-      </SheetContent>
-    </Sheet>
-  </div>
-  
-  <DeaprtmentsDataTable {loading} {columns} {data} />
+<div class="container mx-auto flex flex-col gap-4">
+	<div class="flex items-center justify-between">
+		<div class="flex items-center gap-4">
+			<h1 class="text-2xl font-semibold">Departments</h1>
+			<InputGroup>
+				<InputGroupInput bind:value={search} placeholder="Search by name, abbv." />
+				<InputGroupAddon>
+					<SearchIcon class="size-4" />
+				</InputGroupAddon>
+			</InputGroup>
+		</div>
+		<Sheet bind:open={showDepartmentFormSheet}>
+			<SheetTrigger>
+				<Button variant="secondary">
+					<PlusIcon class="size-4" />
+					Add Department
+				</Button>
+			</SheetTrigger>
+			<SheetContent class="min-w-lg" interactOutsideBehavior="ignore">
+				<SheetHeader>
+					<SheetTitle>{activeDepartmentId ? 'Edit Department' : 'Add Department'}</SheetTitle>
+					<SheetDescription>
+						{activeDepartmentId
+							? 'Update the department information.'
+							: 'Add a new department to the system.'}
+					</SheetDescription>
+				</SheetHeader>
+				<div class="px-4">
+					{#if activeDepartment}
+						<div class="mb-6 flex flex-col gap-4">
+							<AvatarUploader
+								avatar={activeDepartmentAvatar}
+								name={activeDepartmentAbbv}
+								handleImageSelected={handleDepartmentLogoSelected}
+								handleRemoveAvatar={handleRemoveDepartmentLogo}
+							/>
+						</div>
+					{/if}
+					<DepartmentForm
+						bind:formData
+						avatar={activeDepartment?.avatar ?? ''}
+						onSubmit={handleSubmitDepartmentForm}
+						onCancel={handleCancelDepartmentForm}
+					/>
+				</div>
+			</SheetContent>
+		</Sheet>
+	</div>
+
+	<DeaprtmentsDataTable {loading} {columns} {data} />
 </div>
 
 <AlertDialog bind:open={showDeleteDepartmentAlertDialog}>
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Are you sure to delete the department {activeDepartment?.name}?</AlertDialogTitle>
-      <AlertDialogDescription>Deleting this department will remove all related data.</AlertDialogDescription>
-    </AlertDialogHeader>
-    <AlertDialogFooter>
-      <Button variant="destructive" onclick={handleDeleteDepartment}>Archive</Button>
-      <Button variant="outline" onclick={() => showDeleteDepartmentAlertDialog = false}>Cancel</Button>
-    </AlertDialogFooter>
-  </AlertDialogContent>
+	<AlertDialogContent>
+		<AlertDialogHeader>
+			<AlertDialogTitle
+				>Are you sure to delete the department {activeDepartment?.name}?</AlertDialogTitle
+			>
+			<AlertDialogDescription
+				>Deleting this department will remove all related data.</AlertDialogDescription
+			>
+		</AlertDialogHeader>
+		<AlertDialogFooter>
+			<Button variant="destructive" onclick={handleDeleteDepartment}>Archive</Button>
+			<Button variant="outline" onclick={() => (showDeleteDepartmentAlertDialog = false)}
+				>Cancel</Button
+			>
+		</AlertDialogFooter>
+	</AlertDialogContent>
 </AlertDialog>

@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { z } from 'zod';
 
 /**
  * Validates the entire form using a Zod schema
@@ -100,4 +100,3 @@ export function markAllFieldsTouched<T extends Record<string, unknown>>(
 	});
 	return touched;
 }
-

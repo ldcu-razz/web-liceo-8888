@@ -1,5 +1,13 @@
-import type z from "zod";
-import type { TicketsPrioritiesSchema, TicketSchema, TicketStatusesSchema, GetTicketSchema, GetTicketsPaginatedSchema, PostTicketSchema, PutTicketSchema } from "./tickets.schema";
+import type z from 'zod';
+import type {
+	TicketsPrioritiesSchema,
+	TicketSchema,
+	TicketStatusesSchema,
+	GetTicketSchema,
+	GetTicketsPaginatedSchema,
+	PostTicketSchema,
+	PutTicketSchema
+} from './tickets.schema';
 
 export type Ticket = z.infer<typeof TicketSchema>;
 export type TicketsPriorities = z.infer<typeof TicketsPrioritiesSchema>;

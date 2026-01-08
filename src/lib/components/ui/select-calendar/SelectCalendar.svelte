@@ -1,49 +1,46 @@
 <script lang="ts">
-	import { Popover, PopoverContent, PopoverTrigger } from "$lib/components/ui/popover";
-	import Calendar from "$lib/components/ui/calendar/calendar.svelte";
-	import {
-		InputGroup,
-		InputGroupInput,
-	} from "$lib/components/ui/input-group";
-	import { Calendar as CalendarIcon } from "@lucide/svelte";
-	import { getLocalTimeZone, DateFormatter, type DateValue } from "@internationalized/date";
-	import { cn } from "$lib/utils.js";
-	import type { ComponentProps } from "svelte";
-	import InputGroupAddon from "../input-group/input-group-addon.svelte";
+	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
+	import Calendar from '$lib/components/ui/calendar/calendar.svelte';
+	import { InputGroup, InputGroupInput } from '$lib/components/ui/input-group';
+	import { Calendar as CalendarIcon } from '@lucide/svelte';
+	import { getLocalTimeZone, DateFormatter, type DateValue } from '@internationalized/date';
+	import { cn } from '$lib/utils.js';
+	import type { ComponentProps } from 'svelte';
+	import InputGroupAddon from '../input-group/input-group-addon.svelte';
 
 	type Props = {
 		value?: DateValue | undefined;
 		placeholder?: string;
 		id?: string;
-		"aria-invalid"?: boolean | "false" | "true";
+		'aria-invalid'?: boolean | 'false' | 'true';
 		disabled?: boolean;
 		buttonClass?: string;
 		inputClass?: string;
 		popoverContentClass?: string;
 		calendarClass?: string;
-		captionLayout?: ComponentProps<typeof Calendar>["captionLayout"];
+		captionLayout?: ComponentProps<typeof Calendar>['captionLayout'];
 		locale?: string;
 		dateFormat?: Intl.DateTimeFormatOptions;
 		onOpenChange?: (open: boolean) => void;
 		onValueChange?: (value: DateValue | undefined) => void;
-	} & Omit<ComponentProps<typeof Calendar>, "value" | "class" | "captionLayout" | "locale">;
+	} & Omit<ComponentProps<typeof Calendar>, 'value' | 'class' | 'captionLayout' | 'locale'>;
 
 	let {
 		value = $bindable(),
-		placeholder = "",
+		placeholder = '',
 		id,
-		"aria-invalid": ariaInvalid,
+		'aria-invalid': ariaInvalid,
 		disabled = false,
 		buttonClass,
 		inputClass,
 		popoverContentClass,
 		calendarClass,
-		captionLayout = "dropdown",
-		locale = "en-US",
+		captionLayout = 'dropdown',
+		locale = 'en-US',
 		dateFormat = {
-			year: "numeric",
-			month: "long",
-			day: "numeric"
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
 		},
 		onOpenChange,
 		onValueChange,
@@ -53,7 +50,7 @@
 	let popoverOpen = $state(false);
 
 	function formatDate(date: DateValue | undefined): string {
-		if (!date) return "";
+		if (!date) return '';
 		const dateObj = date.toDate(getLocalTimeZone());
 		const formatter = new DateFormatter(locale, dateFormat);
 		return formatter.format(dateObj);
@@ -72,11 +69,11 @@
 		if (value !== previousValue) {
 			const newValue = value;
 			previousValue = newValue;
-			
+
 			if (newValue) {
 				popoverOpen = false;
 			}
-			
+
 			// Call callback after updating previousValue to prevent loops
 			if (onValueChange) {
 				onValueChange(newValue);
@@ -88,10 +85,10 @@
 
 	const defaultInputGroupClass = $derived(
 		cn(
-			"cursor-pointer",
-			popoverOpen && ariaInvalid !== true && ariaInvalid !== "true"
-				? "border-ring ring-[3px] ring-ring/50"
-				: "",
+			'cursor-pointer',
+			popoverOpen && ariaInvalid !== true && ariaInvalid !== 'true'
+				? 'border-ring ring-[3px] ring-ring/50'
+				: '',
 			buttonClass, // Keep for backward compatibility
 			inputClass
 		)
@@ -104,20 +101,20 @@
 			<InputGroupInput
 				{id}
 				readonly
-				disabled={disabled}
+				{disabled}
 				aria-invalid={ariaInvalid}
 				value={formattedValue}
-				placeholder={placeholder}
+				{placeholder}
 			/>
 			<InputGroupAddon>
 				<CalendarIcon />
 			</InputGroupAddon>
 		</InputGroup>
 	</PopoverTrigger>
-	<PopoverContent class={cn("w-auto p-0", popoverContentClass)}>
+	<PopoverContent class={cn('w-auto p-0', popoverContentClass)}>
 		<Calendar
 			type="single"
-			bind:value={value}
+			bind:value
 			{captionLayout}
 			{locale}
 			class={cn(calendarClass)}
@@ -125,4 +122,3 @@
 		/>
 	</PopoverContent>
 </Popover>
-
