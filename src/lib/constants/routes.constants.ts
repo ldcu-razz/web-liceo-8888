@@ -16,6 +16,12 @@ export const PROFILE_ACCOUNT = '/main/profile/account';
 export const PROFILE_NOTIFICATIONS = '/main/profile/notifications';
 export const PROFILE_SESSIONS = '/main/profile/sessions';
 
+// Student Routes
+export const STUDENT_MAIN = '/student';
+export const STUDENT_TICKETS = '/student/tickets';
+export const STUDENT_TICKETS_ID = '/student/tickets/{id}';
+export const STUDENT_PROFILE = '/student/profile';
+
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
 
