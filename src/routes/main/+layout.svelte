@@ -121,7 +121,7 @@
 
 {#if neededDataLoaded}
 	<SidebarProvider>
-		<Sidebar collapsible="offcanvas" class="border-e-0!">
+		<Sidebar collapsible="offcanvas" class="border-e-0! h-full">
 			<SidebarHeader class="p-4 pt-6">
 				<MainAvatar />
 			</SidebarHeader>
