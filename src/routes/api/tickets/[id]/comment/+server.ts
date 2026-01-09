@@ -10,7 +10,9 @@ import type { RequestHandler } from '@sveltejs/kit';
 export const GET: RequestHandler = async ({ params, url }) => {
 	const page = Number(url.searchParams.get('page')) || 1;
 	const size = Number(url.searchParams.get('size')) || 20;
-	const isVisibleToPublic = url.searchParams.get('is_visible_to_public') === 'true';
+	const isVisibleToPublic = url.searchParams.get('is_visible_to_public')
+		? url.searchParams.get('is_visible_to_public') === 'true'
+		: null;
 
 	const { id } = params;
 
@@ -35,7 +37,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		countQueryBuilder = countQueryBuilder.range((page - 1) * size, page * size - 1);
 	}
 
-	if (isVisibleToPublic) {
+	if (isVisibleToPublic !== null) {
 		queryBuilder = queryBuilder.eq('is_visible_to_public', true);
 		countQueryBuilder = countQueryBuilder.eq('is_visible_to_public', true);
 	}

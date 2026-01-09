@@ -69,10 +69,6 @@
 
 	let descriptionValue = $state('');
 
-	onMount(() => {
-		ticketCommentsActions.getTicketComments(ticket.id);
-	});
-
 	function handleStatusChangeTicketStatus(status: TicketStatuses) {
 		ticketsActions.changeTicketStatus(ticket.id, status);
 	}

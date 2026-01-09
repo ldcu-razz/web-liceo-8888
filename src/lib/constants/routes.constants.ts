@@ -21,6 +21,8 @@ export const MEMBER_MAIN = '/member';
 export const MEMBER_TICKETS = '/member/tickets';
 export const MEMBER_TICKETS_ID = '/member/tickets/{id}';
 export const MEMBER_PROFILE = '/member/profile';
+export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
+export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
 
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';

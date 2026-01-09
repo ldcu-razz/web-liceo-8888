@@ -21,7 +21,7 @@ export const ticketCommentsLoadingStore = writable<boolean>(false);
 export const ticketCommentsErrorStore = writable<string | null>(null);
 
 export const ticketCommentsActions = {
-	getTicketComments: async (ticket_id: string, isVisibleToPublic: boolean = false) => {
+	getTicketComments: async (ticket_id: string, isVisibleToPublic?: boolean) => {
 		ticketCommentsLoadingStore.set(true);
 		try {
 			const comments = await getTicketComments(ticket_id, isVisibleToPublic);

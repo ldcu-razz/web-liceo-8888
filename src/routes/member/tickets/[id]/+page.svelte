@@ -131,10 +131,7 @@
 		<div class="mt-4 flex flex-col gap-2">
 			<div class="text-sm font-semibold">Comments</div>
 			<div class="mt-4">
-				<TicketCommentSection
-					ticketId={'ca8fd2fe-cb2a-4aa7-84ee-4005e96376d5'}
-					isVisibleToPublic={true}
-				/>
+				<TicketCommentSection ticketId={ticket.id} />
 			</div>
 		</div>
 	{:else}

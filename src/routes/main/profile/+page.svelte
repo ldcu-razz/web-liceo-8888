@@ -32,7 +32,6 @@
 
 	// Get signed URL for avatar dynamically
 	const avatarSignedUrl = useSignedUrl(() => me?.avatar);
-	console.log(avatarSignedUrl);
 </script>
 
 <div class="flex flex-col gap-6 py-4">

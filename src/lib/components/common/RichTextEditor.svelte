@@ -19,6 +19,7 @@
 		hideAvatar?: boolean;
 		mentionedUsers?: MentionedUsers[];
 		showVisibleToReporterCheckbox?: boolean;
+		showSubmitButton?: boolean;
 		onBlur?: () => void;
 		onSubmit?: (value: string, mentionedUsers?: MentionedUsers[]) => void;
 	};
@@ -33,6 +34,7 @@
 		hideAvatar = false,
 		mentionedUsers = $bindable<MentionedUsers[]>([]),
 		showVisibleToReporterCheckbox = false,
+		showSubmitButton = false,
 		onSubmit,
 		onBlur
 	}: Props = $props();
@@ -312,6 +314,7 @@
 		mentionedUsers = [];
 		history = [''];
 		historyIndex = 0;
+		visibleToReporter = false;
 		closeMentionPopover();
 		resetToolbarState();
 	}
@@ -682,12 +685,14 @@
 					>
 				</div>
 			{/if}
-			<div class="ml-auto">
-				<Button variant="secondary" size="sm" disabled={isCommentEmpty} onclick={submitComment}>
-					<SendIcon class="size-4" />
-					Send
-				</Button>
-			</div>
+			{#if showSubmitButton}
+				<div class="ml-auto">
+					<Button variant="secondary" size="sm" disabled={isCommentEmpty} onclick={submitComment}>
+						<SendIcon class="size-4" />
+						Send
+					</Button>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

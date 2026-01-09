@@ -5,6 +5,7 @@ import {
 	SexEnumSchema,
 	UUIDSchema
 } from '../common/common.schema';
+import { DepartmentsSchema } from '../departments/departments.schema';
 
 export const UserRolesEnumSchema = z.enum(['super_admin', 'admin', 'user', 'department_staff']);
 
@@ -25,6 +26,10 @@ export const UsersSchema = z.object({
 	avatar: z.string().optional(),
 	createdAt: z.string(),
 	updatedAt: z.string()
+});
+
+export const GetUserSchema = UsersSchema.extend({
+	department: DepartmentsSchema.pick({ id: true, name: true })
 });
 
 export const PaginatedUsersSchema = PaginatedSchema.extend({

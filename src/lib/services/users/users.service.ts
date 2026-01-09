@@ -10,6 +10,7 @@ import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
 import type { Pagination } from '$lib/models/common/common.type';
 import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 import type {
+	GetUser,
 	GetUserByUsernameResponse,
 	PaginatedUsers,
 	PostUsers,
@@ -54,7 +55,7 @@ export async function getUser(id: string): Promise<Users> {
 	}
 }
 
-export async function getMe(): Promise<Users> {
+export async function getMe(): Promise<GetUser> {
 	try {
 		const result = await fetch(API_USERS_ME);
 		if (!result.ok) {

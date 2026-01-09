@@ -96,8 +96,8 @@
 </script>
 
 <Popover bind:open={popoverOpen} onOpenChange={handleOpenChange}>
-	<PopoverTrigger>
-		<InputGroup class={defaultInputGroupClass} aria-invalid={ariaInvalid}>
+	<PopoverTrigger class="">
+		<InputGroup class={`${defaultInputGroupClass}`} aria-invalid={ariaInvalid}>
 			<InputGroupInput
 				{id}
 				readonly

@@ -1,6 +1,7 @@
 import { supabase } from '$lib/supabase/client';
-import type { Users } from '$lib/models/users/users.type';
+import type { GetUser } from '$lib/models/users/users.type';
 import type { RequestEvent } from '@sveltejs/kit';
+import { TABLES } from '$lib/constants/tables.constants';
 
 export const GET = async ({ locals }: RequestEvent) => {
 	try {
@@ -14,10 +15,15 @@ export const GET = async ({ locals }: RequestEvent) => {
 		// Fetch full user data from database
 		const { data, error } = await supabase
 			.from('users')
-			.select('*')
+			.select(
+				`
+				*,
+				department:${TABLES.DEPARTMENTS}!department_id(*)
+			`
+			)
 			.eq('id', user.userId)
 			.single()
-			.overrideTypes<Users>();
+			.overrideTypes<GetUser>();
 
 		if (error) {
 			return new Response(JSON.stringify({ error: error.message }), { status: 500 });

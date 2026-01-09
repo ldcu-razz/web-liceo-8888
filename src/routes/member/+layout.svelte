@@ -71,7 +71,7 @@
 	<main
 		class="items-between mx-auto flex h-screen w-full max-w-[562px] flex-col border-x border-border bg-slate-50"
 	>
-		<div class="flex-1 overflow-y-auto pb-30">
+		<div class="flex-1 overflow-y-auto pb-40">
 			{@render children?.()}
 		</div>
 

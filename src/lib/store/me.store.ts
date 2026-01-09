@@ -1,4 +1,4 @@
-import type { Users } from '$lib/models/users/users.type';
+import type { GetUser, PutUsers } from '$lib/models/users/users.type';
 import {
 	changePassword,
 	changeUsername,
@@ -12,7 +12,7 @@ import type { Pagination } from '$lib/models/common/common.type';
 import { getPaginatedSessions } from '$lib/services/auth/session.service';
 import { filesActions } from './files.store';
 
-export const meStore = writable<Users | null>(null);
+export const meStore = writable<GetUser | null>(null);
 
 export const meSessionsStore = writable<Session[]>([]);
 export const meSessionsPagination = writable<Pagination>({ page: 1, size: 10 });
@@ -33,8 +33,25 @@ export const meActions = {
 		}
 	},
 
-	setMe: (user: Users) => {
+	setMe: (user: GetUser) => {
 		meStore.set(user);
+	},
+
+	updateMe: async (me: PutUsers) => {
+		const toastId = toast.loading('Updating information...');
+		const currentMe = get(meStore);
+		try {
+			meStore.update((prev) => (prev ? { ...prev, ...me } : prev));
+			await updateUser(currentMe?.id ?? '', me);
+			toast.success('Information updated successfully', { id: toastId });
+		} catch (error) {
+			console.error(error);
+			toast.error('Failed to update information', { id: toastId });
+			if (currentMe) {
+				meStore.update((prev) => (prev ? { ...prev, ...currentMe } : prev));
+			}
+			throw new Error((error as Error).message);
+		}
 	},
 
 	uploadAvatar: async (file: File) => {

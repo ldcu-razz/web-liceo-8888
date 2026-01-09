@@ -11,6 +11,7 @@
 	import { Input } from '../ui/input';
 	import type { Users } from '$lib/models/users/users.type';
 	import { allUsersStore, nonMemberUsersStore } from '$lib/store/users.store';
+	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
 
 	export type Props = {
 		selectedUserId: string | null;
@@ -37,7 +38,7 @@
 
 	let selectedUser = $derived(users?.find((user) => user.id === selectedUserId));
 
-	let avatar = $derived(selectedUser?.avatar ?? DEFAULT_AVATAR);
+	let avatar = useSignedUrl(() => selectedUser?.avatar);
 
 	let userFullName = $derived(
 		selectedUser
@@ -73,7 +74,7 @@
 				class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 			>
 				<Avatar class="size-5 border border-gray-200">
-					<AvatarImage src={avatar} />
+					<AvatarImage src={avatar.url} class="object-cover" />
 					<AvatarFallback class="text-[8px]"
 						>{userFullName.slice(0, 2).toUpperCase()}</AvatarFallback
 					>
@@ -128,7 +129,7 @@
 		class="flex items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 	>
 		<Avatar class="size-5 border border-gray-200">
-			<AvatarImage src={avatar} />
+			<AvatarImage src={avatar.url} class="object-cover" />
 			<AvatarFallback class="text-[8px]">{userFullName.slice(0, 2).toUpperCase()}</AvatarFallback>
 		</Avatar>
 		<span class="capitalize">{userFullName}</span>

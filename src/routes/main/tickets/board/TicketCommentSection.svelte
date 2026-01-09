@@ -17,40 +17,48 @@
 	import TicketCommentItem from './TicketCommentItem.svelte';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	export type Props = {
 		ticketId: string;
-		isVisibleToPublic?: boolean;
 	};
 </script>
 
 <script lang="ts">
-	let { ticketId, isVisibleToPublic = false }: Props = $props();
+	let { ticketId }: Props = $props();
 
 	let commentValue = $state('');
 	let visibleToReporter = $state(false);
-	let showVisibleToReporterCheckbox = $state(false);
 	let mentionedUsers = $state<MentionedUsers[]>([]);
 	let editingCommentId = $state<string | null>(null);
 	let deleteCommentId = $state<string | null>(null);
 
 	let me = $derived($meStore);
 
+	let isMeUserRole = $derived(me?.role === UserRolesEnumSchema.enum.user);
+
 	let ticketComments = $derived($ticketCommentsStore);
 
 	let ticketCommentsLoading = $derived($ticketCommentsLoadingStore);
 
+	let showVisibleToReporterCheckbox = $derived(!isMeUserRole);
+
 	onMount(() => {
-		ticketCommentsActions.getTicketComments(ticketId, isVisibleToPublic);
+		if (isMeUserRole) {
+			ticketCommentsActions.getTicketComments(ticketId, true);
+		} else {
+			ticketCommentsActions.getTicketComments(ticketId);
+		}
 	});
 
 	function handleSubmitComment(value: string, mentions: MentionedUsers[] = []) {
+		const is_visible_to_public = isMeUserRole ? true : visibleToReporter;
 		const body: PostTicketComment = {
 			id: uuid(),
 			ticket_id: ticketId,
 			comment: value,
 			mentioned_users: mentions,
-			is_visible_to_public: isVisibleToPublic || visibleToReporter,
+			is_visible_to_public,
 			created_by: me?.id || '',
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString()
@@ -104,6 +112,7 @@
 				bind:visibleToReporter
 				bind:mentionedUsers
 				{showVisibleToReporterCheckbox}
+				showSubmitButton={true}
 				placeholder="Write a comment"
 				onSubmit={handleSubmitComment}
 			/>
