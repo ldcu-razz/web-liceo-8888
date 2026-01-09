@@ -346,6 +346,15 @@
 		const meta = event.metaKey || event.ctrlKey;
 		const key = event.key.toLowerCase();
 
+		// Shift+Enter always submits the comment
+		if (event.key === 'Enter' && event.shiftKey && !meta) {
+			event.preventDefault();
+			event.stopPropagation();
+			closeMentionPopover();
+			submitComment();
+			return;
+		}
+
 		if (mentionPopoverOpen) {
 			if (key === 'arrowdown' && filteredMentionUsers.length > 0) {
 				event.preventDefault();
@@ -413,11 +422,8 @@
 			return;
 		}
 
-		if (event.key === 'Enter' && !event.shiftKey && !meta) {
-			event.preventDefault();
-			event.stopPropagation();
-			submitComment();
-		}
+		// Enter without shift creates a new line (default contenteditable behavior)
+		// No need to handle it explicitly - just let the default happen
 	}
 
 	function handleKeyUp(event: KeyboardEvent) {
@@ -631,7 +637,7 @@
 
 		<div
 			class={cn(
-				'rich-comment-editor min-h-[96px] w-full rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 whitespace-pre-line outline-none focus-visible:border-gray-300',
+				'rich-comment-editor max-h-[300px] min-h-[120px] w-full overflow-y-auto rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 whitespace-pre-line outline-none focus-visible:border-gray-300',
 				className
 			)}
 			contenteditable="true"

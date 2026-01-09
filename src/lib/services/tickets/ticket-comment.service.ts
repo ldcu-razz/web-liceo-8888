@@ -11,6 +11,7 @@ import { getRouteWithParams } from '$lib/utils/routes.utils';
 
 export const getTicketComments = async (
 	ticket_id: string,
+	isVisibleToPublic?: boolean,
 	pagination?: Pagination
 ): Promise<GetTicketCommentsPaginated> => {
 	const url = new URL(
@@ -20,6 +21,10 @@ export const getTicketComments = async (
 	if (pagination) {
 		url.searchParams.set('page', pagination.page.toString());
 		url.searchParams.set('size', pagination.size.toString());
+	}
+
+	if (isVisibleToPublic) {
+		url.searchParams.set('is_visible_to_public', 'true');
 	}
 	try {
 		const result = await fetch(url.toString());

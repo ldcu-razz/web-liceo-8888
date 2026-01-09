@@ -57,7 +57,7 @@
 		<button
 			type="button"
 			onclick={() => (showPassword = !showPassword)}
-			class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+			class="absolute top-1/2 right-2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
 			tabindex="-1"
 		>
 			{#if showPassword}

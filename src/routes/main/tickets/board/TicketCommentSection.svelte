@@ -20,11 +20,12 @@
 
 	export type Props = {
 		ticketId: string;
+		isVisibleToPublic?: boolean;
 	};
 </script>
 
 <script lang="ts">
-	let { ticketId }: Props = $props();
+	let { ticketId, isVisibleToPublic = false }: Props = $props();
 
 	let commentValue = $state('');
 	let mentionedUsers = $state<MentionedUsers[]>([]);
@@ -38,7 +39,7 @@
 	let ticketCommentsLoading = $derived($ticketCommentsLoadingStore);
 
 	onMount(() => {
-		ticketCommentsActions.getTicketComments(ticketId);
+		ticketCommentsActions.getTicketComments(ticketId, isVisibleToPublic);
 	});
 
 	function handleSubmitComment(value: string, mentions: MentionedUsers[] = []) {
