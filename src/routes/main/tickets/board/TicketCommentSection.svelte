@@ -28,6 +28,8 @@
 	let { ticketId, isVisibleToPublic = false }: Props = $props();
 
 	let commentValue = $state('');
+	let visibleToReporter = $state(false);
+	let showVisibleToReporterCheckbox = $state(false);
 	let mentionedUsers = $state<MentionedUsers[]>([]);
 	let editingCommentId = $state<string | null>(null);
 	let deleteCommentId = $state<string | null>(null);
@@ -48,7 +50,7 @@
 			ticket_id: ticketId,
 			comment: value,
 			mentioned_users: mentions,
-			is_visible_to_public: false,
+			is_visible_to_public: isVisibleToPublic || visibleToReporter,
 			created_by: me?.id || '',
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString()
@@ -99,7 +101,9 @@
 		<div class="mt-auto">
 			<RichTextEditor
 				bind:value={commentValue}
+				bind:visibleToReporter
 				bind:mentionedUsers
+				{showVisibleToReporterCheckbox}
 				placeholder="Write a comment"
 				onSubmit={handleSubmitComment}
 			/>

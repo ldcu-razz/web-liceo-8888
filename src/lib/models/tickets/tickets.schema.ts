@@ -38,7 +38,12 @@ export const PutTicketSchema = TicketSchema.partial();
 
 export const GetTicketSchema = TicketSchema.extend({
 	category: TicketCategoriesSchema.pick({ id: true, name: true }),
-	current_department_assigned: DepartmentsSchema.pick({ id: true, name: true, abbv: true }),
+	current_department_assigned: DepartmentsSchema.pick({
+		id: true,
+		name: true,
+		abbv: true,
+		avatar: true
+	}),
 	current_user_assigned: UsersSchema.pick({
 		id: true,
 		firstname: true,

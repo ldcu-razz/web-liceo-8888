@@ -10,6 +10,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import type { MentionedUsers } from '$lib/models/users/users.type';
 	import { onMount } from 'svelte';
+	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
+	import { meStore } from '$lib/store/me.store';
 
 	export type Props = {
 		comment: GetTicketComment;
@@ -21,6 +23,8 @@
 
 <script lang="ts">
 	let { comment, onEdit, onSaveEdit, onDelete }: Props = $props();
+
+	let me = $derived($meStore);
 
 	let usersMap = $derived($allUsersMap);
 
@@ -38,6 +42,10 @@
 	let commentValue = $state('');
 
 	let mentionedUsers = $state<MentionedUsers[]>([]);
+
+	let createdByUserAvatar = useSignedUrl(() => createdByUser?.avatar);
+
+	let isOwnComment = $derived(comment.created_by.id === me?.id);
 
 	onMount(() => {
 		commentValue = comment.comment;
@@ -70,11 +78,11 @@
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex items-center gap-3">
 			<Avatar class="size-8 border border-gray-200">
-				<AvatarImage src={createdByUser?.avatar ?? DEFAULT_AVATAR} />
+				<AvatarImage src={createdByUserAvatar.url} />
 				<AvatarFallback class="text-sm font-semibold">{createdByUserInitial}</AvatarFallback>
 			</Avatar>
 			<div class="flex items-center gap-2">
-				<p class="text-xs font-semibold text-gray-900">
+				<p class="text-sm font-semibold text-gray-900">
 					{createdByUser?.firstname}
 					{createdByUser?.lastname}
 				</p>
@@ -82,23 +90,25 @@
 			</div>
 		</div>
 
-		<DropdownMenu.Root>
-			<DropdownMenu.Trigger
-				class="flex size-5 items-center justify-center rounded-sm transition-colors hover:bg-gray-100"
-			>
-				<EllipsisIcon class="size-4 text-gray-600" />
-			</DropdownMenu.Trigger>
-			<DropdownMenu.Content align="end" class="w-40">
-				<DropdownMenu.Item class="cursor-pointer" onclick={handleEdit}>
-					<SquarePenIcon class="size-4" />
-					Edit
-				</DropdownMenu.Item>
-				<DropdownMenu.Item class="cursor-pointer" onclick={handleDelete}>
-					<Trash class="size-4 text-red-600" />
-					<span class="text-red-600">Delete</span>
-				</DropdownMenu.Item>
-			</DropdownMenu.Content>
-		</DropdownMenu.Root>
+		{#if isOwnComment}
+			<DropdownMenu.Root>
+				<DropdownMenu.Trigger
+					class="flex size-5 items-center justify-center rounded-sm transition-colors hover:bg-gray-100"
+				>
+					<EllipsisIcon class="size-4 text-gray-600" />
+				</DropdownMenu.Trigger>
+				<DropdownMenu.Content align="end" class="w-40">
+					<DropdownMenu.Item class="cursor-pointer" onclick={handleEdit}>
+						<SquarePenIcon class="size-4" />
+						Edit
+					</DropdownMenu.Item>
+					<DropdownMenu.Item class="cursor-pointer" onclick={handleDelete}>
+						<Trash class="size-4 text-red-600" />
+						<span class="text-red-600">Delete</span>
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Root>
+		{/if}
 	</div>
 
 	{#if isEdit}
@@ -117,7 +127,7 @@
 			</div>
 		</div>
 	{:else}
-		<p class="ml-11 text-xs leading-relaxed whitespace-pre-line text-gray-700">
+		<p class="ml-11 text-sm leading-relaxed whitespace-pre-line text-gray-700">
 			{@html comment.comment}
 		</p>
 	{/if}

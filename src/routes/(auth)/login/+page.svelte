@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { CREATE_ACCOUNT, MAIN } from '$lib';
+	import { CREATE_ACCOUNT, MAIN, MEMBER_MAIN } from '$lib';
 	import MainAvatar from '$lib/components/common/MainAvatar.svelte';
 	import { TriangleAlertIcon } from '@lucide/svelte';
 	import LoginForm from './LoginForm.svelte';
 	import type { FormData as LoginFormData } from './LoginForm.svelte';
 	import { authActions } from '$lib/store/auth.store';
+	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	let loading = $state(false);
 	let errorMessage = $state<string | null>(null);
@@ -17,13 +18,22 @@
 	async function onLogin(formData: LoginFormData) {
 		loading = true;
 		try {
-			await authActions.login({
+			const response = await authActions.login({
 				username: formData.username,
 				password: formData.password
 			});
 
-			goto(MAIN);
-		} catch (error: unknown) {
+			const role = response.user.role;
+			if (
+				role === UserRolesEnumSchema.enum.admin ||
+				role === UserRolesEnumSchema.enum.super_admin ||
+				role === UserRolesEnumSchema.enum.department_staff
+			) {
+				goto(MAIN);
+			} else {
+				goto(MEMBER_MAIN);
+			}
+		} catch (error) {
 			errorMessage = (error as Error).message;
 		} finally {
 			loading = false;
