@@ -21,10 +21,10 @@ export const ticketCommentsLoadingStore = writable<boolean>(false);
 export const ticketCommentsErrorStore = writable<string | null>(null);
 
 export const ticketCommentsActions = {
-	getTicketComments: async (ticket_id: string) => {
+	getTicketComments: async (ticket_id: string, isVisibleToPublic: boolean = false) => {
 		ticketCommentsLoadingStore.set(true);
 		try {
-			const comments = await getTicketComments(ticket_id);
+			const comments = await getTicketComments(ticket_id, isVisibleToPublic);
 			ticketCommentsStore.set(comments.data);
 			ticketCommentsPaginationStore.set({ page: comments.page, size: comments.size });
 			ticketCommentsTotalCountStore.set(comments.count);

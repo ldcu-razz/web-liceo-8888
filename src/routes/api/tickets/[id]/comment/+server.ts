@@ -10,6 +10,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 export const GET: RequestHandler = async ({ params, url }) => {
 	const page = Number(url.searchParams.get('page')) || 1;
 	const size = Number(url.searchParams.get('size')) || 20;
+	const isVisibleToPublic = url.searchParams.get('is_visible_to_public') === 'true';
 
 	const { id } = params;
 
@@ -23,6 +24,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 		)
 		.eq('ticket_id', id)
 		.order('createdAt', { ascending: false });
+
 	let countQueryBuilder = supabase
 		.from(TABLES.TICKET_COMMENTS)
 		.select('*', { count: 'exact', head: true })
@@ -31,6 +33,11 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	if (size && page) {
 		queryBuilder = queryBuilder.range((page - 1) * size, page * size - 1);
 		countQueryBuilder = countQueryBuilder.range((page - 1) * size, page * size - 1);
+	}
+
+	if (isVisibleToPublic) {
+		queryBuilder = queryBuilder.eq('is_visible_to_public', true);
+		countQueryBuilder = countQueryBuilder.eq('is_visible_to_public', true);
 	}
 
 	const { data, error } = await queryBuilder.overrideTypes<GetTicketComment[]>();

@@ -23,6 +23,8 @@
 	import { AccordionContent, AccordionItem, AccordionTrigger } from '$lib/components/ui/accordion';
 	import { transformText } from '$lib/utils/texts.utils';
 	import TicketStatusTrail from './TicketStatusTrail.svelte';
+	import TicketCommentSection from '../../../main/tickets/board/TicketCommentSection.svelte';
+	import AppBar from '../../AppBar.svelte';
 
 	let ticket = $state<GetTicket>({
 		id: '1',
@@ -75,18 +77,10 @@
 	}
 </script>
 
-<section class="px-4">
-	<div class="align-center mt-4 flex flex-col gap-3 pt-3">
-		<div class="flex items-center gap-4">
-			<Button variant="outline" size="icon-sm" class="p-0! text-gray-700" onclick={goBackToTickets}>
-				<ArrowLeftIcon class="size-4" />
-			</Button>
+<section class="relative px-4">
+	<AppBar title={ticket.title} backButton={true} backButtonOnClick={goBackToTickets} />
 
-			<div class="text-md line-clamp-1 font-semibold text-ellipsis">{ticket.title}</div>
-		</div>
-	</div>
-
-	<div class="mt-4 flex flex-col gap-4">
+	<div class="flex flex-col gap-4 pt-24">
 		<div class="flex flex-col gap-2">
 			<div class="flex items-center gap-2">
 				<TicketIcon status={ticket.status as TicketStatuses} classSize="size-5" />
@@ -150,5 +144,15 @@
 	<div class="mt-8 flex flex-col gap-2">
 		<div class="text-sm font-semibold">Status</div>
 		<TicketStatusTrail status={ticket.status as TicketStatuses} />
+	</div>
+
+	<div class="mt-4 flex flex-col gap-2">
+		<div class="text-sm font-semibold">Comments</div>
+		<div class="mt-4">
+			<TicketCommentSection
+				ticketId={'ca8fd2fe-cb2a-4aa7-84ee-4005e96376d5'}
+				isVisibleToPublic={true}
+			/>
+		</div>
 	</div>
 </section>

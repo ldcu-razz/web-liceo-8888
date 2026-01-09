@@ -1,12 +1,19 @@
 <script lang="ts" module>
 	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
 	import { renderComponent } from '$lib/components/ui/data-table/render-helpers';
-	import { DEFAULT_AVATAR } from '$lib/constants/avatar.constants';
 	import { TicketStatusesSchema } from '$lib/models/tickets/tickets.schema';
-	import type { GetTicket, TicketStatuses } from '$lib/models/tickets/tickets.type';
+	import type {
+		GetTicket,
+		TicketsPriorities,
+		TicketStatuses
+	} from '$lib/models/tickets/tickets.type';
 	import { transformText } from '$lib/utils/texts.utils';
 	import { TicketCheckIcon, TicketMinusIcon, TicketXIcon } from '@lucide/svelte';
 	import TicketIcon from '../TicketIcon.svelte';
+	import {
+		TICKET_PRIORITY_COLOR_MAP,
+		TICKET_STATUS_COLOR_MAP
+	} from '$lib/constants/ticket.constants';
 
 	export type Props = {
 		ticket?: GetTicket;
@@ -45,15 +52,9 @@
 
 	let reportedByAvatar = $derived(reportedBy?.avatar);
 
-	let ticketStatusColorMap = $derived({
-		[TicketStatusesSchema.enum.backlog]: 'text-gray-400',
-		[TicketStatusesSchema.enum.closed]: 'text-green-400',
-		[TicketStatusesSchema.enum.archived]: 'text-red-400',
-		[TicketStatusesSchema.enum.in_progress]: 'text-blue-400',
-		[TicketStatusesSchema.enum.done]: 'text-yellow-400',
-		[TicketStatusesSchema.enum.ready]: 'text-yellow-400',
-		[TicketStatusesSchema.enum.in_review]: 'text-purple-400'
-	});
+	let ticketStatusColorMap = $derived(TICKET_STATUS_COLOR_MAP);
+
+	let ticketPriorityColorMap = $derived(TICKET_PRIORITY_COLOR_MAP);
 
 	function handleClickTicket() {
 		onClickTicket?.(ticket?.id ?? '');
@@ -77,27 +78,34 @@
 	onkeydown={handleKeyDown}
 >
 	<div class="flex gap-3">
-		<TicketIcon status={ticket?.status as TicketStatuses} classSize="size-4" />
+		<div class="mt-0.5">
+			<TicketIcon status={ticket?.status as TicketStatuses} classSize="size-4" />
+		</div>
 
-		<div class="mt-0.5 flex flex-col gap-1">
+		<div class="flex flex-col gap-1">
 			<p class="text-sm text-gray-500">{ticket?.code}</p>
 			<h3 class="line-clamp-1 text-lg font-medium text-ellipsis">{ticket?.title}</h3>
 
 			<div class="mt-2 flex items-center gap-2">
 				{#if ticket?.status}
+					{@const ticketStatusColor = ticketStatusColorMap[ticket?.status as TicketStatuses]}
 					<div
-						class="flex items-center gap-2 rounded-full border border-gray-200 px-2 py-0.5 text-[10px] font-medium"
+						class="flex items-center gap-2 rounded-full border {ticketStatusColor.borderColor} px-2 py-0.5 text-[10px] font-medium"
 					>
-						<div class="size-1.5 rounded-full bg-gray-400"></div>
-						<span class="text-gray-500">{transformText(ticket?.status ?? '')}</span>
+						<div class="size-1.5 rounded-full {ticketStatusColor.bgColor}"></div>
+						<span class={ticketStatusColor.textColor}>{transformText(ticket?.status ?? '')}</span>
 					</div>
 				{/if}
 				{#if ticket?.priority}
+					{@const ticketPriorityColor =
+						ticketPriorityColorMap[ticket?.priority as TicketsPriorities]}
 					<div
-						class="flex items-center gap-2 rounded-full border border-gray-200 px-2 py-0.5 text-[10px] font-medium"
+						class="flex items-center gap-2 rounded-full border {ticketPriorityColor.borderColor} px-2 py-0.5 text-[10px] font-medium"
 					>
-						<div class="size-1.5 rounded-full bg-yellow-400"></div>
-						<span class="text-gray-500">{transformText(ticket?.priority ?? '')}</span>
+						<div class="size-1.5 rounded-full {ticketPriorityColor.bgColor}"></div>
+						<span class={ticketPriorityColor.textColor}
+							>{transformText(ticket?.priority ?? '')}</span
+						>
 					</div>
 				{/if}
 			</div>

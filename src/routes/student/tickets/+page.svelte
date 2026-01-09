@@ -17,7 +17,7 @@
 			id: '1',
 			title: 'Ticket 1',
 			description: 'Description 1',
-			status: TicketStatusesSchema.enum.backlog,
+			status: TicketStatusesSchema.enum.in_progress,
 			priority: TicketsPrioritiesSchema.enum.low,
 			category_id: '1',
 			code: '123456',

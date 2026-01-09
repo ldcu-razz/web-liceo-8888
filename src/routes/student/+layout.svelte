@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Dialog, DialogContent, DialogDescription, DialogTitle } from '$lib/components/ui/dialog';
+	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import BottomNavBar from './BottomNavBar.svelte';
 	import CreateTicketFormForStudent, {
 		type FormData,
@@ -26,9 +27,11 @@
 </script>
 
 <main
-	class="items-between mx-auto flex h-screen w-full max-w-[562px] flex-col border-x border-border bg-slate-50 pb-20"
+	class="items-between mx-auto flex h-screen w-full max-w-[562px] flex-col border-x border-border bg-slate-50"
 >
-	{@render children?.()}
+	<div class="flex-1 overflow-y-auto pb-30">
+		{@render children?.()}
+	</div>
 
 	<BottomNavBar createTicket={handleToggleCreateTicketDialog} />
 </main>
