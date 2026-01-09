@@ -15,6 +15,7 @@ export const getTickets = async (
 	q?: string,
 	departmentsAssignedIds?: string[],
 	usersAssignedIds?: string[],
+	reportedByIds?: string[],
 	status?: TicketStatuses[]
 ): Promise<GetTicketsPaginated> => {
 	const url = new URL(getRoute(API_TICKETS, {}), window.location.origin);
@@ -26,6 +27,8 @@ export const getTickets = async (
 		url.searchParams.set('departmentsAssignedIds', departmentsAssignedIds.join(','));
 	if (usersAssignedIds && usersAssignedIds.length > 0)
 		url.searchParams.set('usersAssignedIds', usersAssignedIds.join(','));
+	if (reportedByIds && reportedByIds.length > 0)
+		url.searchParams.set('reportedByIds', reportedByIds.join(','));
 	if (status && status.length > 0) url.searchParams.set('status', status.join(','));
 
 	const result = await fetch(url.toString());

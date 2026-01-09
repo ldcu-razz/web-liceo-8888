@@ -18,7 +18,6 @@
 		ChevronsUpDown,
 		FolderKanban,
 		Tag,
-		User,
 		UserCog,
 		Users
 	} from '@lucide/svelte';
@@ -34,7 +33,8 @@
 		DEPARTMENTS,
 		USERS,
 		TICKETS_BOARD,
-		TICKETS_CATEGORIES
+		TICKETS_CATEGORIES,
+		MEMBER_MAIN
 	} from '$lib/constants/routes.constants';
 	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
@@ -46,6 +46,7 @@
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
 	import { meActions, meStore } from '$lib/store/me.store';
 	import ScreenLoader from './ScreenLoader.svelte';
+	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	let { children } = $props();
 
@@ -63,7 +64,7 @@
 		preloadCode(TICKETS_CATEGORIES);
 		preloadCode(DEPARTMENTS);
 		preloadCode(USERS);
-		// preloadCode(PROFILE);
+		preloadCode(PROFILE);
 	}
 
 	let sidebarMenuItems = $state<SidebarModel>([
@@ -107,9 +108,14 @@
 
 	onMount(async () => {
 		await meActions.getMe();
+		if (me?.role === UserRolesEnumSchema.enum.user) {
+			await goto(MEMBER_MAIN);
+		}
+
 		await departmentsActions.getDepartments({ page: 1, size: 25 });
 		await usersActions.getAllUsers();
 		await ticketCategoriesActions.getAllTicketCategories();
+
 		neededDataLoaded = true;
 	});
 

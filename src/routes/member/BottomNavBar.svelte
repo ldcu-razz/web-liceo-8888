@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { STUDENT_PROFILE, STUDENT_TICKETS } from '$lib/constants/routes.constants';
+	import { MEMBER_PROFILE, MEMBER_TICKETS } from '$lib/constants/routes.constants';
 
 	type Props = {
 		createTicket?: () => void;
@@ -13,8 +13,8 @@
 
 	import { CirclePlusIcon, TicketIcon, UserCog } from '@lucide/svelte';
 
-	let isActiveTickets = $derived(page.url.pathname.includes(STUDENT_TICKETS));
-	let isActiveProfile = $derived(page.url.pathname.includes(STUDENT_PROFILE));
+	let isActiveTickets = $derived(page.url.pathname.includes(MEMBER_TICKETS));
+	let isActiveProfile = $derived(page.url.pathname.includes(MEMBER_PROFILE));
 
 	function handleCreateTicket() {
 		createTicket?.();
@@ -25,7 +25,7 @@
 	<div class="flex justify-center rounded-full bg-slate-950 px-3 py-2.5">
 		<div class="align-center flex gap-3">
 			<a
-				href={STUDENT_TICKETS}
+				href={MEMBER_TICKETS}
 				class="flex items-center gap-2 rounded-full p-2 text-white hover:bg-white hover:text-slate-950 {isActiveTickets
 					? 'bg-white text-slate-950!'
 					: ''}"
@@ -44,7 +44,7 @@
 				<span class="text-xs">Create Ticket</span>
 			</div>
 			<a
-				href={STUDENT_PROFILE}
+				href={MEMBER_PROFILE}
 				class="flex items-center gap-2 rounded-full p-2 text-white hover:bg-white hover:text-slate-950 {isActiveProfile
 					? 'bg-white text-slate-950!'
 					: ''}"

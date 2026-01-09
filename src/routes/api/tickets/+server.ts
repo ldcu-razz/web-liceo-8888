@@ -8,6 +8,7 @@ export const GET = async ({ url }) => {
 	const size = Number(url.searchParams.get('size')) || 20;
 	const departmentsAssignedIds = url.searchParams.get('departmentsAssignedIds')?.split(',') || [];
 	const usersAssignedIds = url.searchParams.get('usersAssignedIds')?.split(',') || [];
+	const reportedByIds = url.searchParams.get('reportedByIds')?.split(',') || [];
 	const status = url.searchParams.get('status') || '';
 	const q = url.searchParams.get('q') || '';
 
@@ -17,7 +18,7 @@ export const GET = async ({ url }) => {
 			`
       *,
       category:${TABLES.TICKET_CATEGORIES}!category_id(id, name),
-      current_department_assigned:${TABLES.DEPARTMENTS}!current_department_assigned(id, name, abbv),
+      current_department_assigned:${TABLES.DEPARTMENTS}!current_department_assigned(id, name, abbv, avatar),
       current_user_assigned:${TABLES.USERS}!current_user_assigned(id, firstname, lastname, avatar),
       reported_by:${TABLES.USERS}!reported_by(id, firstname, lastname, avatar),
       files(*)
@@ -40,6 +41,11 @@ export const GET = async ({ url }) => {
 	if (usersAssignedIds.length > 0) {
 		query = query.in('current_user_assigned', usersAssignedIds);
 		countQuery = countQuery.in('current_user_assigned', usersAssignedIds);
+	}
+
+	if (reportedByIds.length > 0) {
+		query = query.eq('reported_by', reportedByIds);
+		countQuery = countQuery.eq('reported_by', reportedByIds);
 	}
 
 	if (status) {

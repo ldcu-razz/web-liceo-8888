@@ -35,9 +35,13 @@ export const ticketsActions = {
 		q?: string,
 		departmentsAssignedIds?: string[],
 		usersAssignedIds?: string[],
-		status?: TicketStatuses[]
+		reportedByIds?: string[],
+		status?: TicketStatuses[],
+		silentLoading?: boolean
 	) => {
-		ticketsLoading.set(true);
+		if (!silentLoading) {
+			ticketsLoading.set(true);
+		}
 		try {
 			ticketsPagination.set(pagination);
 
@@ -46,6 +50,7 @@ export const ticketsActions = {
 				q,
 				departmentsAssignedIds,
 				usersAssignedIds,
+				reportedByIds,
 				status
 			);
 			ticketsStore.set(data.data);

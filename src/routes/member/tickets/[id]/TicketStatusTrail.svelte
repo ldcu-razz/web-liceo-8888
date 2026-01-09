@@ -65,24 +65,24 @@
 			<div class="relative flex flex-col items-center">
 				<div
 					class={cn(
-						'z-1 mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border-background',
+						'z-1 mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-background',
 						bgColor
 					)}
 				>
 					{#if ticketStatus === TicketStatusesSchema.enum.backlog}
-						<ImportIcon class={cn('size-3', iconColor)} />
+						<ImportIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.closed}
-						<CircleXIcon class={cn('size-3', iconColor)} />
+						<CircleXIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.archived}
-						<ArchiveIcon class={cn('size-3', iconColor)} />
+						<ArchiveIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.in_progress}
-						<CircleDotDashedIcon class={cn('size-3', iconColor)} />
+						<CircleDotDashedIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.done}
-						<BadgeCheckIcon class={cn('size-3', iconColor)} />
+						<BadgeCheckIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.ready}
-						<CircleDotIcon class={cn('size-3', iconColor)} />
+						<CircleDotIcon class={cn('size-4', iconColor)} />
 					{:else if ticketStatus === TicketStatusesSchema.enum.in_review}
-						<ScanEyeIcon class={cn('size-3', iconColor)} />
+						<ScanEyeIcon class={cn('size-4', iconColor)} />
 					{/if}
 				</div>
 				{#if index < ticketStatuses.length - 1}
@@ -97,7 +97,7 @@
 			<div class="mt-1 flex flex-1 items-center justify-between gap-1 pb-6">
 				<h3
 					class={cn(
-						'm-0 text-xs',
+						'm-0 text-sm',
 						isActive ? 'font-medium text-foreground' : 'text-muted-foreground'
 					)}
 				>

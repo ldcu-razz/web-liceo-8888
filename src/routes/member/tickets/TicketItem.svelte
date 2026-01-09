@@ -50,7 +50,11 @@
 			: 'AU'
 	);
 
-	let reportedByAvatar = $derived(reportedBy?.avatar);
+	let departmentAssigned = $derived(ticket?.current_department_assigned);
+
+	let departmentAssignedAbbv = $derived(ticket?.current_department_assigned?.abbv ?? 'UN');
+
+	let departmentAssignedAvatar = $derived(ticket?.current_department_assigned?.avatar);
 
 	let ticketStatusColorMap = $derived(TICKET_STATUS_COLOR_MAP);
 
@@ -82,8 +86,8 @@
 			<TicketIcon status={ticket?.status as TicketStatuses} classSize="size-4" />
 		</div>
 
-		<div class="flex flex-col gap-1">
-			<p class="text-sm text-gray-500">{ticket?.code}</p>
+		<div class="mt-0.5 flex flex-col gap-1">
+			<p class="text-xs text-gray-500">{ticket?.code}</p>
 			<h3 class="line-clamp-1 text-lg font-medium text-ellipsis">{ticket?.title}</h3>
 
 			<div class="mt-2 flex items-center gap-2">
@@ -112,10 +116,12 @@
 		</div>
 
 		<div class="ml-auto">
-			<Avatar class="size-8">
-				<AvatarImage src={reportedByAvatar} />
-				<AvatarFallback class="text-sm font-semibold">{reportedByInitial}</AvatarFallback>
-			</Avatar>
+			{#if departmentAssigned}
+				<Avatar class="size-10">
+					<AvatarImage src={departmentAssignedAvatar} />
+					<AvatarFallback class="text-xs font-semibold">{departmentAssignedAbbv}</AvatarFallback>
+				</Avatar>
+			{/if}
 		</div>
 	</div>
 </div>

@@ -6,13 +6,14 @@ import { toast } from 'svelte-sonner';
 export const authStore = writable<LoginResponse | null>(null);
 
 export const authActions = {
-	login: async (payload: LoginPayload) => {
+	login: async (payload: LoginPayload): Promise<LoginResponse> => {
 		try {
 			const response = await login(payload);
 
 			if (response.success) {
 				authStore.set(response);
 			}
+			return response;
 		} catch (error) {
 			toast.error('Failed to login');
 			console.error(error);

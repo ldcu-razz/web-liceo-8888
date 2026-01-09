@@ -1,19 +1,24 @@
 <script lang="ts" module>
 	import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 	import { Button } from '../ui/button';
-	import { Bold, Code, Italic, Quote, Strikethrough, Underline } from '@lucide/svelte';
-	import { DEFAULT_AVATAR } from '$lib/constants/avatar.constants';
+	import { Bold, Code, Italic, Quote, SendIcon, Strikethrough, Underline } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
 	import { cn } from '$lib/utils';
 	import type { MentionedUsers, Users } from '$lib/models/users/users.type';
 	import { allUsersStore } from '$lib/store/users.store';
+	import { meStore } from '$lib/store/me.store';
+	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
+	import { Label } from '../ui/label';
+	import { Checkbox } from '../ui/checkbox';
 
 	export type Props = {
 		value?: string;
+		visibleToReporter?: boolean;
 		className?: string;
 		placeholder?: string;
 		hideAvatar?: boolean;
 		mentionedUsers?: MentionedUsers[];
+		showVisibleToReporterCheckbox?: boolean;
 		onBlur?: () => void;
 		onSubmit?: (value: string, mentionedUsers?: MentionedUsers[]) => void;
 	};
@@ -22,20 +27,29 @@
 <script lang="ts">
 	let {
 		value = $bindable(''),
+		visibleToReporter = $bindable(false),
 		className,
 		placeholder = 'Write',
 		hideAvatar = false,
 		mentionedUsers = $bindable<MentionedUsers[]>([]),
+		showVisibleToReporterCheckbox = false,
 		onSubmit,
 		onBlur
 	}: Props = $props();
 
-	let avatar = $derived(DEFAULT_AVATAR);
+	let me = $derived($meStore);
 
-	let userFullName = $derived('John Doe');
+	let avatar = useSignedUrl(() => me?.avatar);
+
+	let userNameInitial = $derived(
+		`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`
+	);
 
 	let editorRef: HTMLDivElement | null = null;
+
 	let editorContainerRef: HTMLDivElement | null = null;
+
+	let isCommentEmpty = $derived(value?.trim() === '');
 
 	const HISTORY_LIMIT = 50;
 	const MAX_MENTION_SUGGESTIONS = 5;
@@ -518,14 +532,14 @@
 <div class="flex gap-2">
 	{#if !hideAvatar}
 		<Avatar class="size-8 border border-gray-200">
-			<AvatarImage src={avatar} />
-			<AvatarFallback class="text-sm">{userFullName.slice(0, 2).toUpperCase()}</AvatarFallback>
+			<AvatarImage src={avatar.url} />
+			<AvatarFallback class="text-sm font-semibold">{userNameInitial}</AvatarFallback>
 		</Avatar>
 	{/if}
 
 	<div class="relative flex-1" {@attach attachEditorContainer}>
 		<div
-			class="flex items-center justify-between rounded-t-md border border-b-0 border-gray-200 p-1"
+			class="flex items-center justify-between rounded-t-md border border-b-0 border-gray-200 bg-white p-1"
 		>
 			<div class="ml-2 text-sm text-gray-500">
 				{placeholder}
@@ -655,6 +669,26 @@
 			onblur={handleBlur}
 			spellcheck="true"
 		></div>
+		<div class="mt-2 flex items-center justify-between gap-2">
+			{#if showVisibleToReporterCheckbox}
+				<div class="flex items-center gap-3">
+					<Checkbox
+						id="visible-to-everyone"
+						class="border-gray-400"
+						bind:checked={visibleToReporter}
+					/>
+					<Label for="visible-to-everyone" class="text-sm font-normal text-gray-500"
+						>Visible to reporter</Label
+					>
+				</div>
+			{/if}
+			<div class="ml-auto">
+				<Button variant="secondary" size="sm" disabled={isCommentEmpty} onclick={submitComment}>
+					<SendIcon class="size-4" />
+					Send
+				</Button>
+			</div>
+		</div>
 	</div>
 </div>
 
