@@ -1,0 +1,88 @@
+<script lang="ts" module>
+	import type {
+		GetNotifications,
+		NotificationTicketUserAssignedMetadata
+	} from '$lib/models/notifications/notifications.type';
+	import { MailIcon, MailOpenIcon, Ticket } from '@lucide/svelte';
+	import ReadableDate from '../ReadableDate.svelte';
+	import { allUsersMap } from '$lib/store/users.store';
+	import { TICKETS_DETAILS } from '$lib/constants/routes.constants';
+	import { getRoute } from '$lib/utils/routes.utils';
+	import { goto } from '$app/navigation';
+	import { notificationsActions } from '$lib/store/notifications.store';
+	import UserAvatar from '../UserAvatar.svelte';
+
+	export type Props = {
+		notification?: GetNotifications;
+		onClick?: (id: string) => void;
+	};
+</script>
+
+<script lang="ts">
+	let { notification, onClick }: Props = $props();
+
+	let notifMetadata = $derived(notification?.metadata as NotificationTicketUserAssignedMetadata);
+
+	let usersMap = $derived($allUsersMap);
+
+	let createdByUser = $derived(usersMap[notifMetadata.assigned_by]);
+
+	let createdByUserFullName = $derived(`${createdByUser?.firstname} ${createdByUser?.lastname}`);
+
+	let createdByUserAvatar = $derived(createdByUser?.avatar);
+
+	function handleNotificationClick() {
+		goto(getRoute(TICKETS_DETAILS, { id: notifMetadata.ticket_id }), {
+			invalidate: [TICKETS_DETAILS]
+		});
+		onClick?.(notifMetadata.ticket_id);
+
+		if (!notification?.mark_as_read) {
+			makeTicketRead();
+		}
+	}
+
+	function makeTicketRead() {
+		notificationsActions.markAsRead(notification?.id ?? '');
+	}
+</script>
+
+<div
+	class="relative flex flex-col gap-2"
+	role="button"
+	tabindex="0"
+	onclick={handleNotificationClick}
+	onkeydown={handleNotificationClick}
+>
+	{#if notification?.mark_as_read}
+		<MailOpenIcon class="absolute top-1 right-2 size-4 text-gray-500" />
+	{:else}
+		<MailIcon class="absolute top-1 right-2 size-4 text-blue-500" />
+	{/if}
+	<div class="flex items-center justify-between">
+		<div class="center flex flex-1 gap-4">
+			<UserAvatar name={createdByUserFullName} imageLink={createdByUserAvatar} sizeClass="size-8" />
+			<div class="flex flex-1 flex-col gap-1">
+				<div class="flex items-center gap-2 text-sm">
+					<div><span class="font-medium">{notification?.metadata?.title ?? ''}</span></div>
+				</div>
+				<div class="text-xs text-gray-500">
+					<ReadableDate date={new Date(notification?.createdAt ?? '')} />
+				</div>
+
+				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2">
+					<div class="flex items-center gap-2">
+						<Ticket class="size-4" />
+						<span class="text-xs font-medium text-gray-600"
+							>{notification?.metadata?.code ?? ''}</span
+						>
+					</div>
+
+					<div class="line-clamp-2 text-sm text-ellipsis">
+						{@html notification?.metadata?.message ?? ''}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

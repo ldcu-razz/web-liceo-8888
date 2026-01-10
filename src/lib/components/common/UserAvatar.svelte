@@ -3,6 +3,7 @@
 		name: string;
 		imageLink?: string;
 		sizeClass?: string;
+		textSizeClass?: string;
 	};
 </script>
 
@@ -10,11 +11,7 @@
 	import { Avatar, AvatarImage, AvatarFallback } from '$lib/components/ui/avatar';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
 
-	let {
-		name,
-		imageLink = 'https://github.com/evilrabbit.png',
-		sizeClass = 'size-8'
-	}: Props = $props();
+	let { name, imageLink = '', sizeClass = 'size-8', textSizeClass = 'text-xs' }: Props = $props();
 
 	// If imageLink looks like a storage path (no http), get signed URL
 	const isStoragePath = $derived(!imageLink?.startsWith('http'));
@@ -24,5 +21,5 @@
 
 <Avatar class={sizeClass}>
 	<AvatarImage src={displayUrl} class="object-cover" />
-	<AvatarFallback>{name.charAt(0)}</AvatarFallback>
+	<AvatarFallback class={textSizeClass}>{name.charAt(0)}</AvatarFallback>
 </Avatar>

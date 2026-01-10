@@ -9,6 +9,7 @@
 	import { allUsersStore } from '$lib/store/users.store';
 	import { Tooltip, TooltipContent } from '$lib/components/ui/tooltip';
 	import TooltipTrigger from '$lib/components/ui/tooltip/tooltip-trigger.svelte';
+	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 
 	export type Props = {
 		ticket: GetTicket;
@@ -73,10 +74,12 @@
 			{#if assignedDepartment}
 				<Tooltip delayDuration={0}>
 					<TooltipTrigger>
-						<Avatar class="size-5">
-							<AvatarImage src={assignedDepartment?.avatar} />
-							<AvatarFallback class="text-[8px]">{departmentInitial}</AvatarFallback>
-						</Avatar>
+						<UserAvatar
+							name={departmentInitial}
+							imageLink={assignedDepartment?.avatar ?? ''}
+							sizeClass="size-5"
+							textSizeClass="text-[10px]"
+						/>
 					</TooltipTrigger>
 					<TooltipContent sideOffset={4} hideArrow={true}>
 						<span class="text-xs">{assignedDepartment?.name}</span>
@@ -87,10 +90,12 @@
 			{#if assignedUser}
 				<Tooltip delayDuration={0}>
 					<TooltipTrigger>
-						<Avatar class="size-5">
-							<AvatarImage src={assignedUserAvatar} />
-							<AvatarFallback class="text-[8px]">{assignedUserInitial}</AvatarFallback>
-						</Avatar>
+						<UserAvatar
+							name={`${assignedUser?.firstname} ${assignedUser?.lastname}`}
+							imageLink={assignedUserAvatar}
+							sizeClass="size-5"
+							textSizeClass="text-[10px]"
+						/>
 					</TooltipTrigger>
 					<TooltipContent sideOffset={4} hideArrow={true}>
 						<span class="text-xs">{`${assignedUser?.firstname} ${assignedUser?.lastname}`}</span>

@@ -14,6 +14,7 @@
 		TICKET_PRIORITY_COLOR_MAP,
 		TICKET_STATUS_COLOR_MAP
 	} from '$lib/constants/ticket.constants';
+	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 
 	export type Props = {
 		ticket?: GetTicket;
@@ -117,10 +118,7 @@
 
 		<div class="ml-auto">
 			{#if departmentAssigned}
-				<Avatar class="size-10">
-					<AvatarImage src={departmentAssignedAvatar} />
-					<AvatarFallback class="text-xs font-semibold">{departmentAssignedAbbv}</AvatarFallback>
-				</Avatar>
+				<UserAvatar name={departmentAssigned?.name} imageLink={departmentAssigned?.avatar ?? ''} sizeClass="size-8" textSizeClass="text-md" />
 			{/if}
 		</div>
 	</div>

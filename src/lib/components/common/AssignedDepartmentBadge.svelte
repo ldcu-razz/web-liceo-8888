@@ -12,6 +12,7 @@
 	import { CheckIcon } from '@lucide/svelte';
 	import { departmentsStore } from '$lib/store/departments.store';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
+	import UserAvatar from './UserAvatar.svelte';
 
 	export type Props = {
 		selectedDepartmentId: string | null;
@@ -68,10 +69,12 @@
 		<div
 			class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 		>
-			<Avatar class="size-5 border border-gray-200">
-				<AvatarImage src={avatar.url} class="object-cover" />
-				<AvatarFallback class="text-[8px]">{departmentInitial}</AvatarFallback>
-			</Avatar>
+			<UserAvatar
+				name={departmentInitial}
+				imageLink={selectedDepartment?.avatar ?? ''}
+				sizeClass="size-5"
+				textSizeClass="text-[10px]"
+			/>
 			<span class="max-w-42 overflow-hidden text-ellipsis whitespace-nowrap capitalize"
 				>{departmentName}</span
 			>
@@ -91,9 +94,7 @@
 					<div class="flex items-center justify-between gap-2">
 						<div class="flex items-center gap-2">
 							<div class="flex items-center gap-1.5">
-								<Avatar class="size-5 border border-gray-200">
-									<AvatarFallback class="text-[10px]">UN</AvatarFallback>
-								</Avatar>
+								<UserAvatar name={'Unassigned'} sizeClass="size-5" textSizeClass="text-[10px]" />
 							</div>
 							<div
 								class="max-w-50 overflow-hidden text-xs text-ellipsis whitespace-nowrap capitalize"
@@ -108,15 +109,12 @@
 						<div class="flex items-center justify-between gap-2">
 							<div class="flex items-center gap-2">
 								<div class="flex items-center gap-1.5">
-									<Avatar class="size-5 border border-gray-200">
-										<AvatarImage
-											src={getDepartmentAvatar(department.avatar).url}
-											class="object-cover"
-										/>
-										<AvatarFallback class="text-[10px]"
-											>{department.name.slice(0, 2).toUpperCase()}</AvatarFallback
-										>
-									</Avatar>
+									<UserAvatar
+										name={department.name}
+										imageLink={department.avatar ?? ''}
+										sizeClass="size-5"
+										textSizeClass="text-[10px]"
+									/>
 								</div>
 								<div class="max-w-50 overflow-hidden text-xs text-ellipsis whitespace-nowrap">
 									{department.name}

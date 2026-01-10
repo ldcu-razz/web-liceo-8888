@@ -12,6 +12,7 @@
 	import type { Users } from '$lib/models/users/users.type';
 	import { allUsersStore, nonMemberUsersStore } from '$lib/store/users.store';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
+	import UserAvatar from './UserAvatar.svelte';
 
 	export type Props = {
 		selectedUserId: string | null;
@@ -73,12 +74,12 @@
 			<div
 				class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 			>
-				<Avatar class="size-5 border border-gray-200">
-					<AvatarImage src={avatar.url} class="object-cover" />
-					<AvatarFallback class="text-[8px]"
-						>{userFullName.slice(0, 2).toUpperCase()}</AvatarFallback
-					>
-				</Avatar>
+				<UserAvatar
+					name={userFullName}
+					imageLink={selectedUser?.avatar ?? ''}
+					sizeClass="size-5"
+					textSizeClass="text-[10px]"
+				/>
 				<span class="max-w-42 overflow-hidden text-ellipsis whitespace-nowrap capitalize"
 					>{userFullName}</span
 				>
@@ -92,9 +93,7 @@
 				{#if filteredUsers.length > 0}
 					<DropdownMenuItem onclick={() => handleUnassignedSelect()}>
 						<div class="flex items-center gap-1.5">
-							<Avatar class="size-6 border border-gray-200">
-								<AvatarFallback class="text-xs">UN</AvatarFallback>
-							</Avatar>
+							<UserAvatar name={'Unassigned'} sizeClass="size-5" textSizeClass="text-[10px]" />
 							<span
 								class="max-w-50 overflow-hidden text-xs text-ellipsis whitespace-nowrap capitalize"
 								>Unassigned</span
@@ -104,11 +103,12 @@
 					{#each filteredUsers as user}
 						<DropdownMenuItem onclick={() => handleUserSelect(user.id)}>
 							<div class="flex items-center gap-1.5">
-								<Avatar class="size-6 border border-gray-200">
-									<AvatarImage src={user.avatar} />
-									<AvatarFallback class="text-xs">{getUserInitial(user)}</AvatarFallback>
-								</Avatar>
-
+								<UserAvatar
+									name={`${user.firstname} ${user.lastname}`}
+									imageLink={user.avatar ?? ''}
+									sizeClass="size-5"
+									textSizeClass="text-[10px]"
+								/>
 								<span
 									class="max-w-32 overflow-hidden text-xs text-ellipsis whitespace-nowrap capitalize"
 									>{transformText(`${user.firstname} ${user.lastname}`)}</span

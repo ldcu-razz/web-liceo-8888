@@ -13,6 +13,8 @@ import {
 	putTicketComment
 } from '$lib/services/tickets/ticket-comment.service';
 import { toast } from 'svelte-sonner';
+import { notificationsActions } from './notifications.store';
+import { ticketsStore } from './tickets.store';
 
 export const ticketCommentsStore = writable<GetTicketComment[]>([]);
 export const ticketCommentsPaginationStore = writable<Pagination>({ page: 1, size: 10 });
@@ -42,6 +44,11 @@ export const ticketCommentsActions = {
 			const comment = await postTicketComment(ticket_id, body);
 			ticketCommentsStore.update((prev) => [comment, ...prev]);
 			toast.success(`Comment posted successfully`, { id: toastId });
+
+			const ticket = get(ticketsStore).find((t) => t.id === ticket_id);
+			if (ticket) {
+				notificationsActions.createTicketCommentedNotification(ticket, comment);
+			}
 		} catch (error) {
 			console.error(error);
 			ticketCommentsErrorStore.set((error as Error).message);
