@@ -4,7 +4,7 @@
 	import type { GetTicketComment } from '$lib/models/tickets/ticket-comments.type';
 	import { allUsersMap } from '$lib/store/users.store';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Trash, SquarePenIcon, EllipsisIcon } from '@lucide/svelte';
+	import { Trash, SquarePenIcon, EllipsisIcon, EyeIcon } from '@lucide/svelte';
 	import ReadableDate from '$lib/components/common/ReadableDate.svelte';
 	import RichTextEditor from '$lib/components/common/RichTextEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -12,6 +12,9 @@
 	import { onMount } from 'svelte';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
 	import { meStore } from '$lib/store/me.store';
+	import TooltipProvider from '$lib/components/ui/tooltip/tooltip-provider.svelte';
+	import { Tooltip, TooltipContent, TooltipTrigger } from '$lib/components/ui/tooltip';
+	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	export type Props = {
 		comment: GetTicketComment;
@@ -25,6 +28,8 @@
 	let { comment, onEdit, onSaveEdit, onDelete }: Props = $props();
 
 	let me = $derived($meStore);
+
+	let isMeUserRole = $derived(me?.role === UserRolesEnumSchema.enum.user);
 
 	let usersMap = $derived($allUsersMap);
 
@@ -88,6 +93,18 @@
 				</p>
 				<p class="text-[10px] text-gray-500"><ReadableDate date={comment.createdAt} /></p>
 			</div>
+			{#if comment.is_visible_to_public && !isMeUserRole}
+				<TooltipProvider delayDuration={0}>
+					<Tooltip>
+						<TooltipTrigger>
+							<EyeIcon class="size-3 text-gray-600" />
+						</TooltipTrigger>
+						<TooltipContent hideArrow={true} sideOffset={4}>
+							<p class="text-xs">Visible to reporter</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			{/if}
 		</div>
 
 		{#if isOwnComment}

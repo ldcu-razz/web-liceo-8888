@@ -10,7 +10,7 @@
 </script>
 
 <script lang="ts">
-	let { title, backButton, backButtonOnClick }: Props = $props();
+	let { title, backButton = true, backButtonOnClick }: Props = $props();
 
 	function handleBackButtonClick() {
 		backButtonOnClick?.();

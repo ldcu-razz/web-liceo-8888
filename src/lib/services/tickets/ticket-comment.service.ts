@@ -26,6 +26,7 @@ export const getTicketComments = async (
 	if (isVisibleToPublic) {
 		url.searchParams.set('is_visible_to_public', 'true');
 	}
+
 	try {
 		const result = await fetch(url.toString());
 		if (!result.ok) {

@@ -11,6 +11,7 @@
 	import { Input } from '../ui/input';
 	import { CheckIcon } from '@lucide/svelte';
 	import { departmentsStore } from '$lib/store/departments.store';
+	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
 
 	export type Props = {
 		selectedDepartmentId: string | null;
@@ -35,9 +36,11 @@
 		departments?.find((department) => department.id === selectedDepartmentId)
 	);
 
-	let avatar = $derived(selectedDepartment?.avatar ?? DEFAULT_AVATAR);
+	let avatar = useSignedUrl(() => selectedDepartment?.avatar);
 
 	let departmentName = $derived(transformText(selectedDepartment?.name ?? 'Assign Department'));
+
+	let departmentInitial = $derived(selectedDepartment?.name?.slice(0, 2).toUpperCase() ?? 'AD');
 
 	let openMenu = $state(false);
 
@@ -54,6 +57,10 @@
 		search = '';
 		onDepartmentChange?.('');
 	}
+
+	function getDepartmentAvatar(avatar: string | null | undefined) {
+		return useSignedUrl(() => avatar);
+	}
 </script>
 
 <DropdownMenu bind:open={openMenu}>
@@ -62,10 +69,8 @@
 			class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 		>
 			<Avatar class="size-5 border border-gray-200">
-				<AvatarImage src={avatar} />
-				<AvatarFallback class="text-[8px]"
-					>{selectedDepartment?.name.slice(0, 2).toUpperCase()}</AvatarFallback
-				>
+				<AvatarImage src={avatar.url} class="object-cover" />
+				<AvatarFallback class="text-[8px]">{departmentInitial}</AvatarFallback>
 			</Avatar>
 			<span class="max-w-42 overflow-hidden text-ellipsis whitespace-nowrap capitalize"
 				>{departmentName}</span
@@ -104,7 +109,10 @@
 							<div class="flex items-center gap-2">
 								<div class="flex items-center gap-1.5">
 									<Avatar class="size-5 border border-gray-200">
-										<AvatarImage src={department.avatar} />
+										<AvatarImage
+											src={getDepartmentAvatar(department.avatar).url}
+											class="object-cover"
+										/>
 										<AvatarFallback class="text-[10px]"
 											>{department.name.slice(0, 2).toUpperCase()}</AvatarFallback
 										>

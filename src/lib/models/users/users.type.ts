@@ -2,6 +2,7 @@ import type z from 'zod';
 import type {
 	DeleteUsersSchema,
 	GetUserByUsernameResponseSchema,
+	GetUserSchema,
 	MentionedUsersSchema,
 	PaginatedUsersSchema,
 	PostUsersSchema,
@@ -11,6 +12,7 @@ import type {
 } from './users.schema';
 
 export type Users = z.infer<typeof UsersSchema>;
+export type GetUser = z.infer<typeof GetUserSchema>;
 export type UserRolesEnum = z.infer<typeof UserRolesEnumSchema>;
 export type PaginatedUsers = z.infer<typeof PaginatedUsersSchema>;
 export type PostUsers = z.infer<typeof PostUsersSchema>;
