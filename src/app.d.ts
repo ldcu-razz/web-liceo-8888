@@ -17,8 +17,8 @@ declare global {
 	}
 
 	interface PublicEnv {
-		SUPABASE_URL: string;
-		SUPABASE_ANON_KEY: string;
+		PUBLIC_SUPABASE_URL: string;
+		PUBLIC_SUPABASE_ANON_KEY: string;
 	}
 
 	interface ImportMetaEnv extends PublicEnv {}
