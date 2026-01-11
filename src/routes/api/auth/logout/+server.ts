@@ -21,13 +21,13 @@ export const POST: RequestHandler = async ({ cookies }) => {
 			path: '/',
 			httpOnly: true,
 			secure: !dev,
-			sameSite: 'strict'
+			sameSite: 'lax'
 		});
 		cookies.delete('refresh_token', {
 			path: '/',
 			httpOnly: true,
 			secure: !dev,
-			sameSite: 'strict'
+			sameSite: 'lax'
 		});
 
 		const response: LogoutResponse = {

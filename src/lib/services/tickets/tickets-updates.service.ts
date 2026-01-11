@@ -11,6 +11,7 @@ import { allUsersMap } from '$lib/store/users.store';
 import { getRoute } from '$lib/utils/routes.utils';
 import { transformText } from '$lib/utils/texts.utils';
 import { get } from 'svelte/store';
+import { requestFetch } from '../request/request.service';
 
 export const getTicketsUpdates = async (
 	pagination?: Pagination,
@@ -22,7 +23,7 @@ export const getTicketsUpdates = async (
 		url.searchParams.set('size', pagination.size.toString());
 	}
 	if (ticketId) url.searchParams.set('ticketId', ticketId);
-	const result = await fetch(url.toString());
+	const result = await requestFetch(url.toString());
 	if (!result.ok) {
 		throw new Error(result.statusText);
 	}
@@ -31,7 +32,7 @@ export const getTicketsUpdates = async (
 
 export const postTicketsUpdates = async (body: PostTicketsUpdates): Promise<GetTicketsUpdates> => {
 	const url = new URL(getRoute(API_TICKETS_UPDATES, {}), window.location.origin);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'POST',
 		body: JSON.stringify(body)
 	});

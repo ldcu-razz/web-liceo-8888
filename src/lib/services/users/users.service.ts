@@ -18,6 +18,7 @@ import type {
 	Users
 } from '$lib/models/users/users.type';
 import { getRouteWithParams } from '$lib/utils/routes.utils';
+import { requestFetch } from '../request/request.service';
 
 export async function getUsers(pagination?: Pagination, q?: string): Promise<PaginatedUsers> {
 	try {
@@ -30,7 +31,7 @@ export async function getUsers(pagination?: Pagination, q?: string): Promise<Pag
 			url.searchParams.set('q', q);
 		}
 
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -44,7 +45,7 @@ export async function getUsers(pagination?: Pagination, q?: string): Promise<Pag
 
 export async function getUser(id: string): Promise<Users> {
 	try {
-		const result = await fetch(getRouteWithParams(API_USERS_ID, { id }));
+		const result = await requestFetch(getRouteWithParams(API_USERS_ID, { id }));
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -57,7 +58,7 @@ export async function getUser(id: string): Promise<Users> {
 
 export async function getMe(): Promise<GetUser> {
 	try {
-		const result = await fetch(API_USERS_ME);
+		const result = await requestFetch(API_USERS_ME);
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -80,7 +81,7 @@ export async function getNonMemberUsers(): Promise<PaginatedUsers> {
 				UserRolesEnumSchema.enum.department_staff.toString()
 		);
 
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -94,7 +95,7 @@ export async function getNonMemberUsers(): Promise<PaginatedUsers> {
 
 export async function createUser(user: PostUsers): Promise<Users> {
 	try {
-		const result = await fetch(API_USERS, {
+		const result = await requestFetch(API_USERS, {
 			method: 'POST',
 			body: JSON.stringify(user)
 		});
@@ -110,7 +111,7 @@ export async function createUser(user: PostUsers): Promise<Users> {
 
 export async function updateUser(id: string, user: PutUsers): Promise<Users> {
 	try {
-		const result = await fetch(getRouteWithParams(API_USERS_ID, { id }), {
+		const result = await requestFetch(getRouteWithParams(API_USERS_ID, { id }), {
 			method: 'PUT',
 			body: JSON.stringify(user)
 		});
@@ -126,7 +127,7 @@ export async function updateUser(id: string, user: PutUsers): Promise<Users> {
 
 export async function deleteUser(id: string): Promise<boolean> {
 	try {
-		const result = await fetch(getRouteWithParams(API_USERS_ID, { id }), {
+		const result = await requestFetch(getRouteWithParams(API_USERS_ID, { id }), {
 			method: 'DELETE'
 		});
 
@@ -142,7 +143,7 @@ export async function deleteUser(id: string): Promise<boolean> {
 
 export async function archiveUser(id: string): Promise<boolean> {
 	try {
-		const result = await fetch(getRouteWithParams(API_USERS_ID, { id }), {
+		const result = await requestFetch(getRouteWithParams(API_USERS_ID, { id }), {
 			method: 'PUT',
 			body: JSON.stringify({
 				status: BaseStatusEnumSchema.enum.archived,
@@ -164,7 +165,7 @@ export async function checkUsername(username: string): Promise<GetUserByUsername
 		const url = new URL(API_USERS_CHECK_USERNAME, window.location.origin);
 		url.searchParams.set('username', username);
 
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -181,7 +182,7 @@ export async function changePassword(
 	userId: string
 ): Promise<boolean> {
 	try {
-		const result = await fetch(API_USERS_CHANGE_PASSWORD, {
+		const result = await requestFetch(API_USERS_CHANGE_PASSWORD, {
 			method: 'POST',
 			body: JSON.stringify({ currentPassword, newPassword, userId })
 		});
@@ -199,7 +200,7 @@ export async function changePassword(
 
 export async function changeUsername(username: string, userId: string): Promise<boolean> {
 	try {
-		const result = await fetch(API_USERS_CHANGE_USERNAME, {
+		const result = await requestFetch(API_USERS_CHANGE_USERNAME, {
 			method: 'POST',
 			body: JSON.stringify({ username, userId })
 		});

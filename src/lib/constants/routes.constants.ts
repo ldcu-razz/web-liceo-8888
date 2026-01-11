@@ -15,8 +15,6 @@ export const PROFILE = '/main/profile';
 export const PROFILE_ACCOUNT = '/main/profile/account';
 export const PROFILE_NOTIFICATIONS = '/main/profile/notifications';
 export const PROFILE_SESSIONS = '/main/profile/sessions';
-
-// Member Routes
 export const MEMBER_MAIN = '/member';
 export const MEMBER_TICKETS = '/member/tickets';
 export const MEMBER_TICKETS_ID = '/member/tickets/{id}';
@@ -24,6 +22,7 @@ export const MEMBER_PROFILE = '/member/profile';
 export const MEMBER_NOTIFICATIONS = '/member/notifications';
 export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
 export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
+export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS];
 
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
@@ -57,3 +56,5 @@ export const API_FILES_SIGNED_URL = '/api/files/signed-url';
 
 // Notifications
 export const API_NOTIFICATIONS = '/api/notifications';
+
+export const PUBLIC_API_ROUTES = [API_AUTH_SESSION, API_AUTH_LOGIN, API_AUTH_LOGOUT, API_DEPARTMENTS];

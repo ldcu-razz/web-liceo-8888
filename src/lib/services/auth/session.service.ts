@@ -3,6 +3,7 @@ import type { GetSessionsPaginated, Session } from '$lib/models/session/session.
 import { TABLES } from '$lib/constants/tables.constants';
 import { API_AUTH_SESSION } from '$lib/constants/routes.constants';
 import type { Pagination } from '$lib/models/common/common.type';
+import { requestFetch } from '../request/request.service';
 
 export async function getPaginatedSessions(pagination?: Pagination): Promise<GetSessionsPaginated> {
 	try {
@@ -12,7 +13,7 @@ export async function getPaginatedSessions(pagination?: Pagination): Promise<Get
 			url.searchParams.set('size', pagination.size.toString());
 		}
 
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			const error = await result.json();
 			throw new Error(error.message);

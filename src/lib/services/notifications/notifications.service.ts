@@ -14,6 +14,7 @@ import type { GetTicket } from '$lib/models/tickets/tickets.type';
 import type { GetUser, Users } from '$lib/models/users/users.type';
 import { transformText } from '$lib/utils/texts.utils';
 import { uuid } from '$lib/utils/uuid.util';
+import { requestFetch } from '../request/request.service';
 
 export async function getNotifications(
 	pagination?: Pagination,
@@ -29,7 +30,7 @@ export async function getNotifications(
 		if (notifyToId) {
 			url.searchParams.set('notify_to', notifyToId);
 		}
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -44,7 +45,7 @@ export async function createNotification(
 	notification: PostNotifications
 ): Promise<GetNotifications> {
 	try {
-		const result = await fetch(API_NOTIFICATIONS, {
+		const result = await requestFetch(API_NOTIFICATIONS, {
 			method: 'POST',
 			body: JSON.stringify(notification)
 		});
@@ -62,7 +63,7 @@ export async function updateNotification(
 	notification: PutNotifications
 ): Promise<GetNotifications> {
 	try {
-		const result = await fetch(API_NOTIFICATIONS, {
+		const result = await requestFetch(API_NOTIFICATIONS, {
 			method: 'PUT',
 			body: JSON.stringify(notification)
 		});
