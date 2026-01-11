@@ -32,6 +32,11 @@ export const API_AUTH_SESSION = '/api/auth/session';
 export const API_AUTH_LOGIN = '/api/auth/login';
 export const API_AUTH_LOGOUT = '/api/auth/logout';
 
+// Dashboard
+export const API_DASHBOARD = '/api/dashboard';
+export const API_DASHBOARD_STATS = '/api/dashboard/stats';
+export const API_DASHBOARD_TICKETS_GRAPH = '/api/dashboard/graph/total-tickets';
+
 // Departments
 export const API_DEPARTMENTS = '/api/departments';
 export const API_DEPARTMENTS_ID = '/api/departments/{id}';
@@ -57,4 +62,9 @@ export const API_FILES_SIGNED_URL = '/api/files/signed-url';
 // Notifications
 export const API_NOTIFICATIONS = '/api/notifications';
 
-export const PUBLIC_API_ROUTES = [API_AUTH_SESSION, API_AUTH_LOGIN, API_AUTH_LOGOUT, API_DEPARTMENTS];
+export const PUBLIC_API_ROUTES = [
+	API_AUTH_SESSION,
+	API_AUTH_LOGIN,
+	API_AUTH_LOGOUT,
+	API_DEPARTMENTS
+];

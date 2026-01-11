@@ -75,6 +75,7 @@
 				query,
 				departmentsAssignedIds,
 				usersAssignedIds,
+				[],
 				status
 			);
 		},
@@ -112,6 +113,7 @@
 				searchQuery,
 				departmentsAssignedIds,
 				usersAssignedIds,
+				[],
 				status
 			);
 		});
@@ -150,6 +152,7 @@
 
 		showCreateTicketForm = false;
 		createTicketFormLoading = false;
+		createTicketFormData = { ...initialFormData };
 	}
 
 	function handleNavigateToList() {

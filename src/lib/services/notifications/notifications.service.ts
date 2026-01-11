@@ -126,8 +126,7 @@ export function getUserAssignedTicketNotificationPayload(
 	ticket: GetTicket,
 	assignedBy: Users,
 	assignedTo: Users,
-	notifyToUserId: string,
-	
+	notifyToUserId: string
 ): PostNotificationPayload {
 	const assignedByFullName = `${assignedBy.firstname} ${assignedBy.lastname}`;
 	const assignedToFullName = `${assignedTo.firstname} ${assignedTo.lastname}`;

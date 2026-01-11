@@ -11,7 +11,7 @@
 		CircleDotIcon,
 		CircleXIcon,
 		ImportIcon,
-		ScanEyeIcon,
+		ScanEyeIcon
 	} from '@lucide/svelte';
 
 	export type Props = {
@@ -121,7 +121,8 @@
 
 <style>
 	@keyframes pulse-gray {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(243 244 246);
 		}
 		50% {
@@ -130,7 +131,8 @@
 	}
 
 	@keyframes pulse-rose {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(255 228 230);
 		}
 		50% {
@@ -139,7 +141,8 @@
 	}
 
 	@keyframes pulse-red {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(254 226 226);
 		}
 		50% {
@@ -148,7 +151,8 @@
 	}
 
 	@keyframes pulse-blue {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(219 234 254);
 		}
 		50% {
@@ -157,7 +161,8 @@
 	}
 
 	@keyframes pulse-green {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(220 252 231);
 		}
 		50% {
@@ -166,7 +171,8 @@
 	}
 
 	@keyframes pulse-yellow {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(254 249 195);
 		}
 		50% {
@@ -175,7 +181,8 @@
 	}
 
 	@keyframes pulse-purple {
-		0%, 100% {
+		0%,
+		100% {
 			background-color: rgb(243 232 255);
 		}
 		50% {

@@ -1,7 +1,11 @@
 <script lang="ts" module>
 	import { page } from '$app/state';
 	import { Badge } from '$lib/components/ui/badge';
-	import { MEMBER_NOTIFICATIONS, MEMBER_PROFILE, MEMBER_TICKETS } from '$lib/constants/routes.constants';
+	import {
+		MEMBER_NOTIFICATIONS,
+		MEMBER_PROFILE,
+		MEMBER_TICKETS
+	} from '$lib/constants/routes.constants';
 	import { notificationsUnreadCountStore } from '$lib/store/notifications.store';
 
 	type Props = {
