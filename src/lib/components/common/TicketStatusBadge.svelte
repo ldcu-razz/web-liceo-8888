@@ -7,6 +7,7 @@
 	type Props = {
 		selectedStatus: TicketStatuses;
 		size?: 'sm' | 'md' | 'lg';
+		disabled?: boolean;
 		onStatusChange?: (status: TicketStatuses) => void;
 	};
 </script>
@@ -19,6 +20,7 @@
 	let {
 		selectedStatus = $bindable(TicketStatusesSchema.enum.backlog),
 		size = 'md',
+		disabled = false,
 		onStatusChange
 	}: Props = $props();
 
@@ -57,7 +59,7 @@
 </script>
 
 <DropdownMenu>
-	<DropdownMenuTrigger>
+	<DropdownMenuTrigger {disabled}>
 		<div
 			class={cn(
 				'cursor-pointer rounded-sm border px-2.5 py-1.5 font-medium text-gray-700',

@@ -118,7 +118,12 @@
 
 		<div class="ml-auto">
 			{#if departmentAssigned}
-				<UserAvatar name={departmentAssigned?.name} imageLink={departmentAssigned?.avatar ?? ''} sizeClass="size-8" textSizeClass="text-md" />
+				<UserAvatar
+					name={departmentAssigned?.name}
+					imageLink={departmentAssigned?.avatar ?? ''}
+					sizeClass="size-8"
+					textSizeClass="text-md"
+				/>
 			{/if}
 		</div>
 	</div>

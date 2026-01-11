@@ -13,12 +13,13 @@
 
 	export type Props = {
 		selectedPriority: TicketsPriorities | string;
+		disabled?: boolean;
 		onPriorityChange?: (priority: TicketsPriorities) => void;
 	};
 </script>
 
 <script lang="ts">
-	let { selectedPriority = $bindable(), onPriorityChange }: Props = $props();
+	let { selectedPriority = $bindable(), disabled = false, onPriorityChange }: Props = $props();
 
 	let priorityName = $derived(transformText(selectedPriority));
 
@@ -34,7 +35,7 @@
 </script>
 
 <DropdownMenu bind:open={openMenu}>
-	<DropdownMenuTrigger>
+	<DropdownMenuTrigger {disabled}>
 		<div
 			class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
 		>

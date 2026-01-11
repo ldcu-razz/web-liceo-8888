@@ -96,14 +96,20 @@ export const notificationsActions = {
 
 	createTicketStatusChangedNotification: async (ticket: GetTicket) => {
 		try {
-		const usersAdminAndSuperAdmin = get(adminAndSuperAdminUsers);
-		const userReportedBy = get(allUsersMap)[ticket.reported_by.id];
-		const usersBasedOnDepartment = get(
-			usersBasedOnDepartmentStore(ticket.current_department_assigned.id)
-		);
-		const meStoreData = get(meStore) as GetUser;
-		const allUsers = Array.from(new Map([...usersAdminAndSuperAdmin, ...[userReportedBy], ...usersBasedOnDepartment].map((user) => [user.id, user])).values());
-		const usersToNotify = allUsers.filter((user) => meStoreData && user.id !== meStoreData?.id);
+			const usersAdminAndSuperAdmin = get(adminAndSuperAdminUsers);
+			const userReportedBy = get(allUsersMap)[ticket.reported_by.id];
+			const usersBasedOnDepartment = ticket.current_department_assigned?.id
+				? get(usersBasedOnDepartmentStore(ticket.current_department_assigned.id))
+				: [];
+			const meStoreData = get(meStore) as GetUser;
+			const allUsers = Array.from(
+				new Map(
+					[...usersAdminAndSuperAdmin, ...[userReportedBy], ...usersBasedOnDepartment].map(
+						(user) => [user.id, user]
+					)
+				).values()
+			);
+			const usersToNotify = allUsers.filter((user) => meStoreData && user.id !== meStoreData?.id);
 			const payload: PostNotifications = usersToNotify
 				.filter((user) => meStoreData && user.id !== meStoreData?.id)
 				.map((user) => {
@@ -137,7 +143,12 @@ export const notificationsActions = {
 			if (reportedByUserId !== assignedUserId) {
 				const reportedUser = get(allUsersMap)[ticket.reported_by.id];
 				const reportedUserPayload: PostNotifications = [
-					getUserAssignedTicketNotificationPayload(ticket, meStoreData, reportedUser, reportedByUserId)
+					getUserAssignedTicketNotificationPayload(
+						ticket,
+						meStoreData,
+						reportedUser,
+						reportedByUserId
+					)
 				];
 				await createNotification(reportedUserPayload);
 			}

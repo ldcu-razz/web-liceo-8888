@@ -44,7 +44,7 @@
 	let userFullName = $derived(
 		selectedUser
 			? transformText(`${selectedUser?.firstname} ${selectedUser?.lastname}`)
-			: 'Assign User'
+			: 'Unassigned'
 	);
 
 	let openMenu = $state(false);

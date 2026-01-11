@@ -1,9 +1,4 @@
-import {
-	LOGIN,
-	PUBLIC_ROUTES,
-	PUBLIC_API_ROUTES,
-	BASE_URL
-} from '$lib/constants/routes.constants';
+import { LOGIN, PUBLIC_ROUTES, PUBLIC_API_ROUTES, BASE_URL } from '$lib/constants/routes.constants';
 import {
 	verifyAccessToken,
 	verifyRefreshToken,
@@ -79,8 +74,16 @@ export const handle: Handle = async ({ event, resolve }) => {
 			return redirectToLogin();
 		}
 
-		const newAccessToken = generateAccessToken(refreshTokenPayload);
-		const newRefreshToken = generateRefreshToken(refreshTokenPayload);
+		// Extract only the user-specific fields, excluding JWT metadata (exp, iat, etc.)
+		const cleanPayload: TokenPayload = {
+			userId: refreshTokenPayload.userId,
+			username: refreshTokenPayload.username,
+			role: refreshTokenPayload.role,
+			sessionId: refreshTokenPayload.sessionId
+		};
+
+		const newAccessToken = generateAccessToken(cleanPayload);
+		const newRefreshToken = generateRefreshToken(cleanPayload);
 
 		const expiresIn = 7 * 24 * 60 * 60; // 7 days in seconds
 		await updateSessionTokens(session.id, newAccessToken, newRefreshToken, expiresIn);
@@ -102,7 +105,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 			maxAge: MAX_AGE_REFRESH_TOKEN
 		});
 
-		event.locals.user = refreshTokenPayload;
+		event.locals.user = cleanPayload;
 
 		return resolve(event);
 	} catch (error) {
