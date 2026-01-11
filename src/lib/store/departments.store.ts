@@ -39,6 +39,10 @@ export const departmentsActions = {
 				departmentsLoading.set(true);
 			}
 
+			if (get(departmentsStore)?.length > 0) {
+				return;
+			}
+
 			departmentsPagination.set(pagination);
 
 			const data = await getDepartments(pagination, q);

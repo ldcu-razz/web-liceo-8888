@@ -21,6 +21,7 @@ export const MEMBER_MAIN = '/member';
 export const MEMBER_TICKETS = '/member/tickets';
 export const MEMBER_TICKETS_ID = '/member/tickets/{id}';
 export const MEMBER_PROFILE = '/member/profile';
+export const MEMBER_NOTIFICATIONS = '/member/notifications';
 export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
 export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
 
@@ -53,3 +54,6 @@ export const API_TICKETS_ID_COMMENT = '/api/tickets/{id}/comment';
 export const API_FILES = '/api/files';
 export const API_FILES_UPLOAD = '/api/files/upload';
 export const API_FILES_SIGNED_URL = '/api/files/signed-url';
+
+// Notifications
+export const API_NOTIFICATIONS = '/api/notifications';

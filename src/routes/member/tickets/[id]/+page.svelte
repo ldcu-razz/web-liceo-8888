@@ -91,7 +91,7 @@
 				<div
 					class="-mx-4 flex items-center justify-between gap-2 border-y border-gray-200 bg-white p-4 text-sm"
 				>
-					<div class="flex gap-2">
+					<div class="flex gap-2 items-center">
 						<Building2Icon class="size-4 text-gray-600" />
 						<span class="font-semibold">Department Assigned</span>
 					</div>
@@ -102,7 +102,7 @@
 				<div
 					class="-mx-4 flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-4 text-sm"
 				>
-					<div class="flex gap-2">
+					<div class="flex gap-2 items-center">
 						<ListStartIcon class="size-4 text-gray-600" />
 						<span class="font-semibold">Priority</span>
 					</div>
@@ -113,7 +113,7 @@
 				<div
 					class="-mx-4 flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-4 text-sm"
 				>
-					<div class="flex gap-2">
+					<div class="flex gap-2 items-center">
 						<HistoryIcon class="size-4 text-gray-600" />
 						<span class="font-semibold">Created At</span>
 					</div>

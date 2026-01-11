@@ -8,5 +8,6 @@ export const TABLES = {
 	DEPARTMENTS: 'departments',
 	USERS: 'users',
 	COMMENTS: 'comments',
-	FILES: 'files'
+	FILES: 'files',
+	NOTIFICATIONS: 'notifications'
 } as const;

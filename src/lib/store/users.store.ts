@@ -37,6 +37,22 @@ export const allUsersMap = derived(allUsersStore, ($allUsersStore) =>
 	)
 );
 
+export const adminAndSuperAdminUsers = derived(allUsersStore, ($allUsersStore) => {
+	return $allUsersStore.filter(
+		(u) =>
+			u.role === UserRolesEnumSchema.enum.admin || u.role === UserRolesEnumSchema.enum.super_admin
+	);
+});
+
+export const usersBasedOnDepartmentStore = (departmentId?: string) =>
+	derived(allUsersStore, ($allUsersStore) => {
+		return $allUsersStore.filter((u) =>
+			u.status === BaseStatusEnumSchema.enum.active && departmentId
+				? u.department_id === departmentId
+				: true
+		);
+	});
+
 export const nonMemberUsersStore = writable<Users[]>([]);
 
 export const currentSelectedUserId = writable<string | null>(null);
@@ -54,8 +70,13 @@ export const usersActions = {
 
 	getAllUsers: async () => {
 		try {
+			if (get(allUsersStore).length > 0) {
+				return;
+			}
+
 			const data = await getUsers();
 			allUsersStore.set(data.data);
+
 			const nonMemberUsers = data.data.filter(
 				(u) =>
 					u.role === UserRolesEnumSchema.enum.admin ||

@@ -18,6 +18,10 @@ import { get, writable } from 'svelte/store';
 import { ticketUpdatesActions } from './ticket-updates.store';
 import { getRoute } from '$lib/utils/routes.utils';
 import { TICKETS_DETAILS } from '$lib/constants/routes.constants';
+import { notificationsActions } from './notifications.store';
+import { meStore } from './me.store';
+import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
+import { departmentsStore } from './departments.store';
 
 export const ticketsStore = writable<GetTicket[]>([]);
 export const ticketsPagination = writable<Pagination>({ page: 1, size: 20 });
@@ -89,10 +93,18 @@ export const ticketsActions = {
 			toast.success(`Ticket created successfully`, { id: toastId });
 			ticketsStore.set([data, ...get(ticketsStore)]);
 
+			// For ticket updates
 			const assignedId =
 				data.current_department_assigned?.id || data.current_user_assigned?.id || '';
 			const postBody = await ticketUpdatesActions.getCreateTicketPostBody(data.id, assignedId);
 			ticketUpdatesActions.postTicketsUpdates(postBody);
+
+			// For notifications
+			const me = get(meStore);
+			const isMeUserRole = me?.role === UserRolesEnumSchema.enum.user;
+			if (isMeUserRole) {
+				notificationsActions.createTicketCreatedNotification(data);
+			}
 		} catch (error) {
 			console.error(error);
 			ticketsError.set((error as Error).message);
@@ -140,9 +152,10 @@ export const ticketsActions = {
 			ticketsStore.update((prev) =>
 				prev.map((t) => (t.id === id ? { ...currentTicket!, status } : t))
 			);
-			await updateTicket(id, { status, updatedAt: new Date().toISOString() });
+			const updatedTicket = await updateTicket(id, { status, updatedAt: new Date().toISOString() });
 			toast.success(`Ticket status updated successfully`, { id: toastId });
 
+			// For ticket updates
 			const currentDepartmentAssigned = currentTicket?.current_department_assigned?.id || '';
 			const postBody = await ticketUpdatesActions.getStatusChangePostBody(
 				id,
@@ -150,6 +163,14 @@ export const ticketsActions = {
 				status
 			);
 			ticketUpdatesActions.postTicketsUpdates(postBody);
+
+			// For notifications
+			// TODO: Send the notification to users participating in the ticket
+			const me = get(meStore);
+			const isMeUserRole = me?.role === UserRolesEnumSchema.enum.user;
+			if (!isMeUserRole) {
+				notificationsActions.createTicketStatusChangedNotification(updatedTicket);
+			}
 		} catch (error) {
 			console.error(error);
 			if (currentTicket) {
@@ -171,8 +192,16 @@ export const ticketsActions = {
 			ticketsStore.update((prev) => prev.map((t) => (t.id === id ? data : t)));
 			toast.success(`Ticket assigned user updated successfully`, { id: toastId });
 
+			// For ticket updates
 			const postBody = await ticketUpdatesActions.getUserAssignPostBody(id, userId);
 			ticketUpdatesActions.postTicketsUpdates(postBody);
+
+			// For notifications
+			const me = get(meStore);
+			const isMeUserRole = me?.role === UserRolesEnumSchema.enum.user;
+			if (!isMeUserRole) {
+				notificationsActions.createUserAssignedTicketNotification(data);
+			}
 		} catch (error) {
 			console.error(error);
 			if (currentTicket) {
@@ -194,8 +223,17 @@ export const ticketsActions = {
 			ticketsStore.update((prev) => prev.map((t) => (t.id === id ? data : t)));
 			toast.success(`Ticket assigned department updated successfully`, { id: toastId });
 
+			// For ticket updates
 			const postBody = await ticketUpdatesActions.getDepartmentAssignPostBody(id, departmentId);
 			ticketUpdatesActions.postTicketsUpdates(postBody);
+
+			// For notifications
+			const me = get(meStore);
+			const isMeUserRole = me?.role === UserRolesEnumSchema.enum.user;
+			const department = get(departmentsStore).find((d) => d.id === departmentId);
+			if (!isMeUserRole && department) {
+				notificationsActions.createTicketDepartmentAssignedNotification(data, department);
+			}
 		} catch (error) {
 			console.error(error);
 			if (currentTicket) {

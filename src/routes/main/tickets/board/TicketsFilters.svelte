@@ -1,10 +1,17 @@
 <script lang="ts" module>
-	import SelectWithSearch from '$lib/components/common/SelectWithSearch.svelte';
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import { TicketStatusesSchema } from '$lib/models/tickets/tickets.schema';
 	import type { TicketStatuses } from '$lib/models/tickets/tickets.type';
 	import { transformText } from '$lib/utils/texts.utils';
-	import { LoaderCircleIcon, SearchIcon, XIcon } from '@lucide/svelte';
+	import { LoaderCircleIcon, SearchIcon } from '@lucide/svelte';
+	import InputGroup from '$lib/components/ui/input-group/input-group.svelte';
+	import { InputGroupAddon, InputGroupInput } from '$lib/components/ui/input-group';
+	import { departmentsMap, departmentsStore } from '$lib/store/departments.store';
+	import { allUsersMap, allUsersStore } from '$lib/store/users.store';
+	import Input from '$lib/components/ui/input/input.svelte';
+	import { Button } from '$lib/components/ui/button';
+	import { untrack } from 'svelte';
+	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 
 	export type Props = {
 		searchQuery?: string;
@@ -18,16 +25,6 @@
 </script>
 
 <script lang="ts">
-	import InputGroup from '$lib/components/ui/input-group/input-group.svelte';
-	import { InputGroupAddon, InputGroupInput } from '$lib/components/ui/input-group';
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-	import { departmentsMap, departmentsStore } from '$lib/store/departments.store';
-	import { allUsersMap, allUsersStore } from '$lib/store/users.store';
-	import Input from '$lib/components/ui/input/input.svelte';
-	import { Button } from '$lib/components/ui/button';
-	import Page from './+page.svelte';
-	import { untrack } from 'svelte';
-
 	let {
 		searchQuery = $bindable(''),
 		selectedDepartments = $bindable([]),
@@ -62,7 +59,8 @@
 	let departments = $derived(
 		$departmentsStore.map((department) => ({
 			label: department.name,
-			value: department.id
+			value: department.id,
+			avatar: department.avatar
 		}))
 	);
 
@@ -77,7 +75,8 @@
 	let users = $derived(
 		usersFilteredByDepartments.map((user) => ({
 			label: `${user.firstname} ${user.lastname}`,
-			value: user.id
+			value: user.id,
+			avatar: user.avatar
 		}))
 	);
 
@@ -171,12 +170,12 @@
 							class="flex items-center gap-2"
 							onclick={() => handleDepartmentSelect(department.value)}
 						>
-							<Avatar class="size-5 border border-gray-200">
-								<AvatarImage src={department.value} />
-								<AvatarFallback class="text-[10px]"
-									>{department.label.slice(0, 2).toUpperCase()}</AvatarFallback
-								>
-							</Avatar>
+							<UserAvatar
+								name={department.label}
+								imageLink={department.avatar ?? ''}
+								sizeClass="size-5"
+								textSizeClass="text-[10px]"
+							/>
 							<span class="overflow-hidden text-xs text-ellipsis whitespace-nowrap"
 								>{department.label}</span
 							>
@@ -222,12 +221,12 @@
 				{#if filteredUsers.length > 0}
 					{#each filteredUsers as user (user.value)}
 						<SelectItem value={user.value} class="flex items-center gap-2">
-							<Avatar class="size-5 border border-gray-200">
-								<AvatarImage src={user.value} />
-								<AvatarFallback class="text-[10px]"
-									>{user.label.slice(0, 2).toUpperCase()}</AvatarFallback
-								>
-							</Avatar>
+							<UserAvatar
+								name={user.label}
+								imageLink={user.avatar ?? ''}
+								sizeClass="size-5"
+								textSizeClass="text-[10px]"
+							/>
 							<span class="overflow-hidden text-xs text-ellipsis whitespace-nowrap"
 								>{user.label}</span
 							>

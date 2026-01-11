@@ -1,7 +1,8 @@
 <script lang="ts" module>
-	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { MEMBER_PROFILE, MEMBER_TICKETS } from '$lib/constants/routes.constants';
+	import { Badge } from '$lib/components/ui/badge';
+	import { MEMBER_NOTIFICATIONS, MEMBER_PROFILE, MEMBER_TICKETS } from '$lib/constants/routes.constants';
+	import { notificationsUnreadCountStore } from '$lib/store/notifications.store';
 
 	type Props = {
 		createTicket?: () => void;
@@ -11,10 +12,13 @@
 <script lang="ts">
 	let { createTicket }: Props = $props();
 
-	import { CirclePlusIcon, TicketIcon, UserCog } from '@lucide/svelte';
+	import { BellIcon, CirclePlusIcon, TicketIcon, UserCog } from '@lucide/svelte';
 
 	let isActiveTickets = $derived(page.url.pathname.includes(MEMBER_TICKETS));
 	let isActiveProfile = $derived(page.url.pathname.includes(MEMBER_PROFILE));
+	let isActiveNotifications = $derived(page.url.pathname.includes(MEMBER_NOTIFICATIONS));
+
+	let unreadNotificationsCount = $derived($notificationsUnreadCountStore);
 
 	function handleCreateTicket() {
 		createTicket?.();
@@ -51,6 +55,18 @@
 			>
 				<UserCog class="size-5" />
 				<span class="text-xs">Profile</span>
+			</a>
+			<a
+				href={MEMBER_NOTIFICATIONS}
+				class="flex items-center gap-2 rounded-full p-2 text-white hover:bg-white hover:text-slate-950 {isActiveNotifications
+					? 'bg-white text-slate-950!'
+					: ''}"
+			>
+				<BellIcon class="size-5" />
+				{#if unreadNotificationsCount > 0}
+					<Badge variant="destructive" class="size-4">{unreadNotificationsCount}</Badge>
+				{/if}
+				<span class="text-xs">Notifications</span>
 			</a>
 		</div>
 	</div>
