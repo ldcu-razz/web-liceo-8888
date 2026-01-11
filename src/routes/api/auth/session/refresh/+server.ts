@@ -44,7 +44,7 @@ export const POST: RequestHandler = async ({ cookies }) => {
 		cookies.set('access_token', newAccessToken, {
 			httpOnly: true,
 			secure: true,
-			sameSite: 'strict',
+			sameSite: 'lax',
 			path: '/',
 			maxAge: 15 * 60
 		});
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ cookies }) => {
 		cookies.set('refresh_token', newRefreshToken, {
 			httpOnly: true,
 			secure: true,
-			sameSite: 'strict',
+			sameSite: 'lax',
 			path: '/',
 			maxAge: 7 * 24 * 60 * 60
 		});

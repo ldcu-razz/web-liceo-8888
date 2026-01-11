@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		cookies.set('access_token', accessToken, {
 			httpOnly: true,
 			secure: !dev, // false in development (local), true in production
-			sameSite: 'strict',
+			sameSite: 'lax',
 			path: '/',
 			maxAge: MAX_AGE_ACCESS_TOKEN
 		});
@@ -76,7 +76,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		cookies.set('refresh_token', refreshToken, {
 			httpOnly: true,
 			secure: !dev, // false in development (local), true in production
-			sameSite: 'strict',
+			sameSite: 'lax',
 			path: '/',
 			maxAge: MAX_AGE_REFRESH_TOKEN
 		});
