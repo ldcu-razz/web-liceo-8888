@@ -11,7 +11,7 @@ import type {
 } from '$lib/models/notifications/notifications.type';
 import type { GetTicketComment } from '$lib/models/tickets/ticket-comments.type';
 import type { GetTicket } from '$lib/models/tickets/tickets.type';
-import type { GetUser } from '$lib/models/users/users.type';
+import type { GetUser, Users } from '$lib/models/users/users.type';
 import { transformText } from '$lib/utils/texts.utils';
 import { uuid } from '$lib/utils/uuid.util';
 
@@ -123,10 +123,13 @@ export function getUpdateStatusTicketNotificationPayload(
 
 export function getUserAssignedTicketNotificationPayload(
 	ticket: GetTicket,
-	assignedBy: GetUser,
-	notifyToUserId: string
+	assignedBy: Users,
+	assignedTo: Users,
+	notifyToUserId: string,
+	
 ): PostNotificationPayload {
 	const assignedByFullName = `${assignedBy.firstname} ${assignedBy.lastname}`;
+	const assignedToFullName = `${assignedTo.firstname} ${assignedTo.lastname}`;
 	return {
 		id: uuid(),
 		type: NotificationsTypesSchema.enum.ticket_user_assigned,
@@ -134,7 +137,7 @@ export function getUserAssignedTicketNotificationPayload(
 			ticket_id: ticket.id,
 			code: ticket.code,
 			title: 'Ticket Assigned',
-			message: `<span style="font-weight: 600;">${assignedByFullName}</span> assigned the ticket to you`,
+			message: `<span style="font-weight: 600;">${assignedByFullName}</span> assigned the ticket to <span style="font-weight: 600;">${assignedToFullName}</span>`,
 			assigned_by: assignedBy.id
 		},
 		mark_as_read: false,

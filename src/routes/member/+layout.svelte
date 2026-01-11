@@ -19,6 +19,7 @@
 	import { ticketsActions } from '$lib/store/tickets.store';
 	import ScreenLoader from '../main/ScreenLoader.svelte';
 	import { usersActions } from '$lib/store/users.store';
+	import { notificationsActions } from '$lib/store/notifications.store';
 
 	let { children } = $props();
 
@@ -35,6 +36,7 @@
 			await goto(MAIN);
 			return;
 		}
+		await notificationsActions.getNotifications({ page: 1, size: 15 }, me?.id ?? '');
 
 		neededDataLoaded = true;
 	});

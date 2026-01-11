@@ -96,14 +96,14 @@ export const notificationsActions = {
 
 	createTicketStatusChangedNotification: async (ticket: GetTicket) => {
 		try {
-			const usersAdminAndSuperAdmin = get(adminAndSuperAdminUsers);
-			const userReportedBy = get(allUsersMap)[ticket.reported_by.id];
-			const usersBasedOnDepartment = get(
-				usersBasedOnDepartmentStore(ticket.current_department_assigned.id)
-			);
-			const meStoreData = get(meStore) as GetUser;
-			const allUsers = [...usersAdminAndSuperAdmin, ...[userReportedBy], ...usersBasedOnDepartment];
-			const usersToNotify = allUsers.filter((user) => meStoreData && user.id !== meStoreData?.id);
+		const usersAdminAndSuperAdmin = get(adminAndSuperAdminUsers);
+		const userReportedBy = get(allUsersMap)[ticket.reported_by.id];
+		const usersBasedOnDepartment = get(
+			usersBasedOnDepartmentStore(ticket.current_department_assigned.id)
+		);
+		const meStoreData = get(meStore) as GetUser;
+		const allUsers = Array.from(new Map([...usersAdminAndSuperAdmin, ...[userReportedBy], ...usersBasedOnDepartment].map((user) => [user.id, user])).values());
+		const usersToNotify = allUsers.filter((user) => meStoreData && user.id !== meStoreData?.id);
 			const payload: PostNotifications = usersToNotify
 				.filter((user) => meStoreData && user.id !== meStoreData?.id)
 				.map((user) => {
@@ -118,15 +118,29 @@ export const notificationsActions = {
 	createUserAssignedTicketNotification: async (ticket: GetTicket) => {
 		try {
 			const assignedUserId = ticket.current_user_assigned.id;
-			const meStoreData = get(meStore) as GetUser;
-			if (meStoreData.id === assignedUserId) {
+			const reportedByUserId = ticket.reported_by.id;
+			const assignedTo = get(allUsersMap)[assignedUserId];
+			const meStoreData = get(meStore);
+
+			if (!meStoreData) {
 				return;
 			}
 
-			const payload: PostNotifications = [
-				getUserAssignedTicketNotificationPayload(ticket, meStoreData, assignedUserId)
-			];
-			await createNotification(payload);
+			if (meStoreData.id !== assignedUserId) {
+				const payload: PostNotifications = [
+					getUserAssignedTicketNotificationPayload(ticket, meStoreData, assignedTo, assignedUserId)
+				];
+				await createNotification(payload);
+			}
+
+			// For Reported User
+			if (reportedByUserId !== assignedUserId) {
+				const reportedUser = get(allUsersMap)[ticket.reported_by.id];
+				const reportedUserPayload: PostNotifications = [
+					getUserAssignedTicketNotificationPayload(ticket, meStoreData, reportedUser, reportedByUserId)
+				];
+				await createNotification(reportedUserPayload);
+			}
 		} catch (error) {
 			console.error(error);
 		}
@@ -151,11 +165,13 @@ export const notificationsActions = {
 			}
 
 			// For Reported User
-			const reportedUser = get(allUsersMap)[ticket.reported_by.id];
-			const reportedUserPayload: PostNotifications = [
-				getTicketNotificationReportedUserPayload(ticket, comment, meStoreData, reportedUser.id)
-			];
-			await createNotification(reportedUserPayload);
+			if (comment.is_visible_to_public) {
+				const reportedUser = get(allUsersMap)[ticket.reported_by.id];
+				const reportedUserPayload: PostNotifications = [
+					getTicketNotificationReportedUserPayload(ticket, comment, meStoreData, reportedUser.id)
+				];
+				await createNotification(reportedUserPayload);
+			}
 		} catch (error) {
 			console.error(error);
 		}
