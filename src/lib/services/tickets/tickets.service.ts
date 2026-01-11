@@ -9,6 +9,7 @@ import type {
 	TicketStatuses
 } from '$lib/models/tickets/tickets.type';
 import { getRoute, getRouteWithParams } from '$lib/utils/routes.utils';
+import { requestFetch } from '../request/request.service';
 
 export const getTickets = async (
 	pagination: Pagination,
@@ -31,7 +32,7 @@ export const getTickets = async (
 		url.searchParams.set('reportedByIds', reportedByIds.join(','));
 	if (status && status.length > 0) url.searchParams.set('status', status.join(','));
 
-	const result = await fetch(url.toString());
+	const result = await requestFetch(url.toString());
 	if (!result.ok) {
 		throw new Error(result.statusText);
 	}
@@ -40,7 +41,7 @@ export const getTickets = async (
 
 export const getTicket = async (id: string): Promise<GetTicket> => {
 	const url = new URL(API_TICKETS_ID.replace('{id}', id), window.location.origin);
-	const result = await fetch(url.toString());
+	const result = await requestFetch(url.toString());
 
 	if (!result.ok) {
 		throw new Error(result.statusText);
@@ -50,7 +51,7 @@ export const getTicket = async (id: string): Promise<GetTicket> => {
 
 export const createTicket = async (ticket: PostTicket): Promise<GetTicket> => {
 	const url = new URL(getRoute(API_TICKETS, {}), window.location.origin);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'POST',
 		body: JSON.stringify(ticket)
 	});
@@ -63,7 +64,7 @@ export const createTicket = async (ticket: PostTicket): Promise<GetTicket> => {
 
 export const updateTicket = async (id: string, ticket: PutTicket): Promise<GetTicket> => {
 	const url = new URL(getRouteWithParams(API_TICKETS_ID, { id }), window.location.origin);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'PUT',
 		body: JSON.stringify(ticket)
 	});
@@ -75,7 +76,7 @@ export const updateTicket = async (id: string, ticket: PutTicket): Promise<GetTi
 
 export const deleteTicket = async (id: string): Promise<Ticket> => {
 	const url = new URL(getRouteWithParams(API_TICKETS_ID, { id }), window.location.origin);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'DELETE'
 	});
 	if (!result.ok) {

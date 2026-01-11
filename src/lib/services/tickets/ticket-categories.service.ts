@@ -7,6 +7,7 @@ import type {
 	PutTicketCategories,
 	TicketCategories
 } from '$lib/models/tickets/categories/tickets-categories.type';
+import { requestFetch } from '../request/request.service';
 
 export const getTicketCategories = async (
 	pagination?: Pagination,
@@ -22,7 +23,7 @@ export const getTicketCategories = async (
 	}
 
 	try {
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -36,7 +37,7 @@ export const getTicketCategories = async (
 export const getTicketCategory = async (id: string) => {
 	try {
 		const url = new URL(API_TICKET_CATEGORIES + '/' + id, window.location.origin);
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -49,7 +50,7 @@ export const getTicketCategory = async (id: string) => {
 
 export const createTicketCategory = async (data: PostTicketCategories) => {
 	try {
-		const result = await fetch(API_TICKET_CATEGORIES, {
+		const result = await requestFetch(API_TICKET_CATEGORIES, {
 			method: 'POST',
 			body: JSON.stringify(data)
 		});
@@ -67,7 +68,7 @@ export const updateTicketCategory = async (
 	payload: PutTicketCategories
 ): Promise<TicketCategories> => {
 	try {
-		const result = await fetch(API_TICKET_CATEGORIES + '/' + payload.id, {
+		const result = await requestFetch(API_TICKET_CATEGORIES + '/' + payload.id, {
 			method: 'PUT',
 			body: JSON.stringify(payload)
 		});
@@ -83,7 +84,7 @@ export const updateTicketCategory = async (
 
 export const archiveTicketCategory = async (id: string): Promise<boolean> => {
 	try {
-		const result = await fetch(API_TICKET_CATEGORIES + '/' + id, {
+		const result = await requestFetch(API_TICKET_CATEGORIES + '/' + id, {
 			method: 'PUT',
 			body: JSON.stringify({
 				status: BaseStatusEnumSchema.enum.archived,

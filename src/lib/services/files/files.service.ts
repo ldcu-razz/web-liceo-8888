@@ -1,5 +1,6 @@
 import { API_FILES_SIGNED_URL, API_FILES_UPLOAD } from '$lib/constants/routes.constants';
 import type { FileTypes, GetFile, PostFile } from '$lib/models/files/files.type';
+import { requestFetch } from '../request/request.service';
 
 export const uploadFile = async (payload: PostFile): Promise<GetFile> => {
 	try {
@@ -15,7 +16,7 @@ export const uploadFile = async (payload: PostFile): Promise<GetFile> => {
 			formData.append('department_id', payload.department_id);
 		}
 
-		const response = await fetch(API_FILES_UPLOAD, {
+		const response = await requestFetch(API_FILES_UPLOAD, {
 			method: 'POST',
 			body: formData
 		});
@@ -42,7 +43,7 @@ export const getSignedUrl = async (storagePath: string): Promise<string> => {
 	}
 
 	try {
-		const response = await fetch(API_FILES_SIGNED_URL, {
+		const response = await requestFetch(API_FILES_SIGNED_URL, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

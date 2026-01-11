@@ -8,6 +8,7 @@ import type {
 	PutTicketComment
 } from '$lib/models/tickets/ticket-comments.type';
 import { getRouteWithParams } from '$lib/utils/routes.utils';
+import { requestFetch } from '../request/request.service';
 
 export const getTicketComments = async (
 	ticket_id: string,
@@ -28,7 +29,7 @@ export const getTicketComments = async (
 	}
 
 	try {
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -47,7 +48,7 @@ export const postTicketComment = async (
 		getRouteWithParams(API_TICKETS_ID_COMMENT, { id: ticket_id }),
 		window.location.origin
 	);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'POST',
 		body: JSON.stringify(body)
 	});
@@ -65,7 +66,7 @@ export const putTicketComment = async (
 		getRouteWithParams(API_TICKETS_ID_COMMENT, { id: ticket_id }),
 		window.location.origin
 	);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'PUT',
 		body: JSON.stringify(body)
 	});
@@ -83,7 +84,7 @@ export const deleteTicketComment = async (
 		getRouteWithParams(API_TICKETS_ID_COMMENT, { id: ticket_id }),
 		window.location.origin
 	);
-	const result = await fetch(url.toString(), {
+	const result = await requestFetch(url.toString(), {
 		method: 'DELETE',
 		body: JSON.stringify(body)
 	});

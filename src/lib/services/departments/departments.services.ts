@@ -2,6 +2,7 @@ import { API_DEPARTMENTS, API_DEPARTMENTS_ID } from '$lib/constants';
 import type { Pagination } from '$lib/models/common/common.type';
 import type { Departments, PaginatedDepartments } from '$lib/models/departments/departments.type';
 import { getRouteWithParams } from '$lib/utils/routes.utils';
+import { requestFetch } from '../request/request.service';
 
 export async function getDepartments(
 	pagination: Pagination,
@@ -15,7 +16,7 @@ export async function getDepartments(
 			url.searchParams.set('q', q);
 		}
 
-		const result = await fetch(url.toString());
+		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
@@ -28,7 +29,7 @@ export async function getDepartments(
 
 export async function createDepartment(department: Departments): Promise<Departments> {
 	try {
-		const result = await fetch(API_DEPARTMENTS, {
+		const result = await requestFetch(API_DEPARTMENTS, {
 			method: 'POST',
 			body: JSON.stringify(department)
 		});
@@ -49,7 +50,7 @@ export async function updateDepartment(
 	department: Partial<Departments>
 ): Promise<Departments> {
 	try {
-		const result = await fetch(getRouteWithParams(API_DEPARTMENTS_ID, { id }), {
+		const result = await requestFetch(getRouteWithParams(API_DEPARTMENTS_ID, { id }), {
 			method: 'PUT',
 			body: JSON.stringify(department)
 		});
@@ -67,7 +68,7 @@ export async function updateDepartment(
 
 export async function archiveDepartment(id: string): Promise<boolean> {
 	try {
-		const result = await fetch(`/api/departments/${id}`, {
+		const result = await requestFetch(getRouteWithParams(API_DEPARTMENTS_ID, { id }), {
 			method: 'DELETE'
 		});
 

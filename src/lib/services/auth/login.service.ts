@@ -1,9 +1,10 @@
 import { API_AUTH_LOGIN, API_AUTH_LOGOUT } from '$lib/constants/routes.constants';
 import type { LoginPayload, LoginResponse, LogoutResponse } from '$lib/models/session/session.type';
+import { requestFetch } from '../request/request.service';
 
 export async function login(payload: LoginPayload): Promise<LoginResponse> {
 	try {
-		const response = await fetch(API_AUTH_LOGIN, {
+		const response = await requestFetch(API_AUTH_LOGIN, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(payload)
@@ -21,7 +22,7 @@ export async function login(payload: LoginPayload): Promise<LoginResponse> {
 
 export async function logout(): Promise<LogoutResponse> {
 	try {
-		const response = await fetch(API_AUTH_LOGOUT, {
+		const response = await requestFetch(API_AUTH_LOGOUT, {
 			method: 'POST'
 		});
 		return response.json();
