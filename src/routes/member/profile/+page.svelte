@@ -194,7 +194,7 @@
 		</AlertDialogHeader>
 		<AlertDialogFooter>
 			<Button variant="outline" onclick={handleCloseLogoutAlertDialog}>Cancel</Button>
-			<Button variant="destructive" onclick={handleLogout}>
+			<Button variant="destructive" disabled={isLoggingOut} onclick={handleLogout}>
 				<span>Logout</span>
 				{#if isLoggingOut}
 					<LoaderCircle class="size-4 animate-spin" />

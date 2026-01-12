@@ -183,6 +183,7 @@
 							<Button
 								variant="ghost"
 								class="w-full justify-start text-destructive hover:text-destructive"
+								disabled={isLoggingOut}
 								onclick={handleLogout}
 							>
 								<span>Logout</span>
