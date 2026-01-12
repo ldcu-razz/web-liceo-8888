@@ -19,8 +19,6 @@ import { uuid } from '$lib/utils/uuid.util';
 import { toast } from 'svelte-sonner';
 import { requestFetch } from '../request/request.service';
 import notificationSound1 from '$lib/assets/sounds/notification-sound-1.mp3';
-import { meStore } from '$lib/store/me.store';
-import { get } from 'svelte/store';
 
 export async function getNotifications(
 	pagination?: Pagination,
