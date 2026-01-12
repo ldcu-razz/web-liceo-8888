@@ -33,7 +33,7 @@
 	let notificationChannel = $state<Awaited<ReturnType<typeof getNotificationChannel>>>();
 
 	onMount(async () => {
-		neededDataLoaded = true;
+		neededDataLoaded = false;
 		await meActions.getMe();
 		await usersActions.getAllUsers();
 		await ticketCategoriesActions.getAllTicketCategories();
