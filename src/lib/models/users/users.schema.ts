@@ -9,6 +9,8 @@ import { DepartmentsSchema } from '../departments/departments.schema';
 
 export const UserRolesEnumSchema = z.enum(['super_admin', 'admin', 'user', 'department_staff']);
 
+export const UserStatusEnumSchema = BaseStatusEnumSchema;
+
 export const UsersSchema = z.object({
 	id: UUIDSchema,
 	rfid_number: z.string(),
@@ -22,7 +24,7 @@ export const UsersSchema = z.object({
 	password: z.string(),
 	role: UserRolesEnumSchema,
 	department_id: UUIDSchema,
-	status: BaseStatusEnumSchema,
+	status: UserStatusEnumSchema,
 	avatar: z.string().optional(),
 	createdAt: z.string(),
 	updatedAt: z.string()

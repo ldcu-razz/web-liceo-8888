@@ -68,9 +68,10 @@ export const POST = async ({ request }) => {
 		.from(TABLES.NOTIFICATIONS)
 		.insert(body)
 		.select()
-		.single()
 		.overrideTypes<GetNotifications[]>();
+
 	if (error) {
+		console.error('error', error);
 		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
 	}
 	return new Response(JSON.stringify(data), { status: 200 });

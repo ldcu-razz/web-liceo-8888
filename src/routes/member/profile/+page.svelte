@@ -4,7 +4,7 @@
 	import { transformText } from '$lib/utils/texts.utils';
 	import { Button } from '$lib/components/ui/button';
 	import AvatarUploader from '$lib/components/common/AvatarUploader.svelte';
-	import { authActions } from '$lib/store/auth.store';
+	import { authActions, logginOutStore } from '$lib/store/auth.store';
 	import AlertDialog from '$lib/components/ui/alert-dialog/alert-dialog.svelte';
 	import {
 		AlertDialogContent,
@@ -15,7 +15,7 @@
 	} from '$lib/components/ui/alert-dialog';
 	import { goto } from '$app/navigation';
 	import { LOGIN, MEMBER_PROFILE_CHANGE_PASSWORD, MEMBER_PROFILE_EDIT } from '$lib/constants';
-	import { PencilIcon } from '@lucide/svelte';
+	import { LoaderCircle, PencilIcon } from '@lucide/svelte';
 
 	let me = $derived($meStore);
 
@@ -78,6 +78,8 @@
 	]);
 
 	let showLogoutAlertDialog = $state(false);
+
+	let isLoggingOut = $derived($logginOutStore);
 
 	async function handleLogout() {
 		await authActions.logout();
@@ -192,7 +194,12 @@
 		</AlertDialogHeader>
 		<AlertDialogFooter>
 			<Button variant="outline" onclick={handleCloseLogoutAlertDialog}>Cancel</Button>
-			<Button variant="destructive" onclick={handleLogout}>Logout</Button>
+			<Button variant="destructive" onclick={handleLogout}>
+				<span>Logout</span>
+				{#if isLoggingOut}
+					<LoaderCircle class="size-4 animate-spin" />
+				{/if}
+			</Button>
 		</AlertDialogFooter>
 	</AlertDialogContent>
 </AlertDialog>

@@ -6,20 +6,17 @@
 	import { MailIcon, MailOpenIcon, Ticket } from '@lucide/svelte';
 	import ReadableDate from '../ReadableDate.svelte';
 	import { allUsersMap } from '$lib/store/users.store';
-	import { TICKETS_DETAILS } from '$lib/constants/routes.constants';
-	import { getRoute } from '$lib/utils/routes.utils';
-	import { goto } from '$app/navigation';
 	import { notificationsActions } from '$lib/store/notifications.store';
 	import UserAvatar from '../UserAvatar.svelte';
 
 	export type Props = {
 		notification?: GetNotifications;
-		onClick?: (id: string) => void;
+		onTicketClick?: (id: string) => void;
 	};
 </script>
 
 <script lang="ts">
-	let { notification, onClick }: Props = $props();
+	let { notification, onTicketClick }: Props = $props();
 
 	let notifMetadata = $derived(notification?.metadata as NotificationTicketUserAssignedMetadata);
 
@@ -32,10 +29,7 @@
 	let createdByUserAvatar = $derived(createdByUser?.avatar);
 
 	function handleNotificationClick() {
-		goto(getRoute(TICKETS_DETAILS, { id: notifMetadata.ticket_id }), {
-			invalidate: [TICKETS_DETAILS]
-		});
-		onClick?.(notifMetadata.ticket_id);
+		onTicketClick?.(notifMetadata.ticket_id);
 
 		if (!notification?.mark_as_read) {
 			makeTicketRead();

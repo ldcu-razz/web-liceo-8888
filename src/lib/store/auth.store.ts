@@ -4,6 +4,7 @@ import { login, logout } from '$lib/services/auth/login.service';
 import { toast } from 'svelte-sonner';
 
 export const authStore = writable<LoginResponse | null>(null);
+export const logginOutStore = writable<boolean>(false);
 
 export const authActions = {
 	login: async (payload: LoginPayload): Promise<LoginResponse> => {
@@ -22,6 +23,7 @@ export const authActions = {
 	},
 
 	logout: async () => {
+		logginOutStore.set(true);
 		try {
 			const response = await logout();
 			if (response.success) {
@@ -30,6 +32,8 @@ export const authActions = {
 		} catch (error) {
 			toast.error('Failed to logout');
 			console.error(error);
+		} finally {
+			logginOutStore.set(false);
 		}
 	}
 };

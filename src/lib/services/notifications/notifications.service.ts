@@ -12,9 +12,15 @@ import type {
 import type { GetTicketComment } from '$lib/models/tickets/ticket-comments.type';
 import type { GetTicket } from '$lib/models/tickets/tickets.type';
 import type { GetUser, Users } from '$lib/models/users/users.type';
+import { notificationsActions } from '$lib/store/notifications.store';
+import { supabase } from '$lib/supabase/client';
 import { transformText } from '$lib/utils/texts.utils';
 import { uuid } from '$lib/utils/uuid.util';
+import { toast } from 'svelte-sonner';
 import { requestFetch } from '../request/request.service';
+import notificationSound1 from '$lib/assets/sounds/notification-sound-1.mp3';
+import { meStore } from '$lib/store/me.store';
+import { get } from 'svelte/store';
 
 export async function getNotifications(
 	pagination?: Pagination,
@@ -77,6 +83,46 @@ export async function updateNotification(
 	}
 }
 
+export function getNotificationChannel(notifyToId: string): Awaited<ReturnType<typeof supabase.channel>> {
+	const me = get(meStore);
+	const channel = supabase.channel(`notifications:${notifyToId}`);
+	channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `notify_to=eq.${notifyToId}` }, (payload) => {
+		console.log('payload', payload);
+		const notification = payload.new as GetNotifications;
+		console.log('me', me?.id);
+		console.log('notifyToId', notifyToId);
+
+		// Don't show notification if the current user triggered the action
+		const metadata = notification.metadata as Record<string, string | undefined>;
+		const actionCreatorId = metadata?.created_by 
+			|| metadata?.updated_by 
+			|| metadata?.assigned_by 
+			|| metadata?.commented_by;
+
+		if (actionCreatorId && actionCreatorId === me?.id) {
+			console.log('Skipping self-notification');
+			return;
+		}
+
+		if (payload.eventType === 'INSERT') {
+			notificationsActions.insertNotification(notification);
+			notificationsActions.updateUnreadNotificationsCount(1);
+			toast.success('You have a new notification', { duration: 10_000 });
+
+			const notificationSound = new Audio(notificationSound1);
+			notificationSound.volume = 0.5;
+			notificationSound.play().catch((error) => {
+				console.log('Notification sound blocked by browser:', error);
+			});
+			notificationSound.onended = () => {
+				notificationSound.currentTime = 0;
+			};
+		}
+	});
+	return channel;
+};
+
+// REGION: Payload Functions
 export function getCreateTicketNotificationPayload(
 	ticket: GetTicket,
 	createdBy: GetUser,

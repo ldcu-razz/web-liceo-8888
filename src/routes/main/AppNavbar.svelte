@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { TICKETS_DETAILS } from '$lib';
 	import NotificaionItem from '$lib/components/common/notifications/NotificaionItem.svelte';
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
@@ -14,6 +16,7 @@
 		notificationsStore,
 		notificationsUnreadCountStore
 	} from '$lib/store/notifications.store';
+	import { getRoute } from '$lib/utils/routes.utils';
 	import { BellIcon, ChevronDownIcon } from '@lucide/svelte';
 	import { onMount, type Snippet } from 'svelte';
 
@@ -45,7 +48,8 @@
 		openNotificationsSheet = true;
 	}
 
-	function handleNotificationClick(id: string) {
+	function handleOnTicketNotificationClick(id: string) {
+		goto(getRoute(TICKETS_DETAILS, { id }));
 		openNotificationsSheet = false;
 	}
 
@@ -103,7 +107,7 @@
 			{:else}
 				{#each notification as notification}
 					<div class={'border-b'}>
-						<NotificaionItem {notification} onClick={handleNotificationClick} />
+						<NotificaionItem {notification} onTicketClick={handleOnTicketNotificationClick} />
 					</div>
 
 					<div

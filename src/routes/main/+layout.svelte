@@ -17,6 +17,7 @@
 		ChartBarBig,
 		ChevronsUpDown,
 		FolderKanban,
+		LoaderCircle,
 		Tag,
 		UserCog,
 		Users
@@ -38,15 +39,16 @@
 	} from '$lib/constants/routes.constants';
 	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { browser } from '$app/environment';
 	import { usersActions } from '$lib/store/users.store';
-	import { authActions, authStore } from '$lib/store/auth.store';
+	import { authActions, authStore, logginOutStore } from '$lib/store/auth.store';
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
 	import { meActions, meStore } from '$lib/store/me.store';
 	import ScreenLoader from './ScreenLoader.svelte';
 	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
+	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
 
 	let { children } = $props();
 
@@ -56,7 +58,13 @@
 	let meInitial = $derived(
 		`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`
 	);
+	let isMeDefartmentStaff = $derived(me?.role === UserRolesEnumSchema.enum.department_staff);
+	let isMeAdmin = $derived(me?.role === UserRolesEnumSchema.enum.admin);
+	let isMeSuperAdmin = $derived(me?.role === UserRolesEnumSchema.enum.super_admin);
+
 	let meAvatar = $derived(me?.avatar ?? '');
+
+	let notificationChannel = $state<Awaited<ReturnType<typeof getNotificationChannel>>>();
 
 	if (browser) {
 		preloadCode(DASHBOARD);
@@ -67,7 +75,7 @@
 		preloadCode(PROFILE);
 	}
 
-	let sidebarMenuItems = $state<SidebarModel>([
+	let sidebarMenuItems = $derived<SidebarModel>([
 		{
 			label: 'Dashboard',
 			href: DASHBOARD,
@@ -89,22 +97,28 @@
 				}
 			]
 		},
-		{
-			label: 'Departments',
-			href: DEPARTMENTS,
-			icon: Building2
-		},
-		{
-			label: 'Users',
-			href: USERS,
-			icon: Users
-		},
+		...(isMeAdmin || isMeSuperAdmin ? [
+			{
+				label: 'Departments',
+				href: DEPARTMENTS,
+				icon: Building2
+			}
+		] : []),
+		...(isMeSuperAdmin ? [
+			{
+				label: 'Users',
+				href: USERS,
+				icon: Users
+			},
+		] : []),
 		{
 			label: 'Profile',
 			href: PROFILE,
 			icon: UserCog
 		}
 	]);
+
+	let isLoggingOut = $derived($logginOutStore);
 
 	onMount(async () => {
 		await meActions.getMe();
@@ -117,12 +131,18 @@
 		await ticketCategoriesActions.getAllTicketCategories();
 
 		neededDataLoaded = true;
+
+		notificationChannel = getNotificationChannel(me?.id ?? '').subscribe();
 	});
 
 	async function handleLogout() {
 		await authActions.logout();
 		goto(LOGIN);
 	}
+
+	onDestroy(() => {
+		notificationChannel?.unsubscribe();
+	});
 </script>
 
 {#if neededDataLoaded}
@@ -165,7 +185,10 @@
 								class="w-full justify-start text-destructive hover:text-destructive"
 								onclick={handleLogout}
 							>
-								Logout
+								<span>Logout</span>
+								{#if isLoggingOut}
+									<LoaderCircle class="size-4 animate-spin" />
+								{/if}
 							</Button>
 						</div>
 					</PopoverContent>

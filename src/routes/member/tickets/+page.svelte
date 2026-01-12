@@ -15,10 +15,13 @@
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import { debounce } from '$lib/utils/reactive.utils';
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { onMount } from 'svelte';
 
 	let searchQuery = $state('');
 
 	let tickets = $derived($ticketsStore);
+
+	let ticketsIsEmpty = $derived(tickets.length === 0);
 
 	let pagination = $derived($ticketsPagination);
 
@@ -30,12 +33,22 @@
 
 	let me = $derived($meStore);
 
+	let isComponentMounted = $state(false);
+
 	$effect(() => {
 		debouncedSearchQuery(searchQuery);
 	});
 
+	onMount(() => {
+		isComponentMounted = true;
+	});
+
 	let debouncedSearchQuery = debounce((query: string) => {
-		const isSilentLoader = tickets.length > 0;
+		if (!isComponentMounted) {
+			return;
+		}
+
+		const isSilentLoader = !query && tickets.length > 0;
 		ticketsActions.getTickets(
 			{ page: 1, size: 20 },
 			query,
@@ -88,7 +101,7 @@
 			{/each}
 		{/if}
 
-		{#if !loading && !isTicketsReachedMaxLimit}
+		{#if !loading && !isTicketsReachedMaxLimit && !ticketsIsEmpty}
 			<div class="flex justify-center">
 				<Button variant="outline" class="mt-4 w-fit" onclick={handleShowMoreTickets}>
 					<ArrowDownIcon class="size-4" />

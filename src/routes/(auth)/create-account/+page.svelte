@@ -15,8 +15,7 @@
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { onMount } from 'svelte';
 	import type { PostUsers } from '$lib/models/users/users.type';
-	import { PostUsersSchema, UserRolesEnumSchema } from '$lib/models/users/users.schema';
-	import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
+	import { PostUsersSchema, UserRolesEnumSchema, UserStatusEnumSchema } from '$lib/models/users/users.schema';
 	import { usersActions } from '$lib/store/users.store';
 	import { uuid } from '$lib/utils/uuid.util';
 
@@ -50,7 +49,7 @@
 			...primaryInformationFormData,
 			...createAccountFormData,
 			role: UserRolesEnumSchema.enum.user,
-			status: BaseStatusEnumSchema.enum.active,
+			status: UserStatusEnumSchema.enum.needs_verification,
 			avatar: '',
 			createdAt: new Date().toISOString(),
 			updatedAt: new Date().toISOString()

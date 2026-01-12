@@ -107,7 +107,7 @@
 						<span class="font-semibold">Priority</span>
 					</div>
 
-					<span>{transformText(ticket.priority)}</span>
+					<span>{transformText(ticket.priority || 'No priority selected')}</span>
 				</div>
 
 				<div

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Dialog, DialogContent, DialogDescription, DialogTitle } from '$lib/components/ui/dialog';
 	import { meActions, meStore } from '$lib/store/me.store';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import BottomNavBar from './BottomNavBar.svelte';
 	import CreateTicketFormForStudent, {
 		type FormData,
@@ -10,7 +10,7 @@
 	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 	import { goto } from '$app/navigation';
 	import { MAIN } from '$lib/constants';
-	import type { PostTicket, TicketsPriorities } from '$lib/models/tickets/tickets.type';
+	import type { PostTicket } from '$lib/models/tickets/tickets.type';
 	import { uuid } from '$lib/utils/uuid.util';
 	import {
 		TicketsPrioritiesSchema,
@@ -20,6 +20,8 @@
 	import ScreenLoader from '../main/ScreenLoader.svelte';
 	import { usersActions } from '$lib/store/users.store';
 	import { notificationsActions } from '$lib/store/notifications.store';
+	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
+	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
 
 	let { children } = $props();
 
@@ -28,17 +30,21 @@
 	let createTicketFormData = $state<FormData>({ ...initialFormData });
 	let neededDataLoaded = $state(false);
 
+	let notificationChannel = $state<Awaited<ReturnType<typeof getNotificationChannel>>>();
+
 	onMount(async () => {
 		neededDataLoaded = true;
 		await meActions.getMe();
 		await usersActions.getAllUsers();
+		await ticketCategoriesActions.getAllTicketCategories();
 		if (me?.role !== UserRolesEnumSchema.enum.user) {
 			await goto(MAIN);
 			return;
 		}
-		await notificationsActions.getNotifications({ page: 1, size: 15 }, me?.id ?? '');
-
 		neededDataLoaded = true;
+
+		await notificationsActions.getNotifications({ page: 1, size: 15 }, me?.id ?? '');
+		notificationChannel = getNotificationChannel(me?.id ?? '').subscribe();
 	});
 
 	function handleToggleCreateTicketDialog() {
@@ -67,6 +73,10 @@
 	function handleCancelTicket() {
 		showCreateTicketialog = false;
 	}
+	
+	onDestroy(() => {
+		notificationChannel?.unsubscribe();
+	});
 </script>
 
 {#if neededDataLoaded}

@@ -45,7 +45,7 @@
 	<div class="absolute top-8 left-8">
 		<MainAvatar />
 	</div>
-	<div class="mb-10 flex flex-col gap-2 text-center">
+	<div class="mb-10 flex flex-col gap-2 text-center mt-8">
 		<h1 class="text-2xl font-bold">Login to your account</h1>
 		<p class="text-md text-gray-500">Enter your username and password to login</p>
 	</div>

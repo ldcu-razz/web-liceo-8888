@@ -30,7 +30,10 @@ export const notificationsUnreadCountStore = writable<number>(0);
 export const notificationsPaginationStore = writable<Pagination>({ page: 1, size: 15 });
 
 export const notificationsActions = {
-	getNotifications: async (pagination: Pagination, notifyToId: string) => {
+	getNotifications: async (pagination: Pagination, notifyToId: string, silentLoading?: boolean) => {
+		if (!silentLoading) {
+			notificationsLoadingStore.set(true);
+		}
 		try {
 			const data = await getNotifications(pagination, notifyToId);
 			notificationsStore.set(data.data);
@@ -65,6 +68,10 @@ export const notificationsActions = {
 			console.error(error);
 		}
 	},
+
+	insertNotification: (notification: GetNotifications) => notificationsStore.update((prev) => [notification, ...prev]),
+
+	updateUnreadNotificationsCount: (additionalUnreadCount: number) => notificationsUnreadCountStore.set(get(notificationsUnreadCountStore) + additionalUnreadCount),
 
 	markAsRead: async (notificationId: string) => {
 		try {

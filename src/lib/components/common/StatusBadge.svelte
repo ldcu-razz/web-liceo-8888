@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { BaseStatusEnum } from '$lib/models/common/common.type';
-	import { CircleCheck, Sparkles, Archive } from '@lucide/svelte';
+	import { transformText } from '$lib/utils/texts.utils';
+	import { CircleCheck, Sparkles, Archive, ShieldAlertIcon } from '@lucide/svelte';
 
 	let { status }: { status: BaseStatusEnum } = $props();
 </script>
@@ -14,6 +15,8 @@
 		<Sparkles class="h-3 w-3 text-gray-500" />
 	{:else if status === 'archived'}
 		<Archive class="size-3 text-red-500" />
+	{:else if status === 'needs_verification'}
+		<ShieldAlertIcon class="size-3 text-amber-500" />
 	{/if}
-	<span class="capitalize">{status}</span>
+	<span class="capitalize">{transformText(status)}</span>
 </div>

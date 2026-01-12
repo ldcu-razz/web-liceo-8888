@@ -21,8 +21,7 @@
 		</div>
 		<h1 class="text-2xl font-bold">Account Created Successfully!</h1>
 		<p class="text-md text-gray-500">
-			Your account has been created successfully. You can now login to the application using your
-			credentials.
+			Your account will be verified by the administrator and you will receive a notification when it is approved.
 		</p>
 	</div>
 

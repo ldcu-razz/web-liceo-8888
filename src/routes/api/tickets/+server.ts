@@ -31,6 +31,7 @@ export const GET = async ({ url }) => {
 
 	if (q) {
 		query = query.or(`title.ilike.%${q}%,code.ilike.%${q}%`);
+		countQuery = countQuery.or(`title.ilike.%${q}%,code.ilike.%${q}%`);
 	}
 
 	if (departmentsAssignedIds.length > 0) {

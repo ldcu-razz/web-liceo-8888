@@ -4,32 +4,34 @@
 	import { ChevronDown } from '@lucide/svelte';
 	import DropdownMenu from '../ui/dropdown-menu/dropdown-menu.svelte';
 	import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
-	import type { BaseStatusEnum } from '$lib/models/common/common.type';
-	import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
+	import { UserStatusEnumSchema } from '$lib/models/users/users.schema';
+	import type { UserStatusEnum } from '$lib/models/users/users.type';
 
 	type Props = {
-		status: BaseStatusEnum;
+		status: UserStatusEnum;
 		size?: 'sm' | 'md' | 'lg';
-		onSelect?: (status: BaseStatusEnum) => void;
+		onSelect?: (status: UserStatusEnum) => void;
 	};
 </script>
 
 <script lang="ts">
 	let { status, size = 'md', onSelect }: Props = $props();
 
-	const statusColors: Record<BaseStatusEnum, string> = {
-		active: 'bg-green-700',
-		inactive: 'bg-gray-500',
-		archived: 'bg-red-700'
+	const statusColors: Record<UserStatusEnum, string> = {
+		active: 'bg-green-100',
+		inactive: 'bg-gray-100',
+		archived: 'bg-red-100',
+		needs_verification: 'bg-amber-100'
 	};
 
-	const borderColors: Record<BaseStatusEnum, string> = {
-		active: 'border-green-500',
+	const borderColors: Record<UserStatusEnum, string> = {
+		active: 'border-green-300',
 		inactive: 'border-gray-300',
-		archived: 'border-red-500'
+		archived: 'border-red-300',
+		needs_verification: 'border-amber-300'
 	};
 
-	let statuses: BaseStatusEnum[] = BaseStatusEnumSchema.options;
+	let statuses: UserStatusEnum[] = UserStatusEnumSchema.options;
 
 	let sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
 		sm: 'text-xs',
@@ -49,8 +51,8 @@
 			)}
 		>
 			<div class="flex items-center gap-2">
-				<span class="text-white capitalize {sizeClasses[size]}">{transformText(status)}</span>
-				<ChevronDown class="size-4 text-white" />
+				<span class="capitalize {sizeClasses[size]}">{transformText(status)}</span>
+				<ChevronDown class="size-4" />
 			</div>
 		</div>
 	</DropdownMenuTrigger>

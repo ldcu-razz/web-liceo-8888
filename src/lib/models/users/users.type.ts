@@ -8,12 +8,14 @@ import type {
 	PostUsersSchema,
 	PutUsersSchema,
 	UserRolesEnumSchema,
-	UsersSchema
+	UsersSchema,
+	UserStatusEnumSchema
 } from './users.schema';
 
 export type Users = z.infer<typeof UsersSchema>;
 export type GetUser = z.infer<typeof GetUserSchema>;
 export type UserRolesEnum = z.infer<typeof UserRolesEnumSchema>;
+export type UserStatusEnum = z.infer<typeof UserStatusEnumSchema>;
 export type PaginatedUsers = z.infer<typeof PaginatedUsersSchema>;
 export type PostUsers = z.infer<typeof PostUsersSchema>;
 export type PutUsers = z.infer<typeof PutUsersSchema>;

@@ -1,6 +1,4 @@
 <script lang="ts" module>
-	import { Avatar, AvatarFallback, AvatarImage } from '$lib/components/ui/avatar';
-	import { DEFAULT_AVATAR } from '$lib/constants/avatar.constants';
 	import type {
 		GetNotifications,
 		NotificationTicketUpdatedMetadata
@@ -8,21 +6,17 @@
 	import { MailIcon, MailOpenIcon, Ticket } from '@lucide/svelte';
 	import ReadableDate from '../ReadableDate.svelte';
 	import { allUsersMap } from '$lib/store/users.store';
-	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
-	import { TICKETS_DETAILS } from '$lib/constants/routes.constants';
-	import { getRoute } from '$lib/utils/routes.utils';
-	import { goto } from '$app/navigation';
 	import { notificationsActions } from '$lib/store/notifications.store';
 	import UserAvatar from '../UserAvatar.svelte';
 
 	export type Props = {
 		notification?: GetNotifications;
-		onClick?: (id: string) => void;
+		onTicketClick?: (id: string) => void;
 	};
 </script>
 
 <script lang="ts">
-	let { notification, onClick }: Props = $props();
+	let { notification, onTicketClick }: Props = $props();
 
 	let notifMetadata = $derived(notification?.metadata as NotificationTicketUpdatedMetadata);
 
@@ -35,8 +29,7 @@
 	let updatedByUserAvatar = $derived(updatedByUser?.avatar);
 
 	function handleNotificationClick() {
-		goto(getRoute(TICKETS_DETAILS, { id: notifMetadata.ticket_id }));
-		onClick?.(notifMetadata.ticket_id);
+		onTicketClick?.(notifMetadata.ticket_id);
 
 		if (!notification?.mark_as_read) {
 			makeTicketRead();
