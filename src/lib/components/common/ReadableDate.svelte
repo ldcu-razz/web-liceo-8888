@@ -16,12 +16,12 @@
 		const diffInWeeks = Math.floor(diffInDays / 7);
 		const diffInMonths = Math.floor(diffInDays / 30);
 
-	if (diffInSeconds < 60) {
-		if (diffInSeconds === 0) {
-			return 'Just now';
-		}
-		return `${diffInSeconds} seconds ago`;
-	} else if (diffInMinutes < 60) {
+		if (diffInSeconds < 60) {
+			if (diffInSeconds === 0) {
+				return 'Just now';
+			}
+			return `${diffInSeconds} seconds ago`;
+		} else if (diffInMinutes < 60) {
 			return `${diffInMinutes} minutes ago`;
 		} else if (diffInDays < 1) {
 			return `${diffInHours} hours ago`;

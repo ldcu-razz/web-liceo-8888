@@ -81,40 +81,52 @@ export async function updateNotification(
 	}
 }
 
-export function getNotificationChannel(notifyToId: string): Awaited<ReturnType<typeof supabase.channel>> {
+export function getNotificationChannel(
+	notifyToId: string
+): Awaited<ReturnType<typeof supabase.channel>> {
 	const channel = supabase.channel(`notifications:${notifyToId}`);
-	channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `notify_to=eq.${notifyToId}` }, (payload) => {
-		const notification = payload.new as GetNotifications;
+	channel.on(
+		'postgres_changes',
+		{
+			event: 'INSERT',
+			schema: 'public',
+			table: 'notifications',
+			filter: `notify_to=eq.${notifyToId}`
+		},
+		(payload) => {
+			const notification = payload.new as GetNotifications;
 
-		// Don't show notification if the current user triggered the action
-		const metadata = notification.metadata as Record<string, string | undefined>;
-		const actionCreatorId = metadata?.created_by 
-			|| metadata?.updated_by 
-			|| metadata?.assigned_by 
-			|| metadata?.commented_by;
+			// Don't show notification if the current user triggered the action
+			const metadata = notification.metadata as Record<string, string | undefined>;
+			const actionCreatorId =
+				metadata?.created_by ||
+				metadata?.updated_by ||
+				metadata?.assigned_by ||
+				metadata?.commented_by;
 
-		if (actionCreatorId && actionCreatorId === notifyToId) {
-			console.log('Skipping self-notification');
-			return;
+			if (actionCreatorId && actionCreatorId === notifyToId) {
+				console.log('Skipping self-notification');
+				return;
+			}
+
+			if (payload.eventType === 'INSERT') {
+				notificationsActions.insertNotification(notification);
+				notificationsActions.updateUnreadNotificationsCount(1);
+				toast.success('You have a new notification', { duration: 10_000 });
+
+				const notificationSound = new Audio(notificationSound1);
+				notificationSound.volume = 0.5;
+				notificationSound.play().catch((error) => {
+					console.log('Notification sound blocked by browser:', error);
+				});
+				notificationSound.onended = () => {
+					notificationSound.currentTime = 0;
+				};
+			}
 		}
-
-		if (payload.eventType === 'INSERT') {
-			notificationsActions.insertNotification(notification);
-			notificationsActions.updateUnreadNotificationsCount(1);
-			toast.success('You have a new notification', { duration: 10_000 });
-
-			const notificationSound = new Audio(notificationSound1);
-			notificationSound.volume = 0.5;
-			notificationSound.play().catch((error) => {
-				console.log('Notification sound blocked by browser:', error);
-			});
-			notificationSound.onended = () => {
-				notificationSound.currentTime = 0;
-			};
-		}
-	});
+	);
 	return channel;
-};
+}
 
 // REGION: Payload Functions
 export function getCreateTicketNotificationPayload(
@@ -250,6 +262,27 @@ export const getTicketNotificationDepartmentAssignedPayload = (
 			title: 'Ticket Assigned To Department',
 			message: `<span><span style="font-weight: 600;">${assignedByFullName}</span> assigned the ticket to the department <span style="font-weight: 600;">${departmentName}</span></span>`,
 			assigned_by: assignedById
+		},
+		mark_as_read: false,
+		notify_to: notifyToUserId,
+		createdAt: new Date().toISOString()
+	};
+};
+
+// Users Creation Notifications
+export const getAccountCreatedNotificationPayload = (
+	user: Users,
+	notifyToUserId: string
+): PostNotificationPayload => {
+	return {
+		id: uuid(),
+		type: NotificationsTypesSchema.enum.account_created,
+		metadata: {
+			user_id: user.id,
+			fullname: `${user.firstname} ${user.lastname}`,
+			title: `New Account Created`,
+			message: `<span style="font-weight: 600;">${user.firstname} ${user.lastname}</span> created a new account. The account needs to be approved before it can be used.`,
+			created_by: user.id
 		},
 		mark_as_read: false,
 		notify_to: notifyToUserId,

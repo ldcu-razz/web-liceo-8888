@@ -16,7 +16,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
 
 	const isPublicRoute = PUBLIC_ROUTES.includes(path) || path === BASE_URL;
-	const isPublicApiRoute = PUBLIC_API_ROUTES.some((route) => path.startsWith(route));
+	const isPublicApiRoute = PUBLIC_API_ROUTES.includes(path);
 
 	if (isPublicRoute || isPublicApiRoute) {
 		return resolve(event);

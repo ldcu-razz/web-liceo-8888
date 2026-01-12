@@ -97,20 +97,24 @@
 				}
 			]
 		},
-		...(isMeAdmin || isMeSuperAdmin ? [
-			{
-				label: 'Departments',
-				href: DEPARTMENTS,
-				icon: Building2
-			}
-		] : []),
-		...(isMeSuperAdmin ? [
-			{
-				label: 'Users',
-				href: USERS,
-				icon: Users
-			},
-		] : []),
+		...(isMeAdmin || isMeSuperAdmin
+			? [
+					{
+						label: 'Departments',
+						href: DEPARTMENTS,
+						icon: Building2
+					}
+				]
+			: []),
+		...(isMeSuperAdmin
+			? [
+					{
+						label: 'Users',
+						href: USERS,
+						icon: Users
+					}
+				]
+			: []),
 		{
 			label: 'Profile',
 			href: PROFILE,

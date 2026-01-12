@@ -6,7 +6,8 @@ export const NotificationsTypesSchema = z.enum([
 	'ticket_updated',
 	'ticket_commented',
 	'ticket_user_assigned',
-	'ticket_department_assigned'
+	'ticket_department_assigned',
+	'account_created'
 ]);
 
 export const NotificationTicketCreatedMetadataSchema = z.object({
@@ -49,12 +50,21 @@ export const NoticationTicketDepartmentAssignedMetadataSchema = z.object({
 	assigned_by: UUIDSchema
 });
 
+export const NotificationAccountCreatedMetadataSchema = z.object({
+	user_id: UUIDSchema,
+	fullname: z.string(),
+	title: z.string(),
+	message: z.string(),
+	created_by: UUIDSchema
+});
+
 export const NotificationMetaDataSchema = z.discriminatedUnion('type', [
 	NotificationTicketCreatedMetadataSchema,
 	NotificationTicketUpdatedMetadataSchema,
 	NotificationTicketCommentedMetadataSchema,
 	NotificationTicketUserAssginedMetadataSchema,
-	NoticationTicketDepartmentAssignedMetadataSchema
+	NoticationTicketDepartmentAssignedMetadataSchema,
+	NotificationAccountCreatedMetadataSchema
 ]);
 
 export const NotificationsSchema = z.object({

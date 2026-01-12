@@ -46,6 +46,7 @@ export const API_USERS_ME = '/api/users/me';
 export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
 export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
 export const API_USERS_CHANGE_USERNAME = '/api/users/change-username';
+export const API_USERS_CREATE_ACCOUNT = '/api/users/create-account';
 
 // Tickets
 export const API_TICKETS = '/api/tickets';
@@ -68,5 +69,5 @@ export const PUBLIC_API_ROUTES = [
 	API_AUTH_LOGOUT,
 	API_DEPARTMENTS,
 	API_USERS_CHECK_USERNAME,
-	API_USERS
+	API_USERS_CREATE_ACCOUNT
 ];

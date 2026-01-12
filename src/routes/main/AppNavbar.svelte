@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { TICKETS_DETAILS } from '$lib';
+	import { TICKETS_DETAILS, USER_DETAILS } from '$lib';
 	import NotificaionItem from '$lib/components/common/notifications/NotificaionItem.svelte';
 	import UserAvatar from '$lib/components/common/UserAvatar.svelte';
 	import Badge from '$lib/components/ui/badge/badge.svelte';
@@ -50,6 +50,11 @@
 
 	function handleOnTicketNotificationClick(id: string) {
 		goto(getRoute(TICKETS_DETAILS, { id }));
+		openNotificationsSheet = false;
+	}
+
+	function handleOnUserNotificationClick(id: string) {
+		goto(getRoute(USER_DETAILS, { id }));
 		openNotificationsSheet = false;
 	}
 
@@ -107,7 +112,11 @@
 			{:else}
 				{#each notification as notification}
 					<div class={'border-b'}>
-						<NotificaionItem {notification} onTicketClick={handleOnTicketNotificationClick} />
+						<NotificaionItem
+							{notification}
+							onTicketClick={handleOnTicketNotificationClick}
+							onUserClick={handleOnUserNotificationClick}
+						/>
 					</div>
 
 					<div

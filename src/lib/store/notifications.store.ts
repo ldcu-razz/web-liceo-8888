@@ -69,9 +69,11 @@ export const notificationsActions = {
 		}
 	},
 
-	insertNotification: (notification: GetNotifications) => notificationsStore.update((prev) => [notification, ...prev]),
+	insertNotification: (notification: GetNotifications) =>
+		notificationsStore.update((prev) => [notification, ...prev]),
 
-	updateUnreadNotificationsCount: (additionalUnreadCount: number) => notificationsUnreadCountStore.set(get(notificationsUnreadCountStore) + additionalUnreadCount),
+	updateUnreadNotificationsCount: (additionalUnreadCount: number) =>
+		notificationsUnreadCountStore.set(get(notificationsUnreadCountStore) + additionalUnreadCount),
 
 	markAsRead: async (notificationId: string) => {
 		try {

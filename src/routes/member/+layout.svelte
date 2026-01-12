@@ -73,7 +73,7 @@
 	function handleCancelTicket() {
 		showCreateTicketialog = false;
 	}
-	
+
 	onDestroy(() => {
 		notificationChannel?.unsubscribe();
 	});

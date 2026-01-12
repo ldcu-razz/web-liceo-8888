@@ -15,7 +15,11 @@
 	import { departmentsActions } from '$lib/store/departments.store';
 	import { onMount } from 'svelte';
 	import type { PostUsers } from '$lib/models/users/users.type';
-	import { PostUsersSchema, UserRolesEnumSchema, UserStatusEnumSchema } from '$lib/models/users/users.schema';
+	import {
+		PostUsersSchema,
+		UserRolesEnumSchema,
+		UserStatusEnumSchema
+	} from '$lib/models/users/users.schema';
 	import { usersActions } from '$lib/store/users.store';
 	import { uuid } from '$lib/utils/uuid.util';
 
@@ -44,19 +48,23 @@
 	}
 
 	async function handleCreateAccount(__: CreateAccountFormData) {
-		const payload: PostUsers = PostUsersSchema.parse({
-			id: uuid(),
-			...primaryInformationFormData,
-			...createAccountFormData,
-			role: UserRolesEnumSchema.enum.user,
-			status: UserStatusEnumSchema.enum.needs_verification,
-			avatar: '',
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString()
-		});
+		try {
+			const payload: PostUsers = PostUsersSchema.parse({
+				id: uuid(),
+				...primaryInformationFormData,
+				...createAccountFormData,
+				role: UserRolesEnumSchema.enum.user,
+				status: UserStatusEnumSchema.enum.needs_verification,
+				avatar: '',
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			});
 
-		await usersActions.createUser(payload, true);
-		goto(CREATE_ACCOUNT_SUCCESS);
+			await usersActions.createAccount(payload);
+			goto(CREATE_ACCOUNT_SUCCESS);
+		} catch (error) {
+			console.error(error);
+		}
 	}
 </script>
 

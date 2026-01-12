@@ -6,20 +6,26 @@
 	import NotificationUpdateTicket from './NotificationUpdateTicket.svelte';
 	import { type GetNotifications } from '$lib/models/notifications/notifications.type';
 	import { NotificationsTypesSchema } from '$lib/models/notifications/notifications.schema';
+	import NotificationNewAccountCreated from './NotificationNewAccountCreated.svelte';
 
 	type Props = {
 		notification: GetNotifications;
 		onTicketClick?: (id: string) => void;
+		onUserClick?: (id: string) => void;
 	};
 </script>
 
 <script lang="ts">
-	let { notification, onTicketClick }: Props = $props();
+	let { notification, onTicketClick, onUserClick }: Props = $props();
 
 	let notificationType = $derived(notification.type);
 
 	function handleOnTicketNotificationClick(id: string) {
 		onTicketClick?.(id);
+	}
+
+	function handleOnUserNotificationClick(id: string) {
+		onUserClick?.(id);
 	}
 </script>
 
@@ -31,8 +37,16 @@
 	{:else if notificationType === NotificationsTypesSchema.enum.ticket_commented}
 		<NotificationCommentedTicket {notification} onTicketClick={handleOnTicketNotificationClick} />
 	{:else if notificationType === NotificationsTypesSchema.enum.ticket_department_assigned}
-		<NotificationAssignedDepartmentTicket {notification} onTicketClick={handleOnTicketNotificationClick} />
+		<NotificationAssignedDepartmentTicket
+			{notification}
+			onTicketClick={handleOnTicketNotificationClick}
+		/>
 	{:else if notificationType === NotificationsTypesSchema.enum.ticket_user_assigned}
-		<NotificationAssignedUserTicket {notification} onTicketClick={handleOnTicketNotificationClick} />
+		<NotificationAssignedUserTicket
+			{notification}
+			onTicketClick={handleOnTicketNotificationClick}
+		/>
+	{:else if notificationType === NotificationsTypesSchema.enum.account_created}
+		<NotificationNewAccountCreated {notification} onUserClick={handleOnUserNotificationClick} />
 	{/if}
 </div>

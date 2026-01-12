@@ -12,7 +12,8 @@ import type {
 	PostNotificationsSchema,
 	GetNotificationsPaginatedSchema,
 	PutNotificationsSchema,
-	PostNotificationPayloadSchema
+	PostNotificationPayloadSchema,
+	NotificationAccountCreatedMetadataSchema
 } from './notifications.schema';
 
 export type NotificationsTypes = z.infer<typeof NotificationsTypesSchema>;
@@ -30,6 +31,9 @@ export type NotificationTicketDepartmentAssignedMetadata = z.infer<
 >;
 export type NotificationTicketUserAssignedMetadata = z.infer<
 	typeof NotificationTicketUserAssginedMetadataSchema
+>;
+export type NotificationAccountCreatedMetadata = z.infer<
+	typeof NotificationAccountCreatedMetadataSchema
 >;
 export type NotificationMetaData = z.infer<typeof NotificationMetaDataSchema>;
 export type Notifications = z.infer<typeof NotificationsSchema>;

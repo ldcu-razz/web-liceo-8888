@@ -9,6 +9,7 @@ import type { BaseStatusEnum, Pagination } from '$lib/models/common/common.type'
 import {
 	archiveUser,
 	checkUsername,
+	createAccount,
 	createUser,
 	deleteUser,
 	getUser,
@@ -263,6 +264,16 @@ export const usersActions = {
 	checkUsername: async (username: string): Promise<GetUserByUsernameResponse> => {
 		try {
 			const response = await checkUsername(username);
+			return response;
+		} catch (error) {
+			console.error(error);
+			throw new Error((error as Error).message);
+		}
+	},
+
+	createAccount: async (user: PostUsers) => {
+		try {
+			const response = await createAccount(user);
 			return response;
 		} catch (error) {
 			console.error(error);

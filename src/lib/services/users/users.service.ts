@@ -3,6 +3,7 @@ import {
 	API_USERS_CHANGE_PASSWORD,
 	API_USERS_CHANGE_USERNAME,
 	API_USERS_CHECK_USERNAME,
+	API_USERS_CREATE_ACCOUNT,
 	API_USERS_ID,
 	API_USERS_ME
 } from '$lib/constants';
@@ -205,6 +206,22 @@ export async function changeUsername(username: string, userId: string): Promise<
 			body: JSON.stringify({ username, userId })
 		});
 
+		if (!result.ok) {
+			throw new Error(result.statusText);
+		}
+		return result.json();
+	} catch (error) {
+		console.error(error);
+		throw new Error((error as Error).message);
+	}
+}
+
+export async function createAccount(user: PostUsers): Promise<Users> {
+	try {
+		const result = await requestFetch(API_USERS_CREATE_ACCOUNT, {
+			method: 'POST',
+			body: JSON.stringify(user)
+		});
 		if (!result.ok) {
 			throw new Error(result.statusText);
 		}
