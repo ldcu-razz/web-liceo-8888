@@ -84,13 +84,9 @@ export async function updateNotification(
 }
 
 export function getNotificationChannel(notifyToId: string): Awaited<ReturnType<typeof supabase.channel>> {
-	const me = get(meStore);
 	const channel = supabase.channel(`notifications:${notifyToId}`);
 	channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `notify_to=eq.${notifyToId}` }, (payload) => {
-		console.log('payload', payload);
 		const notification = payload.new as GetNotifications;
-		console.log('me', me?.id);
-		console.log('notifyToId', notifyToId);
 
 		// Don't show notification if the current user triggered the action
 		const metadata = notification.metadata as Record<string, string | undefined>;
@@ -99,7 +95,7 @@ export function getNotificationChannel(notifyToId: string): Awaited<ReturnType<t
 			|| metadata?.assigned_by 
 			|| metadata?.commented_by;
 
-		if (actionCreatorId && actionCreatorId === me?.id) {
+		if (actionCreatorId && actionCreatorId === notifyToId) {
 			console.log('Skipping self-notification');
 			return;
 		}
