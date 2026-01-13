@@ -7,7 +7,9 @@ export const TABLES = {
 	TICKET_COMMENTS: 'ticket_comments',
 	DEPARTMENTS: 'departments',
 	USERS: 'users',
+	USERS_PROPERTIES: 'users_properties',
 	COMMENTS: 'comments',
 	FILES: 'files',
-	NOTIFICATIONS: 'notifications'
+	NOTIFICATIONS: 'notifications',
+	SYSTEM_SETTINGS: 'system_settings'
 } as const;

@@ -40,6 +40,8 @@ export const API_DASHBOARD_TICKETS_GRAPH = '/api/dashboard/graph/total-tickets';
 // Departments
 export const API_DEPARTMENTS = '/api/departments';
 export const API_DEPARTMENTS_ID = '/api/departments/{id}';
+
+// Users
 export const API_USERS = '/api/users';
 export const API_USERS_ID = '/api/users/{id}';
 export const API_USERS_ME = '/api/users/me';
@@ -47,6 +49,7 @@ export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
 export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
 export const API_USERS_CHANGE_USERNAME = '/api/users/change-username';
 export const API_USERS_CREATE_ACCOUNT = '/api/users/create-account';
+export const API_USERS_PROPERTIES = '/api/users/{id}/properties';
 
 // Tickets
 export const API_TICKETS = '/api/tickets';
@@ -62,6 +65,9 @@ export const API_FILES_SIGNED_URL = '/api/files/signed-url';
 
 // Notifications
 export const API_NOTIFICATIONS = '/api/notifications';
+
+// System
+export const API_SYSTEM_SETTINGS = '/api/system/settings';
 
 export const PUBLIC_API_ROUTES = [
 	API_AUTH_SESSION,
