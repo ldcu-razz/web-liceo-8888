@@ -22,6 +22,9 @@
 	} from '$lib/models/users/users.schema';
 	import { usersActions } from '$lib/store/users.store';
 	import { uuid } from '$lib/utils/uuid.util';
+	import { systemSettingsActions, systemSettingsStore } from '$lib/store/system-settings.store';
+	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
+	import CreateUserReachLimit from './CreateUserReachLimit.svelte';
 
 	const primaryInformationValue = 'primary-information';
 	const createAccountValue = 'create-account';
@@ -29,13 +32,23 @@
 	let activeTab = $state(primaryInformationValue);
 	let isPrimaryInformationFormInvalid = $state(false);
 	let disabledCreateAccountTab = $state(true);
+	let totalUsers = $state(0);
+	let loading = $state(false);
+
+	let systemSettings = $derived($systemSettingsStore);
 
 	let primaryInformationFormData = $state<PrimaryInformationFormData>(
 		defaultPrimaryInformationFormData
 	);
 	let createAccountFormData = $state<CreateAccountFormData>(defaultCreateAccountFormData);
 
-	onMount(() => {
+	let isAccountCreationLimitReached = $derived(totalUsers >= (systemSettings?.number_of_users_creation_limit || 0));
+
+	onMount(async () => {
+		loading = true;
+		const { count } = await usersActions.getTotalUsers();
+		totalUsers = count;
+		loading = false;
 		departmentsActions.getDepartments({ page: 1, size: 25 });
 	});
 
@@ -74,32 +87,45 @@
 		Back to Login
 	</Button>
 </div>
-<div class="mb-10 flex flex-col gap-2 text-center">
-	<h1 class="text-2xl font-bold">Create your account</h1>
-	<p class="text-md text-gray-500">Enter the following information to create your account</p>
+{#if loading}
+<div class="flex flex-col items-center justify-center gap-2 w-full max-w-lg mx-auto">
+	<Skeleton class="w-full h-24" />
+	<Skeleton class="w-full h-24" />
+	<Skeleton class="w-full h-24" />
+	<Skeleton class="w-full h-24" />
 </div>
-<div class="w-full max-w-lg">
-	<Tabs bind:value={activeTab}>
-		<TabsList>
-			<TabsTrigger value={primaryInformationValue}>Primary Information</TabsTrigger>
-			<TabsTrigger
-				value={createAccountValue}
-				disabled={isPrimaryInformationFormInvalid || disabledCreateAccountTab}
-				>Create Account</TabsTrigger
-			>
-		</TabsList>
-		<TabsContent value={primaryInformationValue}>
-			<PrimaryInformationForm
-				bind:invalid={isPrimaryInformationFormInvalid}
-				bind:formData={primaryInformationFormData}
-				onProceed={handlePrimaryInformationFormProceed}
-			/>
-		</TabsContent>
-		<TabsContent value={createAccountValue}>
-			<CreateAccountForm
-				bind:formData={createAccountFormData}
-				onCreateAccount={handleCreateAccount}
-			/>
-		</TabsContent>
-	</Tabs>
-</div>
+{:else}
+	{#if isAccountCreationLimitReached}
+		<CreateUserReachLimit />
+	{:else}
+		<div class="mb-10 flex flex-col gap-2 text-center">
+			<h1 class="text-2xl font-bold">Create your account</h1>
+			<p class="text-md text-gray-500">Enter the following information to create your account</p>
+		</div>
+		<div class="w-full max-w-lg">
+			<Tabs bind:value={activeTab}>
+				<TabsList>
+					<TabsTrigger value={primaryInformationValue}>Primary Information</TabsTrigger>
+					<TabsTrigger
+						value={createAccountValue}
+						disabled={isPrimaryInformationFormInvalid || disabledCreateAccountTab}
+						>Create Account</TabsTrigger
+					>
+				</TabsList>
+				<TabsContent value={primaryInformationValue}>
+					<PrimaryInformationForm
+						bind:invalid={isPrimaryInformationFormInvalid}
+						bind:formData={primaryInformationFormData}
+						onProceed={handlePrimaryInformationFormProceed}
+					/>
+				</TabsContent>
+				<TabsContent value={createAccountValue}>
+					<CreateAccountForm
+						bind:formData={createAccountFormData}
+						onCreateAccount={handleCreateAccount}
+					/>
+				</TabsContent>
+			</Tabs>
+		</div>
+	{/if}
+{/if}

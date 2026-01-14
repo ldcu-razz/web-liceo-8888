@@ -7,6 +7,7 @@ import type {
 	PaginatedUsersSchema,
 	PostUsersSchema,
 	PutUsersSchema,
+	TotalUsersSchema,
 	UserRolesEnumSchema,
 	UsersSchema,
 	UserStatusEnumSchema
@@ -22,3 +23,4 @@ export type PutUsers = z.infer<typeof PutUsersSchema>;
 export type DeleteUsers = z.infer<typeof DeleteUsersSchema>;
 export type GetUserByUsernameResponse = z.infer<typeof GetUserByUsernameResponseSchema>;
 export type MentionedUsers = z.infer<typeof MentionedUsersSchema>;
+export type TotalUsers = z.infer<typeof TotalUsersSchema>;

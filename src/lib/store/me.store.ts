@@ -11,6 +11,7 @@ import type { Session } from '$lib/models/session/session.type';
 import type { Pagination } from '$lib/models/common/common.type';
 import { getPaginatedSessions } from '$lib/services/auth/session.service';
 import { filesActions } from './files.store';
+import { usersActions } from './users.store';
 
 export const meStore = writable<GetUser | null>(null);
 
@@ -132,6 +133,22 @@ export const meActions = {
 			meSessionsError.set((error as Error).message);
 		} finally {
 			meSessionsLoading.set(false);
+		}
+	},
+
+	decrementTicketsCreation: async () => {
+		try {
+			const me = get(meStore);
+			const userProperties = me?.properties?.[0] ?? null;
+			const remainingTicketsCreation = userProperties?.remaining_tickets_creation ?? 0;
+			if (remainingTicketsCreation <= 0) {
+				throw new Error('No tickets left');
+			}
+			await usersActions.updateUserProperties(me?.id ?? '', userProperties?.id ?? '', { remaining_tickets_creation: remainingTicketsCreation - 1 });
+			meStore.update((prev) => (prev ? { ...prev, properties: prev.properties?.map((p) => (p.id === userProperties?.id ? { ...p, remaining_tickets_creation: remainingTicketsCreation - 1 } : p)) } : prev));
+		} catch (error) {
+			console.error(error);
+			throw new Error((error as Error).message);
 		}
 	}
 };

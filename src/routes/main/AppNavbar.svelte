@@ -38,6 +38,8 @@
 
 	let unreadNotificationsCount = $derived($notificationsUnreadCountStore);
 
+	let unreadNotificationsCountLabel = $derived(unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount);
+
 	let isReachedToMaxNotificationsLimit = $derived(pagination.size >= notificationsCount);
 
 	let notification = $derived($notificationsStore);
@@ -87,7 +89,7 @@
 			<div class="relative">
 				<Button variant="ghost" size="sm" onclick={handleOpenNotificationsSheet}>
 					{#if unreadNotificationsCount > 0}
-						<Badge variant="destructive" class="size-4">{unreadNotificationsCount}</Badge>
+						<Badge variant="destructive" class="py-1 px-1.5 text-[10px]">{unreadNotificationsCountLabel}</Badge>
 					{/if}
 					<BellIcon class="size-5" />
 				</Button>
