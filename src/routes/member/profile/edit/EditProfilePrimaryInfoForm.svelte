@@ -55,7 +55,12 @@
 
 	let sexOptions = $derived(SexEnumSchema.options);
 
-	let selectedBirthdate = $state<DateValue | undefined>(undefined);
+	let birthdate = $state<DateValue | undefined>(undefined);
+
+	let todayDate = $state<DateValue | undefined>(
+		fromDate(new Date(), getLocalTimeZone())
+	);
+
 
 	let touched = $state<Record<keyof FormData, boolean>>(createInitialTouched(initialFormData));
 	let errors = $state<Partial<Record<keyof FormData, string>>>({});
@@ -71,17 +76,57 @@
 		invalid = isFormInvalid;
 	});
 
-	$effect(() => {
-		if (formData.birthdate) {
-			selectedBirthdate = fromDate(new Date(formData.birthdate), getLocalTimeZone());
-		}
-	});
+	function handleBirthdateChange(dateValue: DateValue | undefined) {
+	if (dateValue) {
+		const isoString = new Date(
+			dateValue.toDate(getLocalTimeZone())
+		).toISOString();
 
-	$effect(() => {
-		if (selectedBirthdate) {
-			formData.birthdate = new Date(selectedBirthdate.toDate(getLocalTimeZone())).toISOString();
+		if (formData.birthdate !== isoString) {
+			formData.birthdate = isoString;
+
+			if (!touched.birthdate) {
+				touched.birthdate = true;
+			} else {
+				const validation = validateField(
+					'birthdate',
+					formData,
+					formSchema,
+					errors
+				);
+				errors = validation.errors;
+			}
 		}
-	});
+		} else {
+			if (formData.birthdate !== '') {
+				formData.birthdate = '';
+
+				if (touched.birthdate) {
+					const validation = validateField(
+						'birthdate',
+						formData,
+						formSchema,
+						errors
+					);
+					errors = validation.errors;
+				}
+			}
+		}
+	}
+
+	function handleBirthdatePopoverClose(open: boolean) {
+		if (!open && !birthdate) {
+			touched.birthdate = true;
+			const validation = validateField(
+				'birthdate',
+				formData,
+				formSchema,
+				errors
+			);
+			errors = validation.errors;
+		}
+	}
+
 
 	function handleFieldBlur(field: keyof FormData) {
 		touched[field] = true;
@@ -174,11 +219,15 @@
 				<span>Birthdate <span class="text-red-500">*</span></span>
 			</FieldLabel>
 			<SelectCalendar
-				bind:value={selectedBirthdate}
-				buttonClass="py-5 bg-white {getFieldError('birthdate', touched, errors)
-					? 'border-destructive ring-destructive/20 dark:ring-destructive/40'
-					: ''}"
-			/>
+			bind:value={birthdate}
+			maxValue={todayDate}
+			buttonClass="py-5 bg-white {getFieldError('birthdate', touched, errors)
+				? 'border-destructive ring-destructive/20 dark:ring-destructive/40'
+				: ''}"
+			onValueChange={handleBirthdateChange}
+			onOpenChange={handleBirthdatePopoverClose}
+		/>
+
 			{#if getFieldError('birthdate', touched, errors)}
 				<span class="text-sm text-red-500">{getFieldError('birthdate', touched, errors)}</span>
 			{/if}
