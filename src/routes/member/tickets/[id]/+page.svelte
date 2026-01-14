@@ -68,7 +68,7 @@
 					<TicketIcon status={ticket.status as TicketStatuses} classSize="size-6" />
 					<div class="text-sm font-semibold text-gray-500">{ticket.code}</div>
 				</div>
-				<h3 class="text-xl font-bold">{ticket.title}</h3>
+				<h3 class="text-xl font-bold break-all">{ticket.title}</h3>
 			</div>
 
 			<Accordion
