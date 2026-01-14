@@ -102,6 +102,10 @@
 		}
 	}
 
+	async function handleDeleteProfilePicture() {
+		await meActions.removeAvatar();
+	} 
+
 	function handleEditProfile() {
 		goto(MEMBER_PROFILE_EDIT);
 	}
@@ -114,13 +118,15 @@
 <section>
 	<div class="h-42 rounded-b-2xl bg-rose-900 bg-linear-to-b from-red-800 to-rose-900"></div>
 	<div class="-mt-14 flex flex-col items-center justify-center gap-2">
+		
 		<AvatarUploader
 			avatar={me?.avatar ?? ''}
 			name={intialName}
 			avatarSize="size-38"
 			layoutDirection="vertical"
 			{handleImageSelected}
-		/>
+			handleRemoveAvatar={handleDeleteProfilePicture}      
+		/>                                                     
 
 		<div class="mt-4 flex flex-col items-center">
 			<h2 class="text-2xl font-bold">{me?.firstname} {me?.lastname}</h2>
