@@ -23,6 +23,7 @@ export const TicketSchema = z.object({
 	code: z.string(),
 	title: z.string(),
 	description: z.string(),
+	anon: z.boolean().optional().default(false),
 	priority: TicketsPrioritiesSchema.default(TicketsPrioritiesSchema.enum.medium),
 	status: TicketStatusesSchema.default(TicketStatusesSchema.enum.backlog),
 	current_department_assigned: UUIDSchema.nullable().default(''),

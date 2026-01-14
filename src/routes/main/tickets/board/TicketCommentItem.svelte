@@ -4,7 +4,7 @@
 	import type { GetTicketComment } from '$lib/models/tickets/ticket-comments.type';
 	import { allUsersMap } from '$lib/store/users.store';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-	import { Trash, SquarePenIcon, EllipsisIcon, EyeIcon } from '@lucide/svelte';
+	import { Trash, SquarePenIcon, EllipsisIcon, EyeIcon, HatGlasses } from '@lucide/svelte';
 	import ReadableDate from '$lib/components/common/ReadableDate.svelte';
 	import RichTextEditor from '$lib/components/common/RichTextEditor.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -18,6 +18,7 @@
 
 	export type Props = {
 		comment: GetTicketComment;
+		displayAsAnon?: boolean;
 		onEdit?: () => void;
 		onSaveEdit?: (value: string, mentionedUsers: MentionedUsers[]) => void;
 		onDelete?: () => void;
@@ -25,7 +26,7 @@
 </script>
 
 <script lang="ts">
-	let { comment, onEdit, onSaveEdit, onDelete }: Props = $props();
+	let { comment, displayAsAnon = false, onEdit, onSaveEdit, onDelete }: Props = $props();
 
 	let me = $derived($meStore);
 
@@ -82,14 +83,24 @@
 <div class="flex flex-col gap-1 py-3">
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex items-center gap-3">
+			{#if displayAsAnon}
+				<div class="size-8 rounded-full bg-sky-100 border-sky-300 text-sky-900 flex items-center justify-center">
+					<HatGlasses class="size-6 text-gray-600" />
+				</div>
+			{:else}
 			<Avatar class="size-8 border border-gray-200">
 				<AvatarImage src={createdByUserAvatar.url} />
 				<AvatarFallback class="text-sm font-semibold">{createdByUserInitial}</AvatarFallback>
 			</Avatar>
+			{/if}
 			<div class="flex items-center gap-2">
 				<p class="text-sm font-semibold text-gray-900">
-					{createdByUser?.firstname}
-					{createdByUser?.lastname}
+					{#if displayAsAnon}
+						Anonymous
+					{:else}
+						{createdByUser?.firstname}
+						{createdByUser?.lastname}
+					{/if}
 				</p>
 				<p class="text-[10px] text-gray-500"><ReadableDate date={comment.createdAt} /></p>
 			</div>

@@ -18,14 +18,19 @@
 	import * as AlertDialog from '$lib/components/ui/alert-dialog';
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
+	import type { GetTicket } from '$lib/models/tickets/tickets.type';
 
 	export type Props = {
-		ticketId: string;
+		ticket: GetTicket;
+		anon?: boolean;
 	};
 </script>
 
 <script lang="ts">
-	let { ticketId }: Props = $props();
+	let { ticket }: Props = $props();
+	
+	let ticketId = $derived(ticket.id);
+	let anon = $derived(ticket.anon);
 
 	let commentValue = $state('');
 	let visibleToReporter = $state(false);
@@ -42,6 +47,8 @@
 	let ticketCommentsLoading = $derived($ticketCommentsLoadingStore);
 
 	let showVisibleToReporterCheckbox = $derived(!isMeUserRole);
+
+	let reportedBy = $derived(ticket.reported_by);
 
 	onMount(() => {
 		if (isMeUserRole) {
@@ -118,8 +125,10 @@
 			/>
 		</div>
 		{#each ticketComments as comment (comment.id)}
+			{@const displayAsAnon = anon && reportedBy?.id === comment.created_by.id}
 			<TicketCommentItem
 				{comment}
+				displayAsAnon={displayAsAnon}
 				onEdit={() => handleEditComment(comment.id)}
 				onDelete={() => handleDeleteComment(comment.id)}
 				onSaveEdit={(value: string, mentionedUsers: MentionedUsers[]) =>
