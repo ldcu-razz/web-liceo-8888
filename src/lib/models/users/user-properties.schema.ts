@@ -8,6 +8,8 @@ export const UserPropertiesSchema = z.object({
 	bypass_ticket_creation_limit: z.boolean().default(false)
 });
 
+export const PostUserPropertiesSchema = UserPropertiesSchema;
+
 export const GetUserPropertiesSchema = UserPropertiesSchema;
 
 export const PutUserPropertiesSchema = UserPropertiesSchema.omit({

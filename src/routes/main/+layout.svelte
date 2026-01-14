@@ -16,6 +16,7 @@
 		Building2,
 		ChartBarBig,
 		ChevronsUpDown,
+		CogIcon,
 		FolderKanban,
 		LoaderCircle,
 		Tag,
@@ -35,7 +36,10 @@
 		USERS,
 		TICKETS_BOARD,
 		TICKETS_CATEGORIES,
-		MEMBER_MAIN
+		MEMBER_MAIN,
+
+		SYSTEM_SETTINGS
+
 	} from '$lib/constants/routes.constants';
 	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';
@@ -119,6 +123,11 @@
 			label: 'Profile',
 			href: PROFILE,
 			icon: UserCog
+		},
+		{
+			label: 'System Settings',
+			href: SYSTEM_SETTINGS,
+			icon: CogIcon
 		}
 	]);
 

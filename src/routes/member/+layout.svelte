@@ -22,15 +22,26 @@
 	import { notificationsActions } from '$lib/store/notifications.store';
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
 	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
+	import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from '$lib/components/ui/alert-dialog';
+	import { Button } from '$lib/components/ui/button';
 
 	let { children } = $props();
 
 	let me = $derived($meStore);
 	let showCreateTicketialog = $state(false);
 	let createTicketFormData = $state<FormData>({ ...initialFormData });
+	let createTicketLoading = $state(false);
 	let neededDataLoaded = $state(false);
 
 	let notificationChannel = $state<Awaited<ReturnType<typeof getNotificationChannel>>>();
+
+	let showNoTicketsLeftAlertDialog = $state(false);
+
+	let ticketsCreationLimit = $derived(me?.properties?.[0]?.remaining_tickets_creation ?? 0);
+
+	let bypassTicketCreationLimit = $derived(me?.properties?.[0]?.bypass_ticket_creation_limit ?? false);
+
+	let isNoTicketsLeft = $derived(ticketsCreationLimit <= 0);
 
 	onMount(async () => {
 		neededDataLoaded = false;
@@ -48,10 +59,16 @@
 	});
 
 	function handleToggleCreateTicketDialog() {
+		if (isNoTicketsLeft && !bypassTicketCreationLimit) {
+			showNoTicketsLeftAlertDialog = true;
+			return;
+		}
+
 		showCreateTicketialog = true;
 	}
 
 	async function handleSubmitTicket(formData: FormData) {
+		createTicketLoading = true;
 		const payload: PostTicket = {
 			...formData,
 			id: uuid(),
@@ -67,7 +84,9 @@
 		};
 
 		await ticketsActions.createTicket(payload);
+		await meActions.decrementTicketsCreation();
 		showCreateTicketialog = false;
+		createTicketLoading = false;
 	}
 
 	function handleCancelTicket() {
@@ -94,7 +113,7 @@
 {/if}
 
 <Dialog bind:open={showCreateTicketialog}>
-	<DialogContent>
+	<DialogContent class="max-w-md">
 		<DialogTitle>Create Ticket</DialogTitle>
 		<DialogDescription>
 			<div>
@@ -108,8 +127,21 @@
 
 		<CreateTicketFormForStudent
 			bind:formData={createTicketFormData}
+			loading={createTicketLoading}
 			onSubmit={handleSubmitTicket}
 			onCancel={handleCancelTicket}
 		/>
 	</DialogContent>
 </Dialog>
+
+<AlertDialog bind:open={showNoTicketsLeftAlertDialog}>
+	<AlertDialogContent>
+		<AlertDialogTitle>No tickets left</AlertDialogTitle>
+		<AlertDialogDescription>
+			You have no tickets left. You cannot create any more tickets.
+		</AlertDialogDescription>
+		<AlertDialogFooter>
+			<Button variant="outline" onclick={() => (showNoTicketsLeftAlertDialog = false)}>Okay</Button>
+		</AlertDialogFooter>
+	</AlertDialogContent>
+</AlertDialog>

@@ -22,7 +22,9 @@ export const MEMBER_PROFILE = '/member/profile';
 export const MEMBER_NOTIFICATIONS = '/member/notifications';
 export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
 export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
-export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS];
+export const SYSTEM_SETTINGS = '/main/system/settings';
+export const MAINTENANCE = '/maintenance';
+export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS, MAINTENANCE];
 
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
@@ -50,6 +52,8 @@ export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
 export const API_USERS_CHANGE_USERNAME = '/api/users/change-username';
 export const API_USERS_CREATE_ACCOUNT = '/api/users/create-account';
 export const API_USERS_PROPERTIES = '/api/users/{id}/properties';
+export const API_USERS_PROPERTIES_RESET = '/api/users/properties/reset';
+export const API_USERS_TOTAL_USERS = '/api/users/total-users';
 
 // Tickets
 export const API_TICKETS = '/api/tickets';
@@ -75,5 +79,7 @@ export const PUBLIC_API_ROUTES = [
 	API_AUTH_LOGOUT,
 	API_DEPARTMENTS,
 	API_USERS_CHECK_USERNAME,
-	API_USERS_CREATE_ACCOUNT
+	API_USERS_CREATE_ACCOUNT,
+	API_USERS_TOTAL_USERS,
+	API_SYSTEM_SETTINGS
 ];

@@ -37,12 +37,16 @@
 	import { DEFAULT_AVATAR } from '$lib/constants/avatar.constants';
 	import { transformText } from '$lib/utils/texts.utils';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
+	import UserProperties from './UserProperties.svelte';
+	import { meStore } from '$lib/store/me.store';
+	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	let isEditUserInfoSheetOpen = $state(false);
 	let showArchiveUserAlertDialog = $state(false);
 	let currentUser = $derived($currentSelectedUser);
 	let currentUserLoading = $derived($currentSelectedUserLoading);
 	let currentUserId = $state($page.params.id);
+	let currentUserProperties = $derived(currentUser?.properties?.[0] ?? null);
 
 	let formData: UserFormDataUpdate = $state({ ...defaultFormData });
 
@@ -51,6 +55,10 @@
 	let userAvatar = useSignedUrl(() => currentUser?.avatar ?? DEFAULT_AVATAR);
 
 	let userFullName = $derived(transformText(`${currentUser?.firstname} ${currentUser?.lastname}`));
+
+	let me = $derived($meStore);
+
+	let isMeSuperAdmin = $derived(me?.role === UserRolesEnumSchema.enum.super_admin);
 
 	onMount(async () => {
 		if (currentUserId) {
@@ -110,7 +118,7 @@
 		<UserDetailsSkeleton />
 	</div>
 {:else}
-	<div class="container mx-auto flex flex-col gap-4">
+	<div class="container mx-auto flex flex-col gap-4 pb-8">
 		<div
 			class="bg-image h-42 rounded-md bg-cover bg-center"
 			style="background-image: url('{redBannerGradientPattern}');"
@@ -174,6 +182,9 @@
 			{#if currentUser}
 				<UserPrimaryInfo user={currentUser ?? {}} />
 				<UserAccountInfo user={currentUser} />
+				{#if isMeSuperAdmin}
+					<UserProperties userId={currentUserId ?? ''} userProperties={currentUserProperties} />
+				{/if}
 			{/if}
 		</div>
 	</div>

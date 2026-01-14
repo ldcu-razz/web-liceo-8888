@@ -5,7 +5,8 @@ import {
 	API_USERS_CHECK_USERNAME,
 	API_USERS_CREATE_ACCOUNT,
 	API_USERS_ID,
-	API_USERS_ME
+	API_USERS_ME,
+	API_USERS_TOTAL_USERS
 } from '$lib/constants';
 import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
 import type { Pagination } from '$lib/models/common/common.type';
@@ -16,6 +17,7 @@ import type {
 	PaginatedUsers,
 	PostUsers,
 	PutUsers,
+	TotalUsers,
 	Users
 } from '$lib/models/users/users.type';
 import { getRouteWithParams } from '$lib/utils/routes.utils';
@@ -224,6 +226,20 @@ export async function createAccount(user: PostUsers): Promise<Users> {
 		});
 		if (!result.ok) {
 			throw new Error(result.statusText);
+		}
+		return result.json();
+	} catch (error) {
+		console.error(error);
+		throw new Error((error as Error).message);
+	}
+}
+
+export async function getTotalUsers(): Promise<TotalUsers> {
+	try {
+		const result = await requestFetch(API_USERS_TOTAL_USERS);
+		if (!result.ok) {
+			const error = await result.json();
+			throw new Error(error.error);
 		}
 		return result.json();
 	} catch (error) {

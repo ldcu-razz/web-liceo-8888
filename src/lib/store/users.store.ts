@@ -3,6 +3,7 @@ import type {
 	GetUserByUsernameResponse,
 	PostUsers,
 	PutUsers,
+	TotalUsers,
 	Users
 } from '$lib/models/users/users.type';
 import type { BaseStatusEnum, Pagination } from '$lib/models/common/common.type';
@@ -12,6 +13,7 @@ import {
 	createAccount,
 	createUser,
 	deleteUser,
+	getTotalUsers,
 	getUser,
 	getUsers,
 	updateUser
@@ -19,6 +21,8 @@ import {
 import { toast } from 'svelte-sonner';
 import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
 import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
+import type { PostUserProperties, PutUserProperties } from '$lib/models/users/user-properties.type';
+import { createUserProperties, updateUserProperties } from '$lib/services/users/users-properties';
 
 export const usersStore = writable<Users[]>([]);
 export const usersLoading = writable<boolean>(false);
@@ -279,5 +283,45 @@ export const usersActions = {
 			console.error(error);
 			throw new Error((error as Error).message);
 		}
-	}
+	},
+
+	createUserProperties: async (userId: string, payload: PostUserProperties) => {
+		const toastId = toast.loading(`Creating user properties...`);
+		try {
+			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
+			const response = await createUserProperties(userId, payload);
+			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
+			toast.success(`User properties created successfully`, { id: toastId });
+		} catch (error) {
+			console.error(error);
+			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
+			toast.error(`Failed to create user properties`, { id: toastId });
+			throw new Error((error as Error).message);
+		}
+	},
+
+	updateUserProperties: async (userId: string, userPropertiesId: string, payload: PutUserProperties) => {
+		const toastId = toast.loading(`Updating user properties...`);
+		try {
+			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p, ...payload } : p)) } : u)));
+			const response = await updateUserProperties(userId, userPropertiesId, payload);
+			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
+			toast.success(`User properties updated successfully`, { id: toastId });
+		} catch (error) {
+			console.error(error);
+			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p } : p)) } : u)));
+			toast.error(`Failed to update user properties`, { id: toastId });
+			throw new Error((error as Error).message);
+		}
+	},
+
+	getTotalUsers: async (): Promise<TotalUsers> => {
+		try {
+			const response = await getTotalUsers();
+			return response;
+		} catch (error) {
+			console.error(error);
+			throw new Error((error as Error).message);
+		}
+	},
 };

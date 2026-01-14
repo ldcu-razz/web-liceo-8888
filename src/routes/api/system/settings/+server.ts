@@ -15,11 +15,13 @@ export const GET = async () => {
 	return new Response(JSON.stringify(payloadData), { status: 200 });
 };
 
-export const PUT = async ({ request }: RequestEvent) => {
+export const PUT = async ({ request, url }: RequestEvent) => {
+	const id = url.searchParams.get('id');
 	const body = await request.json();
 	const { data, error } = await supabase
 		.from(TABLES.SYSTEM_SETTINGS)
 		.update(body)
+		.eq('id', id)
 		.select('*')
 		.single();
 

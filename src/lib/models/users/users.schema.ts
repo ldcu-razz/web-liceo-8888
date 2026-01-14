@@ -6,6 +6,7 @@ import {
 	UUIDSchema
 } from '../common/common.schema';
 import { DepartmentsSchema } from '../departments/departments.schema';
+import { UserPropertiesSchema } from './user-properties.schema';
 
 export const UserRolesEnumSchema = z.enum(['super_admin', 'admin', 'user', 'department_staff']);
 
@@ -26,12 +27,14 @@ export const UsersSchema = z.object({
 	department_id: UUIDSchema,
 	status: UserStatusEnumSchema,
 	avatar: z.string().optional(),
+	properties: UserPropertiesSchema.array(),
 	createdAt: z.string(),
 	updatedAt: z.string()
 });
 
 export const GetUserSchema = UsersSchema.extend({
-	department: DepartmentsSchema.pick({ id: true, name: true })
+	department: DepartmentsSchema.pick({ id: true, name: true }),
+	properties: UserPropertiesSchema.array()
 });
 
 export const PaginatedUsersSchema = PaginatedSchema.extend({
@@ -53,4 +56,8 @@ export const MentionedUsersSchema = UsersSchema.pick({
 	firstname: true,
 	lastname: true,
 	username: true
+});
+
+export const TotalUsersSchema = z.object({
+	count: z.number()
 });

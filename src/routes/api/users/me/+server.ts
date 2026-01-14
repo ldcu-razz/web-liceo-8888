@@ -18,6 +18,7 @@ export const GET = async ({ locals }: RequestEvent) => {
 			.select(
 				`
 				*,
+				properties:user_properties(*)
 				department:${TABLES.DEPARTMENTS}!department_id(*)
 			`
 			)

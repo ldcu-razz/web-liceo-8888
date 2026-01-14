@@ -7,7 +7,7 @@ export const GET = async ({ params }) => {
 	const { id } = params;
 	const { data, error } = await supabase
 		.from('users')
-		.select('*')
+		.select('*,properties:user_properties(*)')
 		.eq('id', id)
 		.single()
 		.overrideTypes<Users>();

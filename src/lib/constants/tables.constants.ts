@@ -7,7 +7,7 @@ export const TABLES = {
 	TICKET_COMMENTS: 'ticket_comments',
 	DEPARTMENTS: 'departments',
 	USERS: 'users',
-	USERS_PROPERTIES: 'users_properties',
+	USERS_PROPERTIES: 'user_properties',
 	COMMENTS: 'comments',
 	FILES: 'files',
 	NOTIFICATIONS: 'notifications',
