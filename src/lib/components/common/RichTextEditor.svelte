@@ -654,7 +654,7 @@
 
 		<div
 			class={cn(
-				'rich-comment-editor max-h-[300px] min-h-[120px] w-full overflow-y-auto rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 whitespace-pre-line outline-none focus-visible:border-gray-300',
+				'rich-comment-editor max-h-[300px] min-h-[120px] w-full overflow-y-auto rounded-b-md border border-gray-200 bg-white px-3 py-2 text-sm leading-6 whitespace-pre-line outline-none focus-visible:border-gray-300 break-all',
 				className
 			)}
 			contenteditable="true"

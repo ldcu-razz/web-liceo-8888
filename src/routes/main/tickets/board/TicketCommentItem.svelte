@@ -144,7 +144,7 @@
 			</div>
 		</div>
 	{:else}
-		<p class="ml-11 text-sm leading-relaxed whitespace-pre-line text-gray-700">
+		<p class="ml-11 text-sm leading-relaxed whitespace-pre-line text-gray-700 break-all">
 			{@html comment.comment}
 		</p>
 	{/if}
