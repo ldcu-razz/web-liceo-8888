@@ -96,7 +96,7 @@
 				<TicketItem {ticket} {isLastItem} onClickTicket={handleClickTicket} />
 			{:else}
 				<div class="flex justify-center items-center h-full">
-					<p class="text-gray-500">No tickets found</p>
+					<p class="text-gray-500">No tickets founds yet</p>
 				</div>
 			{/each}
 		{/if}
