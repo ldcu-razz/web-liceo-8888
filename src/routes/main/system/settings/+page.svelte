@@ -30,7 +30,7 @@
 
   $inspect(ticketStartDateCountValue);
 
-  onMount(() => {
+  $effect(() => {
     systemSettingsId = $systemSettingsStore?.id ?? '';
     ticketCreationLimit = $systemSettingsStore?.number_of_tickets_creation_limit ?? 0;
     numberOfUsersCreationLimit = $systemSettingsStore?.number_of_users_creation_limit ?? 0;

@@ -6,14 +6,19 @@
 	import { usersActions } from '$lib/store/users.store';
 	import type { PostUsers } from '$lib/models/users/users.type';
 	import { uuid } from '$lib/utils/uuid.util';
-	import { PostUsersSchema } from '$lib/models/users/users.schema';
+	import { PostUsersSchema, UserRolesEnumSchema } from '$lib/models/users/users.schema';
 	import { USERS } from '$lib/constants';
 	import { BaseStatusEnumSchema } from '$lib/models/common/common.schema';
+	import { systemSettingsStore } from '$lib/store/system-settings.store';
 
 	let loading = $state(false);
 
+	let systemSettings = $derived($systemSettingsStore);
+
+	let numberOfTicketsCreationLimit = $derived(systemSettings?.number_of_tickets_creation_limit ?? 0);
+
 	function goBack() {
-		window.history.back();
+		goto(USERS);
 	}
 
 	async function handleCreateUser(formData: FormData) {
@@ -31,6 +36,16 @@
 			const payload: PostUsers = PostUsersSchema.parse(data);
 
 			await usersActions.createUser(payload);
+			
+			const isRoleUser = payload.role === UserRolesEnumSchema.enum.user;
+			if (isRoleUser) {
+				await usersActions.createUserProperties(payload.id, {
+					id: uuid(),
+					user_id: payload.id,
+					remaining_tickets_creation: numberOfTicketsCreationLimit,
+					bypass_ticket_creation_limit: false
+				}, true);
+			}
 			goto(USERS);
 		} catch (error) {
 			console.error(error);
@@ -58,6 +73,6 @@
 	</div>
 
 	<div class="mt-2">
-		<UserForm onCancel={goBack} onCreateUser={handleCreateUser} />
+		<UserForm {loading} onCancel={goBack} onCreateUser={handleCreateUser} />
 	</div>
 </div>

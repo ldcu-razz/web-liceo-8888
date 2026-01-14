@@ -41,7 +41,7 @@ export const PaginatedUsersSchema = PaginatedSchema.extend({
 	data: z.array(UsersSchema)
 });
 
-export const PostUsersSchema = UsersSchema;
+export const PostUsersSchema = UsersSchema.omit({ properties: true });
 
 export const PutUsersSchema = UsersSchema.partial();
 

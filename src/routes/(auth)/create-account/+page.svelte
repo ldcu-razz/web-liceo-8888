@@ -74,6 +74,13 @@
 			});
 
 			await usersActions.createAccount(payload);
+			await usersActions.createUserProperties(payload.id, {
+				id: uuid(),
+				user_id: payload.id,
+				remaining_tickets_creation: systemSettings?.number_of_tickets_creation_limit ?? 0,
+				bypass_ticket_creation_limit: false
+			}, true);
+			
 			goto(CREATE_ACCOUNT_SUCCESS);
 		} catch (error) {
 			console.error(error);

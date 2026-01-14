@@ -152,7 +152,7 @@ export const usersActions = {
 			toastId = toast.loading(`Creating user...`);
 		}
 		try {
-			usersStore.set([user, ...(get(usersStore) || [])]);
+			usersStore.set([{ ...user, properties: [] }, ...(get(usersStore) || [])]);
 			await createUser(user);
 			usersLoading.set(false);
 			if (!disabledToast) {
@@ -285,17 +285,24 @@ export const usersActions = {
 		}
 	},
 
-	createUserProperties: async (userId: string, payload: PostUserProperties) => {
-		const toastId = toast.loading(`Creating user properties...`);
+	createUserProperties: async (userId: string, payload: PostUserProperties, silentToast?: boolean) => {
+		let toastId: string | number | undefined = undefined;
+		if (!silentToast) {
+			toastId = toast.loading(`Creating user properties...`);
+		}
 		try {
 			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
 			const response = await createUserProperties(userId, payload);
 			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
-			toast.success(`User properties created successfully`, { id: toastId });
+			if (!silentToast) {
+				toast.success(`User properties created successfully`, { id: toastId });
+			}
 		} catch (error) {
 			console.error(error);
 			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
-			toast.error(`Failed to create user properties`, { id: toastId });
+			if (!silentToast) {
+				toast.error(`Failed to create user properties`, { id: toastId });
+			}
 			throw new Error((error as Error).message);
 		}
 	},
