@@ -300,17 +300,24 @@ export const usersActions = {
 		}
 	},
 
-	updateUserProperties: async (userId: string, userPropertiesId: string, payload: PutUserProperties) => {
-		const toastId = toast.loading(`Updating user properties...`);
+	updateUserProperties: async (userId: string, userPropertiesId: string, payload: PutUserProperties, silentToast?: boolean) => {
+		let toastId: string | number | undefined = undefined;
+		if (!silentToast) {
+			toastId = toast.loading(`Updating user properties...`);
+		}
 		try {
 			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p, ...payload } : p)) } : u)));
 			const response = await updateUserProperties(userId, userPropertiesId, payload);
 			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
-			toast.success(`User properties updated successfully`, { id: toastId });
+			if (!silentToast) {
+				toast.success(`User properties updated successfully`, { id: toastId });
+			}
 		} catch (error) {
 			console.error(error);
 			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p } : p)) } : u)));
-			toast.error(`Failed to update user properties`, { id: toastId });
+			if (!silentToast) {	
+				toast.error(`Failed to update user properties`, { id: toastId });
+			}
 			throw new Error((error as Error).message);
 		}
 	},

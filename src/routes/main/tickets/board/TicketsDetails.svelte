@@ -29,8 +29,6 @@
 		AlertDialogHeader,
 		AlertDialogTitle
 	} from '$lib/components/ui/alert-dialog';
-	import { ticketCommentsActions } from '$lib/store/ticket-comments.store';
-	import { onMount } from 'svelte';
 	import TicketCommentSection from './TicketCommentSection.svelte';
 	import RichTextEditor from '$lib/components/common/RichTextEditor.svelte';
 	import {
@@ -39,6 +37,7 @@
 		TooltipProvider,
 		TooltipTrigger
 	} from '$lib/components/ui/tooltip';
+	import AnonymousBadge from '$lib/components/common/AnonymousBadge.svelte';
 
 	export type Props = {
 		ticket: GetTicket;
@@ -68,6 +67,8 @@
 	let isEditDescription = $state(false);
 
 	let descriptionValue = $state('');
+
+	let isAnonymous = $derived(ticket.anon);
 
 	function handleStatusChangeTicketStatus(status: TicketStatuses) {
 		ticketsActions.changeTicketStatus(ticket.id, status);
@@ -207,7 +208,7 @@
 			{/if}
 
 			<div class="mt-auto min-h-0 flex-1 pt-8">
-				<TicketCommentSection ticketId={ticket.id} />
+				<TicketCommentSection {ticket} />
 			</div>
 		</div>
 
@@ -264,10 +265,14 @@
 						</TicketDetailItem>
 
 						<TicketDetailItem title="Reported by">
-							<AssignedUserBadge
-								selectedUserId={ticket.reported_by?.id ?? ''}
-								showOptions={false}
-							/>
+							{#if isAnonymous}
+								<AnonymousBadge />
+							{:else}
+								<AssignedUserBadge
+									selectedUserId={ticket.reported_by?.id ?? ''}
+									showOptions={false}
+								/>
+							{/if}
 						</TicketDetailItem>
 
 						<TicketDetailItem title="Priority">

@@ -85,6 +85,7 @@
 
 		await ticketsActions.createTicket(payload);
 		await meActions.decrementTicketsCreation();
+		formData = { ...initialFormData };
 		showCreateTicketialog = false;
 		createTicketLoading = false;
 	}
@@ -138,7 +139,7 @@
 	<AlertDialogContent>
 		<AlertDialogTitle>No tickets left</AlertDialogTitle>
 		<AlertDialogDescription>
-			You have no tickets left. You cannot create any more tickets.
+			You have no tickets left. You cannot create any more tickets. Wait for the next semester to start to get more tickets.
 		</AlertDialogDescription>
 		<AlertDialogFooter>
 			<Button variant="outline" onclick={() => (showNoTicketsLeftAlertDialog = false)}>Okay</Button>

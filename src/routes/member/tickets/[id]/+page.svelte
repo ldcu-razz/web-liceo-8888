@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { MEMBER_TICKETS } from '$lib';
 	import type { TicketStatuses } from '$lib/models/tickets/tickets.type';
-	import { Building2Icon, HistoryIcon, ListStartIcon } from '@lucide/svelte';
+	import { Building2Icon, CheckIcon, HatGlasses, HistoryIcon, ListStartIcon } from '@lucide/svelte';
 	import TicketIcon from '../../TicketIcon.svelte';
 </script>
 
@@ -21,6 +21,8 @@
 	let ticketId = $state(page.params.id);
 
 	let ticket = $derived($currentTicket);
+
+	let isAnonymous = $derived(ticket?.anon);
 
 	let loading = $derived($currentTicketLoading);
 
@@ -88,8 +90,20 @@
 		<div class="mt-8 flex flex-col gap-2">
 			<div class="text-sm font-semibold">Details</div>
 			<div class="flex flex-col">
+				{#if isAnonymous}
+					<div
+						class="-mx-4 flex items-center justify-between gap-2 border-y border-sky-200 bg-sky-50 text-sky-700 p-4 text-sm"
+					>
+						<div class="flex items-center gap-2">
+							<HatGlasses class="size-4 text-sky-700" />
+							<span class="font-semibold">Anonymous</span>
+						</div>
+
+						<CheckIcon class="size-4 text-green-600" />
+					</div>
+				{/if}
 				<div
-					class="-mx-4 flex items-center justify-between gap-2 border-y border-gray-200 bg-white p-4 text-sm"
+					class="-mx-4 flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-4 text-sm {!isAnonymous ? 'border-y' : ''}"
 				>
 					<div class="flex items-center gap-2">
 						<Building2Icon class="size-4 text-gray-600" />
@@ -131,7 +145,7 @@
 		<div class="mt-4 flex flex-col gap-2">
 			<div class="text-sm font-semibold">Comments</div>
 			<div class="mt-4">
-				<TicketCommentSection ticketId={ticket.id} />
+				<TicketCommentSection {ticket} />
 			</div>
 		</div>
 	{:else}

@@ -5,7 +5,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import { ticketCategoriesNonArchivedStore } from '$lib/store/ticket-categories.store';
-	import { LoaderCircle } from '@lucide/svelte';
+	import { HatGlasses, LoaderCircle } from '@lucide/svelte';
 	import { z } from 'zod';
 	import {
 		validateForm,
@@ -14,16 +14,20 @@
 		createInitialTouched,
 		markAllFieldsTouched
 	} from '$lib/utils/form.utils';
+	import { Checkbox } from '$lib/components/ui/checkbox';
+	import { Label } from '$lib/components/ui/label';
 
 	export const formSchema = z.object({
 		title: z.string().min(1, 'Title is required'),
 		category_id: z.string(),
+		anon: z.boolean().default(false),
 		description: z.string().min(1, 'Description is required')
 	});
 
 	export type FormData = z.infer<typeof formSchema>;
 
 	export const initialFormData: FormData = {
+		anon: false,
 		title: '',
 		category_id: '',
 		description: ''
@@ -88,6 +92,24 @@
 
 <form>
 	<FieldGroup>
+
+		<div class="flex gap-2 flex-col">
+			<Label for="anon" class="border border-border rounded-md p-2 flex items-center gap-2 w-full group has-data-[state=checked]:bg-sky-50 has-data-[state=checked]:border-sky-500 cursor-pointer">
+				<div class="size-8 rounded-full bg-sky-100 border-sky-300 text-sky-900 flex items-center justify-center {formData.anon ? 'bg-sky-300 border-sky-400' : ''}">
+					<HatGlasses class="size-6" />
+				</div>
+				<Checkbox
+					id="anon"
+					bind:checked={formData.anon}
+					class={formData.anon ? 'bg-sky-500 border-sky-500 data-[state=checked]:bg-sky-100 data-[state=checked]:border-sky-500 data-[state=checked]:text-sky-600' : ''}
+					onblur={() => handleFieldBlur('anon')}
+				/>
+				<span class="text-sm font-medium">Anonymous</span>
+			</Label>
+			{#if formData.anon}
+				<p class="text-xs text-muted-foreground">Your ticket will be anonymously saved. Your name will not be disclosed.</p>
+			{/if}
+		</div>
 		<Field>
 			<FieldLabel class="gap-1">Title <span class="text-red-500">*</span></FieldLabel>
 			<Input

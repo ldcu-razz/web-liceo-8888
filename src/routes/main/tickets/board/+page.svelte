@@ -142,6 +142,7 @@
 			...formData,
 			id: uuid(),
 			category_id: formData.category_id,
+			anon: false,
 			priority: (formData.priority as PostTicket['priority']) || 'medium',
 			reported_by: me?.id || '',
 			createdAt: new Date().toISOString(),
