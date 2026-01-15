@@ -21,7 +21,7 @@
 	{/if}
 	<button
 		type="button"
-		class="cursor-pointer text-left font-medium underline-offset-4 hover:underline"
+		class="cursor-pointer text-left font-medium underline-offset-4 hover:underline truncate block max-w-[240px]"
 		onclick={() => onView?.(id)}
 	>
 		{name}
