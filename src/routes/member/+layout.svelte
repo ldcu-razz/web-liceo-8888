@@ -22,8 +22,15 @@
 	import { notificationsActions } from '$lib/store/notifications.store';
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
 	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
-	import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogTitle } from '$lib/components/ui/alert-dialog';
+	import {
+		AlertDialog,
+		AlertDialogContent,
+		AlertDialogDescription,
+		AlertDialogFooter,
+		AlertDialogTitle
+	} from '$lib/components/ui/alert-dialog';
 	import { Button } from '$lib/components/ui/button';
+	import { filesActions } from '$lib/store/files.store';
 
 	let { children } = $props();
 
@@ -33,13 +40,17 @@
 	let createTicketLoading = $state(false);
 	let neededDataLoaded = $state(false);
 
+	let uploadedFiles = $state<File[]>([]);
+
 	let notificationChannel = $state<Awaited<ReturnType<typeof getNotificationChannel>>>();
 
 	let showNoTicketsLeftAlertDialog = $state(false);
 
 	let ticketsCreationLimit = $derived(me?.properties?.[0]?.remaining_tickets_creation ?? 0);
 
-	let bypassTicketCreationLimit = $derived(me?.properties?.[0]?.bypass_ticket_creation_limit ?? false);
+	let bypassTicketCreationLimit = $derived(
+		me?.properties?.[0]?.bypass_ticket_creation_limit ?? false
+	);
 
 	let isNoTicketsLeft = $derived(ticketsCreationLimit <= 0);
 
@@ -68,26 +79,31 @@
 	}
 
 	async function handleSubmitTicket(formData: FormData) {
-		createTicketLoading = true;
-		const payload: PostTicket = {
-			...formData,
-			id: uuid(),
-			category_id: formData.category_id || null,
-			priority: TicketsPrioritiesSchema.enum.medium,
-			reported_by: me?.id || '',
-			status: TicketStatusesSchema.enum.backlog,
-			code: '',
-			current_department_assigned: null,
-			current_user_assigned: null,
-			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString()
-		};
+		try {
+			createTicketLoading = true;
+			const { attachments, ...rest } = formData;
+			const payload: PostTicket = {
+				...rest,
+				id: uuid(),
+				category_id: formData.category_id || null,
+				priority: TicketsPrioritiesSchema.enum.medium,
+				reported_by: me?.id || '',
+				status: TicketStatusesSchema.enum.backlog,
+				code: '',
+				current_department_assigned: null,
+				current_user_assigned: null,
+				createdAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
+			};
 
-		await ticketsActions.createTicket(payload);
-		await meActions.decrementTicketsCreation();
-		formData = { ...initialFormData };
-		showCreateTicketialog = false;
-		createTicketLoading = false;
+			await ticketsActions.createTicket(payload, uploadedFiles);
+			await meActions.decrementTicketsCreation();
+			formData = { ...initialFormData };
+			showCreateTicketialog = false;
+			createTicketLoading = false;
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	function handleCancelTicket() {
@@ -101,7 +117,7 @@
 
 {#if neededDataLoaded}
 	<main
-		class="items-between mx-auto flex h-screen w-full max-w-[562px] flex-col border-x border-border bg-slate-50"
+		class="items-between mx-auto flex h-screen w-full max-w-[620px] flex-col border-x border-border bg-slate-50"
 	>
 		<div class="flex-1 overflow-y-auto pb-40">
 			{@render children?.()}
@@ -114,7 +130,7 @@
 {/if}
 
 <Dialog bind:open={showCreateTicketialog}>
-	<DialogContent class="max-w-md">
+	<DialogContent class="w-full sm:max-w-xl">
 		<DialogTitle>Create Ticket</DialogTitle>
 		<DialogDescription>
 			<div>
@@ -128,6 +144,7 @@
 
 		<CreateTicketFormForStudent
 			bind:formData={createTicketFormData}
+			bind:uploadedFiles
 			loading={createTicketLoading}
 			onSubmit={handleSubmitTicket}
 			onCancel={handleCancelTicket}
@@ -139,7 +156,8 @@
 	<AlertDialogContent>
 		<AlertDialogTitle>No tickets left</AlertDialogTitle>
 		<AlertDialogDescription>
-			You have no tickets left. You cannot create any more tickets. Wait for the next semester to start to get more tickets.
+			You have no tickets left. You cannot create any more tickets. Wait for the next semester to
+			start to get more tickets.
 		</AlertDialogDescription>
 		<AlertDialogFooter>
 			<Button variant="outline" onclick={() => (showNoTicketsLeftAlertDialog = false)}>Okay</Button>

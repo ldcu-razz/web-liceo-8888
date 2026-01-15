@@ -37,7 +37,6 @@ export async function updateSystemSettings(id: string, data: PutSystemSettings) 
 	}
 }
 
-
 export async function resetAllUsersTicketLimit(number_of_tickets_creation_limit: number) {
 	try {
 		const url = getRoute(API_USERS_PROPERTIES_RESET, {});

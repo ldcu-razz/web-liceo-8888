@@ -9,7 +9,12 @@ export const GET = async ({ url }) => {
 	const userRoles = url.searchParams.get('userRoles');
 	const userRolesArray = userRoles ? userRoles.split(',') : [];
 
-	let queryBuilder = supabase.from('users').select('*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)').order('createdAt', { ascending: false });
+	let queryBuilder = supabase
+		.from('users')
+		.select(
+			'*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)'
+		)
+		.order('createdAt', { ascending: false });
 
 	if (size && page) {
 		queryBuilder = queryBuilder.range((page - 1) * size, page * size - 1);

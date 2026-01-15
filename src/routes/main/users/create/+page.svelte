@@ -15,7 +15,9 @@
 
 	let systemSettings = $derived($systemSettingsStore);
 
-	let numberOfTicketsCreationLimit = $derived(systemSettings?.number_of_tickets_creation_limit ?? 0);
+	let numberOfTicketsCreationLimit = $derived(
+		systemSettings?.number_of_tickets_creation_limit ?? 0
+	);
 
 	function goBack() {
 		goto(USERS);
@@ -36,15 +38,19 @@
 			const payload: PostUsers = PostUsersSchema.parse(data);
 
 			await usersActions.createUser(payload);
-			
+
 			const isRoleUser = payload.role === UserRolesEnumSchema.enum.user;
 			if (isRoleUser) {
-				await usersActions.createUserProperties(payload.id, {
-					id: uuid(),
-					user_id: payload.id,
-					remaining_tickets_creation: numberOfTicketsCreationLimit,
-					bypass_ticket_creation_limit: false
-				}, true);
+				await usersActions.createUserProperties(
+					payload.id,
+					{
+						id: uuid(),
+						user_id: payload.id,
+						remaining_tickets_creation: numberOfTicketsCreationLimit,
+						bypass_ticket_creation_limit: false
+					},
+					true
+				);
 			}
 			goto(USERS);
 		} catch (error) {

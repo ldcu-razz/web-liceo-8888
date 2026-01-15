@@ -37,9 +37,7 @@
 		TICKETS_BOARD,
 		TICKETS_CATEGORIES,
 		MEMBER_MAIN,
-
 		SYSTEM_SETTINGS
-
 	} from '$lib/constants/routes.constants';
 	import { goto, preloadCode } from '$app/navigation';
 	import CollapsibleMenuItem from './CollapsibleMenuItem.svelte';

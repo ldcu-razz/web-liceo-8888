@@ -18,7 +18,7 @@
 </script>
 
 <div
-	class="align-center fixed top-0 right-0 left-0 z-10 mx-auto flex w-full max-w-[562px] flex-col gap-3 border-b border-gray-200 bg-white px-3 py-4 shadow-xs"
+	class="align-center fixed top-0 right-0 left-0 z-10 mx-auto flex w-full max-w-[620px] flex-col gap-3 border-b border-gray-200 bg-white px-3 py-4 shadow-xs"
 >
 	<div class="flex items-center gap-4">
 		{#if backButton}

@@ -1,4 +1,8 @@
-import { getSystemSettings, resetAllUsersTicketLimit, updateSystemSettings } from '$lib/services/system/settings.service';
+import {
+	getSystemSettings,
+	resetAllUsersTicketLimit,
+	updateSystemSettings
+} from '$lib/services/system/settings.service';
 import { writable } from 'svelte/store';
 import type { GetSystemSettings, PutSystemSettings } from '$lib/models/system/system-settings.type';
 import { toast } from 'svelte-sonner';

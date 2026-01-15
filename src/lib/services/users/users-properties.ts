@@ -36,7 +36,11 @@ export async function createUserProperties(userId: string, payload: PostUserProp
 	}
 }
 
-export async function updateUserProperties(userId: string, userPropertiesId: string, data: PutUserProperties) {
+export async function updateUserProperties(
+	userId: string,
+	userPropertiesId: string,
+	data: PutUserProperties
+) {
 	try {
 		const url = new URL(getRoute(API_USERS_PROPERTIES, { id: userId }), window.location.origin);
 		url.searchParams.set('userPropertyId', userPropertiesId);

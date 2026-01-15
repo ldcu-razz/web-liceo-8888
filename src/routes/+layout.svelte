@@ -17,7 +17,6 @@
 	let route = $derived(page.url.pathname);
 	let isMaintenanceRoute = $derived(route.includes(MAINTENANCE));
 
-
 	onMount(async () => {
 		loading = true;
 		await systemSettingsActions.getSystemSettings();

@@ -285,21 +285,35 @@ export const usersActions = {
 		}
 	},
 
-	createUserProperties: async (userId: string, payload: PostUserProperties, silentToast?: boolean) => {
+	createUserProperties: async (
+		userId: string,
+		payload: PostUserProperties,
+		silentToast?: boolean
+	) => {
 		let toastId: string | number | undefined = undefined;
 		if (!silentToast) {
 			toastId = toast.loading(`Creating user properties...`);
 		}
 		try {
-			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
+			usersStore.update((prev) =>
+				prev.map((u) =>
+					u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u
+				)
+			);
 			const response = await createUserProperties(userId, payload);
-			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
+			currentSelectedUser.update((prev) =>
+				prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev
+			);
 			if (!silentToast) {
 				toast.success(`User properties created successfully`, { id: toastId });
 			}
 		} catch (error) {
 			console.error(error);
-			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u)));
+			usersStore.update((prev) =>
+				prev.map((u) =>
+					u.id === userId ? { ...u, properties: [...(u.properties || []), payload] } : u
+				)
+			);
 			if (!silentToast) {
 				toast.error(`Failed to create user properties`, { id: toastId });
 			}
@@ -307,22 +321,49 @@ export const usersActions = {
 		}
 	},
 
-	updateUserProperties: async (userId: string, userPropertiesId: string, payload: PutUserProperties, silentToast?: boolean) => {
+	updateUserProperties: async (
+		userId: string,
+		userPropertiesId: string,
+		payload: PutUserProperties,
+		silentToast?: boolean
+	) => {
 		let toastId: string | number | undefined = undefined;
 		if (!silentToast) {
 			toastId = toast.loading(`Updating user properties...`);
 		}
 		try {
-			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p, ...payload } : p)) } : u)));
+			usersStore.update((prev) =>
+				prev.map((u) =>
+					u.id === userId
+						? {
+								...u,
+								properties: u.properties?.map((p) =>
+									p.id === userPropertiesId ? { ...p, ...payload } : p
+								)
+							}
+						: u
+				)
+			);
 			const response = await updateUserProperties(userId, userPropertiesId, payload);
-			currentSelectedUser.update((prev) => (prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev));
+			currentSelectedUser.update((prev) =>
+				prev ? { ...prev, properties: [...(prev.properties || []), response] } : prev
+			);
 			if (!silentToast) {
 				toast.success(`User properties updated successfully`, { id: toastId });
 			}
 		} catch (error) {
 			console.error(error);
-			usersStore.update((prev) => prev.map((u) => (u.id === userId ? { ...u, properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p } : p)) } : u)));
-			if (!silentToast) {	
+			usersStore.update((prev) =>
+				prev.map((u) =>
+					u.id === userId
+						? {
+								...u,
+								properties: u.properties?.map((p) => (p.id === userPropertiesId ? { ...p } : p))
+							}
+						: u
+				)
+			);
+			if (!silentToast) {
 				toast.error(`Failed to update user properties`, { id: toastId });
 			}
 			throw new Error((error as Error).message);
@@ -337,5 +378,5 @@ export const usersActions = {
 			console.error(error);
 			throw new Error((error as Error).message);
 		}
-	},
+	}
 };

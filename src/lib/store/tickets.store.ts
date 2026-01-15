@@ -22,6 +22,7 @@ import { notificationsActions } from './notifications.store';
 import { meStore } from './me.store';
 import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 import { departmentsStore } from './departments.store';
+import { filesActions } from './files.store';
 
 export const ticketsStore = writable<GetTicket[]>([]);
 export const ticketsPagination = writable<Pagination>({ page: 1, size: 20 });
@@ -86,12 +87,19 @@ export const ticketsActions = {
 		}
 	},
 
-	createTicket: async (ticket: PostTicket) => {
+	createTicket: async (ticket: PostTicket, files: File[] = []) => {
 		const toastId = toast.loading(`Creating ticket...`);
 		try {
 			const data = await createTicket(ticket);
-			toast.success(`Ticket created successfully`, { id: toastId });
 			ticketsStore.set([data, ...get(ticketsStore)]);
+
+			if (files.length > 0) {
+				await Promise.all(
+					files.map((file) => filesActions.uploadFile({ file: file, ticket_id: data.id }))
+				);
+			}
+
+			toast.success(`Ticket created successfully`, { id: toastId });
 
 			// For ticket updates
 			const assignedId =
