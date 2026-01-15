@@ -66,13 +66,15 @@
 					<ReadableDate date={new Date(notification?.createdAt ?? '')} />
 				</div>
 
-				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2">
-					<div class="flex items-center gap-2">
-						<Ticket class="size-4" />
-						<span class="text-xs font-medium text-gray-600"
-							>{notification?.metadata?.code ?? ''}</span
-						>
-					</div>
+				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2" style="word-break: break-all;">
+					{#if 'code' in (notification?.metadata ?? {})}
+						<div class="flex items-center gap-2">
+							<Ticket class="size-4" />
+							<span class="text-xs font-medium text-gray-600"
+								>{notification?.metadata?.code ?? ''}</span
+							>
+						</div>
+					{/if}
 
 					<div class="line-clamp-2 text-sm text-ellipsis">
 						{@html notification?.metadata?.message ?? ''}
