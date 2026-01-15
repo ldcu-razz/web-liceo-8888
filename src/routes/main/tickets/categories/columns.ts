@@ -21,14 +21,6 @@ export function createTicketsCategoriesColumns(
 			}
 		},
 		{
-			header: 'Department',
-			accessorKey: 'default_department',
-			cell: ({ row }) => {
-				const department = get(departmentsMap)[row.original.department_id ?? ''];
-				return department?.abbv ?? '';
-			}
-		},
-		{
 			header: 'Status',
 			accessorKey: 'status',
 			cell: ({ row }) => {
