@@ -35,6 +35,7 @@
 	let { children } = $props();
 
 	let me = $derived($meStore);
+	
 	let showCreateTicketialog = $state(false);
 	let createTicketFormData = $state<FormData>({ ...initialFormData });
 	let createTicketLoading = $state(false);
@@ -77,7 +78,15 @@
 
 		showCreateTicketialog = true;
 	}
+	
 
+	function resetForm() {
+		createTicketFormData = { ...initialFormData };
+		uploadedFiles = [];
+	}
+
+	
+	
 	async function handleSubmitTicket(formData: FormData) {
 		try {
 			createTicketLoading = true;
@@ -95,12 +104,16 @@
 				createdAt: new Date().toISOString(),
 				updatedAt: new Date().toISOString()
 			};
+			
 
 			await ticketsActions.createTicket(payload, uploadedFiles);
-			await meActions.decrementTicketsCreation();
-			formData = { ...initialFormData };
+			if(!bypassTicketCreationLimit){
+				await meActions.decrementTicketsCreation();
+			}
+			
 			showCreateTicketialog = false;
 			createTicketLoading = false;
+			resetForm();
 		} catch (error) {
 			console.error(error);
 		}
