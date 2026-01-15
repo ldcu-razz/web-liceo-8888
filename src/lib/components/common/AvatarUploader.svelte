@@ -32,6 +32,13 @@
 
 	let layoutDirectionClass = $derived(layoutDirection === 'horizontal' ? 'flex-row' : 'flex-col');
 
+	// Reset file input when avatar is cleared (deleted)
+	$effect(() => {
+		if (!avatar && fileInput) {
+			fileInput.value = '';
+		}
+	});
+
 	function openImagePicker() {
 		fileInput?.click();
 	}
