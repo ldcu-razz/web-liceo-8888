@@ -85,7 +85,7 @@
 					<AccordionTrigger class="text-sm font-semibold">Description</AccordionTrigger>
 					<AccordionContent>
 						<div class="flex flex-col gap-2">
-							<p class="text-sm">{@html ticket.description}</p>
+							<p class="text-sm whitespace-pre-line">{@html ticket.description}</p>
 
 							<div class="mt-4 flex gap-2 overflow-x-auto">
 								{#each attachments as attachment}

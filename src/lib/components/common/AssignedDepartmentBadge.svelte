@@ -44,7 +44,7 @@
 
 	let avatar = useSignedUrl(() => selectedDepartment?.avatar);
 
-	let departmentName = $derived(transformText(selectedDepartment?.name ?? 'Unassigned'));
+	let departmentName = $derived(transformText(selectedDepartment?.name ?? 'Unassigned Department'));
 
 	let departmentInitial = $derived(selectedDepartment?.name?.slice(0, 2).toUpperCase() ?? 'U');
 

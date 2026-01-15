@@ -47,10 +47,6 @@ export function createUsersTableColumns(
 			accessorKey: 'email'
 		},
 		{
-			header: 'Username',
-			accessorKey: 'username'
-		},
-		{
 			header: 'Role',
 			accessorKey: 'role',
 			cell: ({ row }) => {
@@ -64,21 +60,24 @@ export function createUsersTableColumns(
 				return renderComponent(StatusBadge, { status: row.original.status });
 			}
 		},
-		{
-			header: 'Updated At',
-			accessorKey: 'updatedAt',
-			cell: ({ row }) => {
-				return new Date(row.original.updatedAt).toLocaleDateString('en-US', {
-					month: 'long',
-					day: 'numeric',
-					year: 'numeric',
-					hour: '2-digit',
+	{
+		header: 'Updated At',
+		accessorKey: 'updatedAt',
+		cell: ({ row }) => {
+			const date = new Date(row.original.updatedAt);
+			const month = date.toLocaleString('en-US', { month: 'short' });
+			const day = date.getDate();
+			const year = date.getFullYear();
+			const time = date
+				.toLocaleString('en-US', {
+					hour: 'numeric',
 					minute: '2-digit',
-					second: '2-digit',
 					hour12: true
-				});
-			}
-		},
+				})
+				.replace(' ', '');
+			return `${month} ${day}, ${year} ${time}`;
+		}
+	},
 		{
 			header: 'Actions',
 			accessorKey: 'actions',

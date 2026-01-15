@@ -143,7 +143,7 @@
 {/if}
 
 <Dialog bind:open={showCreateTicketialog}>
-	<DialogContent class="w-full sm:max-w-xl">
+	<DialogContent class="h-screen max-h-screen w-screen max-w-full overflow-y-auto rounded-none sm:h-[90vh] sm:max-h-[90vh] sm:w-full sm:max-w-xl sm:rounded-lg">
 		<DialogTitle>Create Ticket</DialogTitle>
 		<DialogDescription>
 			<div>
