@@ -62,11 +62,13 @@
 	<DropdownMenuTrigger {disabled}>
 		<div
 			class={cn(
-				'cursor-pointer rounded-sm border px-2.5 py-1.5 font-medium text-gray-700',
+				'rounded-sm border px-2.5 py-1.5 font-medium text-gray-700',
 				sizeClasses[size],
 				statusColors[selectedStatus],
 				borderColors[selectedStatus]
 			)}
+			class:cursor-default={disabled}
+			class:cursor-pointer={!disabled}
 		>
 			<div class="flex items-center gap-2">
 				<span class="capitalize {sizeClasses[size]}">{transformText(selectedStatus)}</span>

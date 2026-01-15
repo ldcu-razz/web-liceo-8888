@@ -37,7 +37,9 @@
 <DropdownMenu bind:open={openMenu}>
 	<DropdownMenuTrigger {disabled}>
 		<div
-			class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+			class="flex items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+			class:cursor-default={disabled}
+			class:cursor-pointer={!disabled}
 		>
 			{#if selectedPriority && typeof selectedPriority === 'string'}
 				<PriorityIcons priority={selectedPriority as TicketsPriorities} />
