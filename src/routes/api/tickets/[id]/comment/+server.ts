@@ -104,8 +104,9 @@ export const PUT: RequestHandler = async ({ request }) => {
 	return new Response(JSON.stringify(data), { status: 200 });
 };
 
-export const DELETE: RequestHandler = async ({ params }) => {
-	const { id } = params;
+export const DELETE: RequestHandler = async ({ request }) => {
+	const { id } = await request.json();
+
 	const { error } = await supabase
 		.from(TABLES.TICKET_COMMENTS)
 		.delete()
