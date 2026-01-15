@@ -17,7 +17,11 @@
 	import { LOGIN, MEMBER_PROFILE_CHANGE_PASSWORD, MEMBER_PROFILE_EDIT } from '$lib/constants';
 	import { LoaderCircle, PencilIcon } from '@lucide/svelte';
 
+	import { departmentsMap } from '$lib/store/departments.store';
+
 	let me = $derived($meStore);
+
+	let department = $derived($departmentsMap[me?.department_id ?? '']);
 
 	let intialName = $derived(
 		`${me?.firstname?.slice(0, 1).toUpperCase() ?? ''}${me?.lastname?.slice(0, 1).toUpperCase() ?? ''}`
@@ -32,53 +36,52 @@
 	);
 
 	let primaryInformation = $derived([
-		{
-			label: 'RFID',
-			value: me?.rfid_number
+		{ 
+			label: 'RFID', 
+			value: me?.rfid_number 
 		},
-		{
-			label: 'Fullname',
-			value: `${me?.firstname} ${me?.lastname}`
+		{ 
+			label: 'Fullname', 
+			value: `${me?.firstname} ${me?.lastname}` 
 		},
-		{
-			label: 'Sex',
-			value: transformText(me?.sex ?? '')
+		{ 
+			label: 'Sex', 
+			value: transformText(me?.sex ?? '') 
 		},
-		{
-			label: 'Birthdate',
-			value: meBirthdate
+		{ 
+			label: 'Birthdate', 
+			value: meBirthdate 
 		},
-		{
-			label: 'Email',
-			value: me?.email
+		{ 
+			label: 'Email', 
+			value: me?.email 
 		},
-		{
-			label: 'Contact Number',
-			value: me?.contact_number
+		{ 
+			label: 'Contact Number', 
+			value: me?.contact_number 
 		}
 	]);
 
 	let accountInformation = $derived([
-		{
-			label: 'Username',
-			value: `@${me?.username ?? ''}`
+		{ 
+			label: 'Username', 
+			value: `@${me?.username ?? ''}` 
 		},
-		{
-			label: 'Status',
-			value: transformText(me?.status ?? '')
+		{ 
+			label: 'Status', 
+			value: transformText(me?.status ?? '') 
 		},
-		{
-			label: 'Role',
-			value: transformText(me?.role ?? '')
+		{ 
+			label: 'Role', 
+			value: transformText(me?.role ?? '') 
 		},
-		{
-			label: 'Department',
-			value: me?.department?.name
+		{ 
+			label: 'Department', 
+			value: department?.name ?? '' 
 		}
 	]);
 
 	let showLogoutAlertDialog = $state(false);
-
 	let isLoggingOut = $derived($logginOutStore);
 
 	async function handleLogout() {
