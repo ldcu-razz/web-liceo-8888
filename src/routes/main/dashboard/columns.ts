@@ -6,6 +6,7 @@ import TicketPriorityBadge from '$lib/components/common/TicketPriorityBadge.svel
 import TicketStatusBadge from '$lib/components/common/TicketStatusBadge.svelte';
 import AssignedUserBadge from '$lib/components/common/AssignedUserBadge.svelte';
 import AssignedDepartmentBadge from '$lib/components/common/AssignedDepartmentBadge.svelte';
+import AnonymousBadge from '$lib/components/common/AnonymousBadge.svelte';
 
 export function createColumns(onView?: (id: string) => void): ColumnDef<GetTicket>[] {
 	return [
@@ -62,6 +63,9 @@ export function createColumns(onView?: (id: string) => void): ColumnDef<GetTicke
 			header: 'Reported by',
 			accessorKey: 'reported_by',
 			cell: ({ row }) => {
+				if (row.original.anon) {
+					return renderComponent(AnonymousBadge);
+				}
 				return renderComponent(AssignedUserBadge, {
 					selectedUserId: row.original.reported_by?.id ?? '',
 					showOptions: false
