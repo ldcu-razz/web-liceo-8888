@@ -14,12 +14,9 @@
 	} from '$lib/utils/form.utils';
 	import z from 'zod';
 	import { Button } from '$lib/components/ui/button';
-	import { departmentsMap, departmentsStore } from '$lib/store/departments.store';
-	import type { Departments } from '$lib/models/departments/departments.type';
 
 	export const formSchema = z.object({
 		name: z.string().min(1, 'Name is required'),
-		department_id: z.string().nullable(),
 		status: BaseStatusEnumSchema
 	});
 
@@ -29,7 +26,6 @@
 
 	export const defaultFormData: FormData = {
 		name: '',
-		department_id: null,
 		status: BaseStatusEnumSchema.enum.active
 	};
 
@@ -54,12 +50,6 @@
 	const statusOptions = BaseStatusEnumSchema.options;
 
 	const initialFormData: FormData = formData;
-
-	let departments = $state<Departments[]>($departmentsStore);
-
-	let departmentsMapData = $derived($departmentsMap);
-
-	let selectedDepartment = $derived(departmentsMapData[formData.department_id ?? '']);
 
 	let touched = $state<Record<keyof FormData, boolean>>(createInitialTouched(initialFormData));
 
@@ -94,15 +84,10 @@
 		}
 	}
 
-	function handleSelectClose(field: 'department_id' | 'status') {
-		if (formData[field]) {
-			touched[field] = true;
-			validateFieldData(field);
-		} else if (field === 'status') {
-			// Status is required, so mark as touched even if empty
-			touched[field] = true;
-			validateFieldData(field);
-		}
+	function handleSelectClose(field: 'status') {
+		touched[field] = true;
+		validateFieldData(field);
+		
 	}
 
 	function getFieldErrorMessage(field: keyof FormData): string | undefined {
@@ -141,35 +126,6 @@
 			/>
 			{#if getFieldErrorMessage('name')}
 				<FieldError errors={[{ message: getFieldErrorMessage('name') }]} />
-			{/if}
-		</Field>
-
-		<Field>
-			<FieldLabel for="default_department">Department</FieldLabel>
-			<Select
-				type="single"
-				bind:value={formData.department_id as string | undefined}
-				onOpenChange={(open) => {
-					if (!open) {
-						handleSelectClose('department_id');
-					}
-				}}
-			>
-				<SelectTrigger aria-invalid={hasFieldErrorMessage('department_id')}>
-					{#if formData.department_id}
-						<span>{selectedDepartment ? selectedDepartment.name : 'Select a department'}</span>
-					{:else}
-						<span class="text-gray-400">Select a department</span>
-					{/if}
-				</SelectTrigger>
-				<SelectContent>
-					{#each departments as department (department.id)}
-						<SelectItem value={department.id}>{transformText(department.name)}</SelectItem>
-					{/each}
-				</SelectContent>
-			</Select>
-			{#if getFieldErrorMessage('department_id')}
-				<FieldError errors={[{ message: getFieldErrorMessage('department_id') }]} />
 			{/if}
 		</Field>
 
