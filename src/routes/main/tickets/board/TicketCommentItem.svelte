@@ -84,14 +84,16 @@
 	<div class="flex items-start justify-between gap-2">
 		<div class="flex items-center gap-3">
 			{#if displayAsAnon}
-				<div class="size-8 rounded-full bg-sky-100 border-sky-300 text-sky-900 flex items-center justify-center">
+				<div
+					class="flex size-8 items-center justify-center rounded-full border-sky-300 bg-sky-100 text-sky-900"
+				>
 					<HatGlasses class="size-6 text-gray-600" />
 				</div>
 			{:else}
-			<Avatar class="size-8 border border-gray-200">
-				<AvatarImage src={createdByUserAvatar.url} />
-				<AvatarFallback class="text-sm font-semibold">{createdByUserInitial}</AvatarFallback>
-			</Avatar>
+				<Avatar class="size-8 border border-gray-200">
+					<AvatarImage src={createdByUserAvatar.url} />
+					<AvatarFallback class="text-sm font-semibold">{createdByUserInitial}</AvatarFallback>
+				</Avatar>
 			{/if}
 			<div class="flex items-center gap-2">
 				<p class="text-sm font-semibold text-gray-900">
@@ -155,7 +157,7 @@
 			</div>
 		</div>
 	{:else}
-		<p class="ml-11 text-sm leading-relaxed whitespace-pre-line text-gray-700 break-all">
+		<p class="ml-11 text-sm leading-relaxed break-all whitespace-pre-line text-gray-700">
 			{@html comment.comment}
 		</p>
 	{/if}

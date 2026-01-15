@@ -24,7 +24,9 @@
 
 	let unreadNotificationsCount = $derived($notificationsUnreadCountStore);
 
-	let unreadNotificationsCountLabel = $derived(unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount);
+	let unreadNotificationsCountLabel = $derived(
+		unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount
+	);
 
 	function handleCreateTicket() {
 		createTicket?.();
@@ -61,7 +63,9 @@
 			>
 				<BellIcon class="size-5" />
 				{#if unreadNotificationsCount > 0}
-					<Badge variant="destructive" class="p-0.5 text-[8px]">{unreadNotificationsCountLabel}</Badge>
+					<Badge variant="destructive" class="p-0.5 text-[8px]"
+						>{unreadNotificationsCountLabel}</Badge
+					>
 				{/if}
 				<span class="text-[10px]">Notifications</span>
 			</a>

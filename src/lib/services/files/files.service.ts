@@ -6,15 +6,15 @@ export const uploadFile = async (payload: PostFile): Promise<GetFile> => {
 	try {
 		const formData = new FormData();
 		formData.append('file', payload.file);
-		if (payload.user_id) {
-			formData.append('user_id', payload.user_id);
-		}
-		if (payload.ticket_id) {
-			formData.append('ticket_id', payload.ticket_id);
-		}
-		if (payload.department_id) {
-			formData.append('department_id', payload.department_id);
-		}
+		// if (payload.user_id) {
+		formData.append('user_id', payload.user_id ?? '');
+		// }
+		// if (payload.ticket_id) {
+		formData.append('ticket_id', payload.ticket_id ?? '');
+		// }
+		// if (payload.department_id) {
+		formData.append('department_id', payload.department_id ?? '');
+		// }
 
 		const response = await requestFetch(API_FILES_UPLOAD, {
 			method: 'POST',

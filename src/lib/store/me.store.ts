@@ -145,8 +145,24 @@ export const meActions = {
 				throw new Error('No tickets left');
 			}
 			const silentToast = true;
-			await usersActions.updateUserProperties(me?.id ?? '', userProperties?.id ?? '', { remaining_tickets_creation: remainingTicketsCreation - 1 }, silentToast);
-			meStore.update((prev) => (prev ? { ...prev, properties: prev.properties?.map((p) => (p.id === userProperties?.id ? { ...p, remaining_tickets_creation: remainingTicketsCreation - 1 } : p)) } : prev));
+			await usersActions.updateUserProperties(
+				me?.id ?? '',
+				userProperties?.id ?? '',
+				{ remaining_tickets_creation: remainingTicketsCreation - 1 },
+				silentToast
+			);
+			meStore.update((prev) =>
+				prev
+					? {
+							...prev,
+							properties: prev.properties?.map((p) =>
+								p.id === userProperties?.id
+									? { ...p, remaining_tickets_creation: remainingTicketsCreation - 1 }
+									: p
+							)
+						}
+					: prev
+			);
 		} catch (error) {
 			console.error(error);
 			throw new Error((error as Error).message);

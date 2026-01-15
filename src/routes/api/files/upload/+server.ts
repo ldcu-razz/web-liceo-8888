@@ -7,22 +7,16 @@ import { uuid } from '$lib/utils/uuid.util.js';
 
 export const POST = async ({ request }) => {
 	const formData = await request.formData();
+
 	const file = formData.get('file') as File | null;
-	const user_id = formData.get('user_id') as string | null;
-	const ticket_id = formData.get('ticket_id') as string | null;
-	const department_id = formData.get('department_id') as string | null;
+	const name = (formData.get('name') as string | null) || null;
+	const user_id = (formData.get('user_id') as string | null) || null;
+	const ticket_id = (formData.get('ticket_id') as string | null) || null;
+	const department_id = (formData.get('department_id') as string | null) || null;
 
 	if (!file) {
 		return new Response(JSON.stringify({ error: 'file is required' }), { status: 400 });
 	}
-
-	if (!user_id && !ticket_id && !department_id) {
-		return new Response(
-			JSON.stringify({ error: 'user_id, ticket_id, or department_id is required' }),
-			{ status: 400 }
-		);
-	}
-
 	// Derive metadata from the file object
 	const fileExt = file.name.split('.').pop() ?? '';
 	const id = user_id ?? ticket_id ?? department_id;
@@ -43,6 +37,7 @@ export const POST = async ({ request }) => {
 		user_id: user_id,
 		ticket_id: ticket_id,
 		department_id: department_id,
+		name: name ?? file.name,
 		path: data.path, // Store storage path like "userId/uuid.ext"
 		type: detectFileType(file.type, fileExt),
 		size: file.size,
@@ -54,8 +49,8 @@ export const POST = async ({ request }) => {
 	const { data: fileData, error: fileError } = await supabase
 		.from(TABLES.FILES)
 		.insert(fileProperties)
-		.select()
-		.single();
+		.select();
+
 	if (fileError) {
 		return new Response(JSON.stringify({ error: fileError.message }), { status: 500 });
 	}

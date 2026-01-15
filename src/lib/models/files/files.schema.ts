@@ -17,6 +17,7 @@ export const FilesSchema = z.object({
 	id: UUIDSchema,
 	path: z.string(),
 	type: FileTypesSchema,
+	name: z.string(),
 	size: z.number(),
 	extension: z.string(),
 	mime_type: z.string(),

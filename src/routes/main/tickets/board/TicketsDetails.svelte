@@ -38,6 +38,7 @@
 		TooltipTrigger
 	} from '$lib/components/ui/tooltip';
 	import AnonymousBadge from '$lib/components/common/AnonymousBadge.svelte';
+	import FilePlaceholder from '$lib/components/common/FilePlaceholder.svelte';
 
 	export type Props = {
 		ticket: GetTicket;
@@ -69,6 +70,8 @@
 	let descriptionValue = $state('');
 
 	let isAnonymous = $derived(ticket.anon);
+
+	let ticketFiles = $derived(ticket.files);
 
 	function handleStatusChangeTicketStatus(status: TicketStatuses) {
 		ticketsActions.changeTicketStatus(ticket.id, status);
@@ -197,7 +200,7 @@
 				</div>
 			{:else}
 				<div
-					class="mb-4 min-h-32 shrink-0 cursor-pointer rounded-sm p-1 hover:bg-gray-100"
+					class="mb-4 min-h-24 shrink-0 cursor-pointer rounded-sm p-1 hover:bg-gray-100"
 					role="button"
 					tabindex="0"
 					onclick={handleEditDescription}
@@ -205,6 +208,21 @@
 				>
 					<p class="text-sm whitespace-pre-line">{@html ticket.description}</p>
 				</div>
+
+				{#if ticketFiles.length > 0}
+					<div class="mt-4 flex flex-col gap-2">
+						<h3 class="mb-2 shrink-0 text-sm font-semibold">Attachments</h3>
+						<div class="flex gap-2 overflow-x-auto">
+							{#each ticketFiles as file}
+								{@const isNonMediaFile = file.type !== 'image' && file.type !== 'video'}
+								{@const sizeClass = isNonMediaFile ? 'w-52 h-32' : 'size-32'}
+								<div class={sizeClass}>
+									<FilePlaceholder {file} />
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
 			{/if}
 
 			<div class="mt-auto min-h-0 flex-1 pt-8">

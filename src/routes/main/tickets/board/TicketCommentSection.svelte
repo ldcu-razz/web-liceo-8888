@@ -28,7 +28,7 @@
 
 <script lang="ts">
 	let { ticket }: Props = $props();
-	
+
 	let ticketId = $derived(ticket.id);
 	let anon = $derived(ticket.anon);
 
@@ -128,7 +128,7 @@
 			{@const displayAsAnon = anon && reportedBy?.id === comment.created_by.id}
 			<TicketCommentItem
 				{comment}
-				displayAsAnon={displayAsAnon}
+				{displayAsAnon}
 				onEdit={() => handleEditComment(comment.id)}
 				onDelete={() => handleDeleteComment(comment.id)}
 				onSaveEdit={(value: string, mentionedUsers: MentionedUsers[]) =>

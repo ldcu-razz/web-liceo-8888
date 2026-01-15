@@ -17,10 +17,13 @@
 	import { Skeleton } from '$lib/components/ui/skeleton';
 	import { onMount } from 'svelte';
 	import { currentTicket, currentTicketLoading, ticketsActions } from '$lib/store/tickets.store';
+	import FilePlaceholder from '$lib/components/common/FilePlaceholder.svelte';
 
 	let ticketId = $state(page.params.id);
 
 	let ticket = $derived($currentTicket);
+
+	let attachments = $derived(ticket?.files);
 
 	let isAnonymous = $derived(ticket?.anon);
 
@@ -81,7 +84,20 @@
 				<AccordionItem value={descriptionAccordionValue}>
 					<AccordionTrigger class="text-sm font-semibold">Description</AccordionTrigger>
 					<AccordionContent>
-						<p class="text-sm">{@html ticket.description}</p>
+						<div class="flex flex-col gap-2">
+							<p class="text-sm">{@html ticket.description}</p>
+
+							<div class="mt-4 flex gap-2 overflow-x-auto">
+								{#each attachments as attachment}
+									{@const isNonMediaFile =
+										attachment.type !== 'image' && attachment.type !== 'video'}
+									{@const sizeClass = isNonMediaFile ? 'w-52 h-32' : 'size-32'}
+									<div class={sizeClass}>
+										<FilePlaceholder file={attachment} />
+									</div>
+								{/each}
+							</div>
+						</div>
 					</AccordionContent>
 				</AccordionItem>
 			</Accordion>
@@ -92,7 +108,7 @@
 			<div class="flex flex-col">
 				{#if isAnonymous}
 					<div
-						class="-mx-4 flex items-center justify-between gap-2 border-y border-sky-200 bg-sky-50 text-sky-700 p-4 text-sm"
+						class="-mx-4 flex items-center justify-between gap-2 border-y border-sky-200 bg-sky-50 p-4 text-sm text-sky-700"
 					>
 						<div class="flex items-center gap-2">
 							<HatGlasses class="size-4 text-sky-700" />
@@ -103,7 +119,9 @@
 					</div>
 				{/if}
 				<div
-					class="-mx-4 flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-4 text-sm {!isAnonymous ? 'border-y' : ''}"
+					class="-mx-4 flex items-center justify-between gap-2 border-b border-gray-200 bg-white p-4 text-sm {!isAnonymous
+						? 'border-y'
+						: ''}"
 				>
 					<div class="flex items-center gap-2">
 						<Building2Icon class="size-4 text-gray-600" />

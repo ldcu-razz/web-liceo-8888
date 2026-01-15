@@ -35,7 +35,9 @@
 
 	let userProperties = $derived(me?.properties?.[0] ?? null);
 
-	let bypassTicketCreationLimit = $derived(me?.properties?.[0]?.bypass_ticket_creation_limit ?? false);
+	let bypassTicketCreationLimit = $derived(
+		me?.properties?.[0]?.bypass_ticket_creation_limit ?? false
+	);
 
 	let isComponentMounted = $state(false);
 
@@ -84,8 +86,12 @@
 	<div class="align-center mt-4 flex flex-col gap-3 px-4 pt-3">
 		<div class="flex items-center justify-between">
 			<h3 class="text-2xl font-semibold">Tickets</h3>
-			<div class="text-xs border border-sky-500 text-sky-900 font-semibold bg-sky-500/10 py-1 px-2 rounded-md">
-				Tickets left: {bypassTicketCreationLimit ? 'Unlimited' : userProperties?.remaining_tickets_creation ?? 0}
+			<div
+				class="rounded-md border border-sky-500 bg-sky-500/10 px-2 py-1 text-xs font-semibold text-sky-900"
+			>
+				Tickets left: {bypassTicketCreationLimit
+					? 'Unlimited'
+					: (userProperties?.remaining_tickets_creation ?? 0)}
 			</div>
 		</div>
 		<InputGroup class="bg-white py-5">

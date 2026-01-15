@@ -1,6 +1,14 @@
 import { writable } from 'svelte/store';
-import type { GetUserProperties, PostUserProperties, PutUserProperties } from '$lib/models/users/user-properties.type';
-import { createUserProperties, getUserProperties, updateUserProperties } from '$lib/services/users/users-properties';
+import type {
+	GetUserProperties,
+	PostUserProperties,
+	PutUserProperties
+} from '$lib/models/users/user-properties.type';
+import {
+	createUserProperties,
+	getUserProperties,
+	updateUserProperties
+} from '$lib/services/users/users-properties';
 
 export const userPropertiesStore = writable<GetUserProperties | null>(null);
 export const userPropertiesLoadingStore = writable<boolean>(false);
@@ -33,7 +41,11 @@ export const userPropertiesActions = {
 		}
 	},
 
-	updateUserProperties: async (userId: string, userPropertiesId: string, data: PutUserProperties) => {
+	updateUserProperties: async (
+		userId: string,
+		userPropertiesId: string,
+		data: PutUserProperties
+	) => {
 		try {
 			userPropertiesLoadingStore.set(true);
 			userPropertiesErrorStore.set(null);
