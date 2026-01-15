@@ -73,7 +73,9 @@
 	<DropdownMenu bind:open={openMenu}>
 		<DropdownMenuTrigger>
 			<div
-				class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+				class="flex items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+				class:cursor-default={!showOptions}
+				class:cursor-pointer={showOptions}
 			>
 				<UserAvatar
 					name={departmentInitial}
@@ -143,7 +145,9 @@
 	</DropdownMenu>
 {:else}
 	<div
-		class="flex cursor-pointer items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+		class="flex items-center gap-1.5 rounded-sm border border-gray-200 bg-white px-2.5 py-1 text-xs font-medium text-gray-700"
+		class:cursor-default={!showOptions}
+		class:cursor-pointer={showOptions}
 	>
 		<UserAvatar
 			name={departmentInitial}
