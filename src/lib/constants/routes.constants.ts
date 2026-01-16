@@ -24,7 +24,8 @@ export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
 export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
 export const SYSTEM_SETTINGS = '/main/system/settings';
 export const MAINTENANCE = '/maintenance';
-export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS, MAINTENANCE];
+export const EMAIL_TEMPLATE = '/template/email';
+export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS, MAINTENANCE, EMAIL_TEMPLATE];
 
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
