@@ -9,16 +9,33 @@ export const GET = async ({ url }) => {
 	const userRoles = url.searchParams.get('userRoles');
 	const userRolesArray = userRoles ? userRoles.split(',') : [];
 
-	let queryBuilder = supabase.from('users').select('*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)').order('createdAt', { ascending: false });
+	let queryBuilder = supabase
+		.from('users')
+		.select(
+			'*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)'
+		)
+		.order('createdAt', { ascending: false });
 
 	if (size && page) {
 		queryBuilder = queryBuilder.range((page - 1) * size, page * size - 1);
 	}
 
 	if (query) {
-		queryBuilder = queryBuilder.or(
-			`firstname.ilike.%${query}%,lastname.ilike.%${query}%,username.ilike.%${query}%`
-		);
+		const isNumeric = !Number.isNaN(Number(query));
+
+		const orConditions = [
+			`firstname.ilike.%${query}%`,
+			`lastname.ilike.%${query}%`,
+			`username.ilike.%${query}%`
+		];
+
+		if (isNumeric) {
+    // We use rfid_number because that is the actual column name
+    // We remove Number() to keep it as a string (prevents losing leading zeros)
+    orConditions.push(`rfid_number.eq.${query}`);
+}
+
+		queryBuilder = queryBuilder.or(orConditions.join(','));
 	}
 
 	if (userRolesArray.length > 0) {
@@ -31,12 +48,35 @@ export const GET = async ({ url }) => {
 		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
 	}
 
-	const { count, error: countError } = await supabase
+	let countQuery = supabase
 		.from('users')
 		.select('*', { count: 'exact', head: true });
+
+	if (query) {
+    const orConditions = [
+        `firstname.ilike.%${query}%`,
+        `lastname.ilike.%${query}%`,
+        `username.ilike.%${query}%`,
+        // Targeted Fix: This ensures the exact RFID is matched 
+        // regardless of whether it contains letters or hyphens.
+        `rfid_number.eq.${query}` 
+    ];
+
+    // REMOVE the "if (isNumeric)" block entirely to satisfy 
+    // the requirement for exact RFID matching for all formats.
+    queryBuilder = queryBuilder.or(orConditions.join(','));
+}
+
+	if (userRolesArray.length > 0) {
+		countQuery = countQuery.in('role', userRolesArray);
+	}
+
+	const { count, error: countError } = await countQuery;
+
 	if (countError) {
 		return new Response(JSON.stringify({ error: countError.message }), { status: 500 });
 	}
+
 	return new Response(JSON.stringify({ data, count, page, size }), { status: 200 });
 };
 
