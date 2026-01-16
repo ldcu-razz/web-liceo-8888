@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	export type Props = {
 		ticketId: string;
+		isAnonymous?: boolean;
 	};
 </script>
 
@@ -15,7 +16,7 @@
 	import { Loader } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
-	let { ticketId }: Props = $props();
+	let { ticketId, isAnonymous = false }: Props = $props();
 
 	let ticketUpdates = $derived($ticketsUpdatesStore);
 	let activeTicketId = $derived($ticketsUpdatesActiveTicketIdStore);
@@ -50,10 +51,16 @@
 		return `${month} ${day} ${year} - ${hours}:${minutes} ${ampm}`;
 	}
 
-	onMount(() => {
-		if (!isActiveTicket) {
-			ticketUpdatesActions.getTicketsUpdates(ticketId, { page: 1, size: 20 });
+	function getSafeMessage(update: any): string {
+		if (isAnonymous && update.title === 'Ticket Created') {
+			return 'Anonymous created the ticket';
 		}
+
+		return update.message;
+	}
+
+	onMount(() => {
+		ticketUpdatesActions.getTicketsUpdates(ticketId, { page: 1, size: 20 });
 	});
 </script>
 
@@ -79,7 +86,7 @@
 				</div>
 				<div class="flex flex-1 flex-col gap-1 pb-6">
 					<h3 class="m-0 text-xs font-semibold text-foreground">{update.title}</h3>
-					<p class="m-0 text-xs text-gray-700">{@html update.message}</p>
+					<p class="m-0 text-xs text-gray-700">{@html getSafeMessage(update)}</p>
 					<span class="mt-1 text-xs text-muted-foreground">{formatDate(update.updated_at)}</span>
 				</div>
 			</div>
