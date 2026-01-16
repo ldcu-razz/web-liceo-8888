@@ -131,8 +131,6 @@
 		input.value = '';
 	}
 
-	$inspect(uploadedFiles);
-
 	function handleRemoveFile(file: File) {
 		uploadedFiles = uploadedFiles.filter((f) => f !== file);
 	}
