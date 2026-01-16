@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { LoginPayload, LoginResponse } from '$lib/models/session/session.type';
 import { login, logout } from '$lib/services/auth/login.service';
 import { toast } from 'svelte-sonner';
+import { commonActions } from './common.store';
 
 export const authStore = writable<LoginResponse | null>(null);
 export const logginOutStore = writable<boolean>(false);
@@ -28,6 +29,7 @@ export const authActions = {
 			const response = await logout();
 			if (response.success) {
 				authStore.set(null);
+				commonActions.clearUpStores();
 			}
 		} catch (error) {
 			toast.error('Failed to logout');

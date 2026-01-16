@@ -85,5 +85,13 @@ export const ticketCommentsActions = {
 			ticketCommentsStore.update((prev) => (currentComment ? [currentComment, ...prev] : prev));
 			toast.error(`Failed to delete comment`, { id: toastId });
 		}
+	},
+
+	reset: async () => {
+		ticketCommentsStore.set([]);
+		ticketCommentsPaginationStore.set({ page: 1, size: 10 });
+		ticketCommentsTotalCountStore.set(0);
+		ticketCommentsLoadingStore.set(false);
+		ticketCommentsErrorStore.set(null);
 	}
 };

@@ -49,7 +49,8 @@ export const POST = async ({ request }) => {
 	const { data: fileData, error: fileError } = await supabase
 		.from(TABLES.FILES)
 		.insert(fileProperties)
-		.select();
+		.select()
+		.single();
 
 	if (fileError) {
 		return new Response(JSON.stringify({ error: fileError.message }), { status: 500 });

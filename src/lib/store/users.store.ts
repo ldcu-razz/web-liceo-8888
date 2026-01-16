@@ -51,9 +51,9 @@ export const adminAndSuperAdminUsers = derived(allUsersStore, ($allUsersStore) =
 
 export const usersBasedOnDepartmentStore = (departmentId?: string) =>
 	derived(allUsersStore, ($allUsersStore) => {
-		return $allUsersStore.filter((u) =>
-			u.status === BaseStatusEnumSchema.enum.active && departmentId
-				? u.department_id === departmentId
+		return $allUsersStore.filter((user) =>
+			user.status === BaseStatusEnumSchema.enum.active && departmentId
+				? user.department_id === departmentId
 				: true
 		);
 	});

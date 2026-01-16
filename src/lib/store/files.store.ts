@@ -14,5 +14,9 @@ export const filesActions = {
 			console.error(error);
 			throw new Error((error as Error).message);
 		}
+	},
+
+	reset: async () => {
+		filesStore.set([]);
 	}
 };

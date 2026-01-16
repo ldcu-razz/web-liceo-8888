@@ -61,6 +61,7 @@ export const ticketUpdatesActions = {
 			ticket_id: ticketId,
 			assigned_id: assignedId || null,
 			type: TicketsUpdatesTypesSchema.enum.create_ticket,
+			is_visible_to_public: false,
 			title: await getCreateTicketTitle(),
 			message: await getCreateTicketRemarkMessage(me?.id || ''),
 			updated_at: new Date().toISOString(),
@@ -78,6 +79,7 @@ export const ticketUpdatesActions = {
 			id: uuid(),
 			ticket_id: ticketId,
 			assigned_id: assigned_id,
+			is_visible_to_public: true,
 			type: TicketsUpdatesTypesSchema.enum.department_assign,
 			title: await getDepartmentAssignTitle(),
 			message: await getDepartmentAssignRemarkMessage(departmentId, me?.id || ''),
@@ -93,6 +95,7 @@ export const ticketUpdatesActions = {
 			id: uuid(),
 			ticket_id: ticketId,
 			assigned_id: assigned_id,
+			is_visible_to_public: false,
 			type: TicketsUpdatesTypesSchema.enum.user_assign,
 			title: await getUserAssignTitle(),
 			message: await getUserAssignRemarkMessage(userId, me?.id || ''),
@@ -112,6 +115,7 @@ export const ticketUpdatesActions = {
 			id: uuid(),
 			ticket_id: ticketId,
 			assigned_id,
+			is_visible_to_public: true,
 			type: TicketsUpdatesTypesSchema.enum.priority_change,
 			title: await getPriorityChangeTitle(),
 			message: await getPriorityChangeRemarkMessage(priority, me?.id || ''),
@@ -131,11 +135,19 @@ export const ticketUpdatesActions = {
 			id: uuid(),
 			ticket_id: ticketId,
 			assigned_id,
+			is_visible_to_public: true,
 			type: TicketsUpdatesTypesSchema.enum.status_change,
 			title: await getStatusChangeTitle(),
 			message: await getStatusChangeRemarkMessage(status, me?.id || ''),
 			updated_at: new Date().toISOString(),
 			updated_by: me?.id || ''
 		};
+	},
+
+	reset: async () => {
+		ticketsUpdatesStore.set([]);
+		ticketsUpdatesActiveTicketIdStore.set('');
+		ticketUpdatesLoadingStore.set(false);
+		ticketsUpdatesPagination.set({ page: 1, size: 20 });
 	}
 };

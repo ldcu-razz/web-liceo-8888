@@ -56,5 +56,11 @@ export const userPropertiesActions = {
 		} finally {
 			userPropertiesLoadingStore.set(false);
 		}
+	},
+
+	reset: async () => {
+		userPropertiesStore.set(null);
+		userPropertiesLoadingStore.set(false);
+		userPropertiesErrorStore.set(null);
 	}
 };

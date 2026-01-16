@@ -216,5 +216,13 @@ export const notificationsActions = {
 		} catch (error) {
 			console.error(error);
 		}
+	},
+
+	reset: async () => {
+		notificationsStore.set([]);
+		notificationsLoadingStore.set(false);
+		notificationsCountStore.set(0);
+		notificationsUnreadCountStore.set(0);
+		notificationsPaginationStore.set({ page: 1, size: 15 });
 	}
 };

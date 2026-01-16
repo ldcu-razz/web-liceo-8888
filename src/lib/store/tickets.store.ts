@@ -173,7 +173,6 @@ export const ticketsActions = {
 			ticketUpdatesActions.postTicketsUpdates(postBody);
 
 			// For notifications
-			// TODO: Send the notification to users participating in the ticket
 			const me = get(meStore);
 			const isMeUserRole = me?.role === UserRolesEnumSchema.enum.user;
 			if (!isMeUserRole) {
@@ -297,5 +296,16 @@ export const ticketsActions = {
 			console.error(error);
 			toast.error(`Failed to copy ticket link`, { id: toastId });
 		}
+	},
+
+	reset: async () => {
+		ticketsStore.set([]);
+		ticketsPagination.set({ page: 1, size: 20 });
+		ticketsTotalCount.set(0);
+		ticketsLoading.set(false);
+		ticketsError.set(null);
+		currentTicket.set(null);
+		currentTicketLoading.set(false);
+		currentTicketError.set(null);
 	}
 };

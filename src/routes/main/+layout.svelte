@@ -51,6 +51,7 @@
 	import ScreenLoader from './ScreenLoader.svelte';
 	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
+	import { commonActions } from '$lib/store/common.store';
 
 	let { children } = $props();
 
@@ -122,11 +123,15 @@
 			href: PROFILE,
 			icon: UserCog
 		},
-		{
-			label: 'System Settings',
-			href: SYSTEM_SETTINGS,
-			icon: CogIcon
-		}
+		...(isMeSuperAdmin
+			? [
+					{
+						label: 'System Settings',
+						href: SYSTEM_SETTINGS,
+						icon: CogIcon
+					}
+				]
+			: []),
 	]);
 
 	let isLoggingOut = $derived($logginOutStore);

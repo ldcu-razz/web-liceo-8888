@@ -58,5 +58,22 @@ export const dashboardActions = {
 		} finally {
 			dashboardRecentTicketsLoadingStore.set(false);
 		}
+	},
+
+	reset: async () => {
+		dashboardStatsStore.set({
+			total_tickets: 0,
+			total_resolved_tickets: 0,
+			total_active_accounts: 0,
+			total_active_departments: 0
+		});
+		dashboardStatsLoadingStore.set(false);
+		dashboardStatsErrorStore.set(null);
+		totalTicketsGraphStore.set([]);
+		totalTicketsGraphLoadingStore.set(false);
+		totalTicketsGraphErrorStore.set(null);
+		dashboardRecentTicketsStore.set([]);
+		dashboardRecentTicketsLoadingStore.set(false);
+		dashboardRecentTicketsErrorStore.set(null);
 	}
 };
