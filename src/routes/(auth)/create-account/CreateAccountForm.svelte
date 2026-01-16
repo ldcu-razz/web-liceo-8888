@@ -34,8 +34,8 @@
 				.min(1, 'Username is required')
 				.min(6, 'Username must be at least 6 characters')
 				.regex(
-					/^[a-zA-Z0-9_-]+$/,
-					'Username can only contain letters, numbers, hyphens (-), and underscores (_)'
+					/^[a-zA-Z0-9_]+$/,
+						"Username can only contain letters, numbers, and underscores (_). The '-' symbol is not allowed."
 				),
 			password: z
 				.string()
