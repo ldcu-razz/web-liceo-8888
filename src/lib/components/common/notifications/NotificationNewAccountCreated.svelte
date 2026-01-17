@@ -59,7 +59,7 @@
 					<ReadableDate date={new Date(notification?.createdAt ?? '')} />
 				</div>
 
-				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2" style="word-break: break-all;">
+				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2 break-all">
 					<div class="line-clamp-2 text-sm text-ellipsis">
 						{@html notification?.metadata?.message ?? ''}
 					</div>
