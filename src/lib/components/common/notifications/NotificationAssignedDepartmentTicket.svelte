@@ -66,7 +66,7 @@
 					<ReadableDate date={new Date(notification?.createdAt ?? '')} />
 				</div>
 
-				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2 break-all">
+				<div class="mt-2 flex flex-col gap-2 rounded-md bg-gray-100 p-2 break-word">
 					{#if 'code' in (notification?.metadata ?? {})}
 						<div class="flex items-center gap-2">
 							<Ticket class="size-4" />
