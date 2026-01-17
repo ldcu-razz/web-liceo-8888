@@ -3,7 +3,8 @@ import type { TotalTicketGraph } from '$lib/models/dashboard/graph/total-ticket.
 import type { GetTicket } from '$lib/models/tickets/tickets.type';
 import { getDashboardStats, getTotalTicketsGraph } from '$lib/services/dashboard/dashboard.service';
 import { getTickets } from '$lib/services/tickets/tickets.service';
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
+import { meStore } from './me.store';
 
 export const dashboardStatsStore = writable<DashboardStats>();
 export const dashboardStatsLoadingStore = writable<boolean>(false);
@@ -50,7 +51,12 @@ export const dashboardActions = {
 		dashboardRecentTicketsLoadingStore.set(true);
 		try {
 			dashboardRecentTicketsErrorStore.set(null);
-			const tickets = await getTickets({ page: 1, size: 15 });
+			const user = get(meStore);
+			let departmentsAssignedIds: string[] | undefined;
+			if (user?.role === 'department_staff' && user.department_id) {
+				departmentsAssignedIds = [user.department_id];
+			}
+			const tickets = await getTickets({ page: 1, size: 15 }, undefined, departmentsAssignedIds);
 			dashboardRecentTicketsStore.set(tickets.data);
 		} catch (error) {
 			console.error(error);
