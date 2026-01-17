@@ -135,9 +135,12 @@ export function getCreateTicketNotificationPayload(
 	createdBy: GetUser,
 	notifyToUserId: string
 ): PostNotificationPayload {
-	const createdByFullName = ticket?.anon
+	const isAnonymous = ticket?.anon === true;
+
+	const createdByFullName = isAnonymous
 		? 'Anonymous User'
 		: `${createdBy.firstname} ${createdBy.lastname}`;
+
 	return {
 		id: uuid(),
 		type: NotificationsTypesSchema.enum.ticket_created,
@@ -146,7 +149,8 @@ export function getCreateTicketNotificationPayload(
 			code: ticket.code,
 			title: `<span style="font-weight: 600;">${createdByFullName}</span> created a new ticket`,
 			message: ticket.description,
-			created_by: createdBy.id
+			// If anonymous, use empty string so UI can show HatGlasses icon
+			created_by: isAnonymous ? '' : createdBy.id
 		},
 		mark_as_read: false,
 		notify_to: notifyToUserId,
