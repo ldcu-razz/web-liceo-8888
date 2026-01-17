@@ -103,7 +103,7 @@
 							<p style="margin: 0 0 12px 0; font-size: 14px; color: #5E5E5E; line-height: 1.6;">
 								If the button doesn't work, copy and paste this link into your browser:
 							</p>
-							<p style="margin: 0; font-size: 13px; color: {PRIMARY_COLOR}; word-break: break-all; line-height: 1.6;">
+							<p style="margin: 0; font-size: 13px; color: {PRIMARY_COLOR}; word-break: break-word; line-height: 1.6;">
 								{VERIFICATION_LINK}
 							</p>
 						</td>

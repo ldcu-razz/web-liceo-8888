@@ -105,7 +105,7 @@
 		</div>
 	</div>
 
-	<div class="flex items-center justify-between gap-2 break-all">
+	<div class="flex items-center justify-between gap-2 break-word">
 		<span class="line-clamp-1 text-sm text-ellipsis">{ticket.title}</span>
 		<PriorityIcons priority={ticket.priority} />
 	</div>

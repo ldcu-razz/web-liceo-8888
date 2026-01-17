@@ -130,7 +130,7 @@
 				<h1 class="text-sm font-semibold">{ticket.code}</h1>
 			</div>
 			<div class="flex flex-col gap-0.5">
-				<h2 class="text-lg font-semibold break-all">{ticket.title}</h2>
+				<h2 class="text-lg font-semibold break-word">{ticket.title}</h2>
 				{#if ticket.category}
 					<div class="w-fit rounded-sm border border-gray-300 p-1">
 						<div class="text-[10px] font-semibold">{ticket.category?.name}</div>
@@ -184,7 +184,7 @@
 	</header>
 
 	<section class="mt-4 grid max-h-full flex-1 grid-cols-10 gap-4 overflow-hidden">
-		<div class="col-span-6 flex flex-col overflow-y-auto pr-3 break-all">
+		<div class="col-span-6 flex flex-col overflow-y-auto pr-3 break-word">
 			<h3 class="mb-2 shrink-0 text-sm font-semibold">Description</h3>
 			{#if isEditDescription}
 				<RichTextEditor

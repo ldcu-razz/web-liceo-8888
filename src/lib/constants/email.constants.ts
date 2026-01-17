@@ -245,7 +245,7 @@ export const VERIFY_USER_ACCOUNT_HTML_TEMPLATE = (VERIFICATION_LINK: string) => 
     </head>
     <body>
       <div style="margin: 0; padding: 1rem 0.5rem; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" class="email-container" style="background-color: {PRIMARY_COLOR}; padding: 80px 20px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" class="email-container" style="background-color: #830b14; padding: 80px 20px;">
           <tbody>
           <tr>
             <td align="center">
@@ -287,7 +287,7 @@ export const VERIFY_USER_ACCOUNT_HTML_TEMPLATE = (VERIFICATION_LINK: string) => 
                     <p style="margin: 0 0 12px 0; font-size: 14px; color: #5E5E5E; line-height: 1.6;">
                       If the button doesn't work, copy and paste this link into your browser:
                     </p>
-                    <p style="margin: 0; font-size: 13px; color: {PRIMARY_COLOR}; word-break: break-all; line-height: 1.6;">
+                    <p style="margin: 0; font-size: 13px; color: #830b14; word-break: break-word; line-height: 1.6;">
                       ${VERIFICATION_LINK}
                     </p>
                   </td>

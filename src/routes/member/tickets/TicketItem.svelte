@@ -89,7 +89,7 @@
 
 		<div class="mt-0.5 flex flex-col gap-1">
 			<p class="text-xs text-gray-500">{ticket?.code}</p>
-			<h3 class="line-clamp-1 text-lg font-medium break-all text-ellipsis">{ticket?.title}</h3>
+			<h3 class="line-clamp-1 text-lg font-medium break-word text-ellipsis">{ticket?.title}</h3>
 
 			<div class="mt-2 flex items-center gap-2">
 				{#if ticket?.status}
