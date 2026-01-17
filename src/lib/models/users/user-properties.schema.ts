@@ -5,7 +5,9 @@ export const UserPropertiesSchema = z.object({
 	id: z.string(),
 	user_id: UUIDSchema,
 	remaining_tickets_creation: z.number(),
-	bypass_ticket_creation_limit: z.boolean().default(false)
+	bypass_ticket_creation_limit: z.boolean().default(false),
+	vertification_token: z.string().nullable().default(null),
+	verified_at: z.string().nullable().default(null),
 });
 
 export const PostUserPropertiesSchema = UserPropertiesSchema;

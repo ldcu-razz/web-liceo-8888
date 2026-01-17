@@ -2,6 +2,7 @@ export const BASE_URL = '/';
 export const LOGIN = '/login';
 export const CREATE_ACCOUNT = '/create-account';
 export const CREATE_ACCOUNT_SUCCESS = '/create-account-success';
+export const VERIFY_EMAIL = '/verify/email';
 export const MAIN = '/main';
 export const DASHBOARD = '/main/dashboard';
 export const TICKETS_BOARD = '/main/tickets/board';
@@ -24,7 +25,8 @@ export const MEMBER_PROFILE_EDIT = '/member/profile/edit';
 export const MEMBER_PROFILE_CHANGE_PASSWORD = '/member/profile/change-password';
 export const SYSTEM_SETTINGS = '/main/system/settings';
 export const MAINTENANCE = '/maintenance';
-export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS, MAINTENANCE];
+export const EMAIL_TEMPLATE = '/template/email';
+export const PUBLIC_ROUTES = [LOGIN, CREATE_ACCOUNT, CREATE_ACCOUNT_SUCCESS, VERIFY_EMAIL, MAINTENANCE, EMAIL_TEMPLATE];
 
 /** REGION: API URLS */
 export const API_BASE_URL = '/api';
@@ -33,6 +35,7 @@ export const API_BASE_URL = '/api';
 export const API_AUTH_SESSION = '/api/auth/session';
 export const API_AUTH_LOGIN = '/api/auth/login';
 export const API_AUTH_LOGOUT = '/api/auth/logout';
+export const API_AUTH_VERIFY_EMAIL = '/api/auth/verify/email';
 
 // Dashboard
 export const API_DASHBOARD = '/api/dashboard';
@@ -50,6 +53,7 @@ export const API_USERS_ME = '/api/users/me';
 export const API_USERS_CHECK_USERNAME = '/api/users/check-username';
 export const API_USERS_CHANGE_PASSWORD = '/api/users/change-password';
 export const API_USERS_CHANGE_USERNAME = '/api/users/change-username';
+export const API_USERS_CHECK_EMAIL = '/api/users/check-email';
 export const API_USERS_CREATE_ACCOUNT = '/api/users/create-account';
 export const API_USERS_PROPERTIES = '/api/users/{id}/properties';
 export const API_USERS_PROPERTIES_RESET = '/api/users/properties/reset';
@@ -79,7 +83,9 @@ export const PUBLIC_API_ROUTES = [
 	API_AUTH_LOGOUT,
 	API_DEPARTMENTS,
 	API_USERS_CHECK_USERNAME,
+	API_USERS_CHECK_EMAIL,
 	API_USERS_CREATE_ACCOUNT,
 	API_USERS_TOTAL_USERS,
-	API_SYSTEM_SETTINGS
+	API_SYSTEM_SETTINGS,
+	API_AUTH_VERIFY_EMAIL
 ];

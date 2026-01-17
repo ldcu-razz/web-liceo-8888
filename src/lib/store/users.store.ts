@@ -1,5 +1,6 @@
 import { derived, get, writable } from 'svelte/store';
 import type {
+	GetUserByEmailResponse,
 	GetUserByUsernameResponse,
 	PostUsers,
 	PutUsers,
@@ -9,6 +10,7 @@ import type {
 import type { BaseStatusEnum, Pagination } from '$lib/models/common/common.type';
 import {
 	archiveUser,
+	checkEmail,
 	checkUsername,
 	createAccount,
 	createUser,
@@ -268,6 +270,16 @@ export const usersActions = {
 	checkUsername: async (username: string): Promise<GetUserByUsernameResponse> => {
 		try {
 			const response = await checkUsername(username);
+			return response;
+		} catch (error) {
+			console.error(error);
+			throw new Error((error as Error).message);
+		}
+	},
+
+	checkEmail: async (email: string): Promise<GetUserByEmailResponse> => {
+		try {
+			const response = await checkEmail(email);
 			return response;
 		} catch (error) {
 			console.error(error);
