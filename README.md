@@ -81,7 +81,9 @@ Thanks to these wonderful people who have contributed to Liceo 8888:
 | <img src="https://avatars.githubusercontent.com/u/222370319?v=4" width="40px;"/> | **Ernesto Razo** | Lead/Senior Developer | [@ldcu-razz](https://github.com/ldcu-razz) |
 | <img src="https://avatars.githubusercontent.com/u/222396091?v=4" width="40px;"/> | **Lleunel Valmoria** | Developer | [@nel2131](https://github.com/nel2131) |
 | <img src="https://avatars.githubusercontent.com/u/221650488?v=4" width="40px;"/> | **Jose Borja** | Developer | [@josemanuelborja](https://github.com/josemanuelborja) |
+| <img src="https://avatars.githubusercontent.com/u/221546268?v=4" width="40px;"/> | **Ashton Lactuan** | Developer | [@AshtonLactuan](https://github.com/AshtonLactuan) |
 | <img src="https://avatars.githubusercontent.com/u/222395829?v=4" width="40px;"/> | **Raque Alexy Paradillo** | Developer | [@raParadillo](https://github.com/raParadillo) |
+| <img src="https://avatars.githubusercontent.com/u/221546268?v=4" width="40px;"/> | **Johnden Llatuna** | Developer | [@johndenllatuna](https://github.com/johndenllatuna) |
 | <img src="https://avatars.githubusercontent.com/u/222396765?v=4" width="40px;"/> | **Arweyne Salcacedo** | Quality Assurance | [@arsiiee](https://github.com/arsiiee) |
 | <img src="https://avatars.githubusercontent.com/u/188642106?v=4" width="40px;"/> | **Josh Daniel Uy** | Quality Assurance | [@JDaiNCK](https://github.com/JDaiNCK) |
 | <img src="https://avatars.githubusercontent.com/u/222396576?v=4" width="40px;"/> | **Ambersleyy** | Quality Assurance | [@AmberAinsleyGarillos](https://github.com/AmberAinsleyGarillos) |
