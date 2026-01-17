@@ -19,6 +19,7 @@
 	import { ticketsActions } from '$lib/store/tickets.store';
 	import ScreenLoader from '../main/ScreenLoader.svelte';
 	import { usersActions } from '$lib/store/users.store';
+	import { departmentsActions } from '$lib/store/departments.store';
 	import { notificationsActions } from '$lib/store/notifications.store';
 	import { ticketCategoriesActions } from '$lib/store/ticket-categories.store';
 	import { getNotificationChannel } from '$lib/services/notifications/notifications.service';
@@ -59,6 +60,7 @@
 		neededDataLoaded = false;
 		await meActions.getMe();
 		await usersActions.getAllUsers();
+		await departmentsActions.getDepartments({ page: 1, size: 25 });
 		await ticketCategoriesActions.getAllTicketCategories();
 		if (me?.role !== UserRolesEnumSchema.enum.user) {
 			await goto(MAIN);
