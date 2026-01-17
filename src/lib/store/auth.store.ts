@@ -3,11 +3,22 @@ import type { LoginPayload, LoginResponse } from '$lib/models/session/session.ty
 import { login, logout } from '$lib/services/auth/login.service';
 import { toast } from 'svelte-sonner';
 import { commonActions } from './common.store';
+import { verifyUserEmail } from '$lib/services/auth/verify.service';
 
 export const authStore = writable<LoginResponse | null>(null);
 export const logginOutStore = writable<boolean>(false);
 
 export const authActions = {
+	verifyUserEmail: async (token: string): Promise<boolean> => {
+		try {
+			const response = await verifyUserEmail(token);
+			return response;
+		} catch (error) {
+			console.error(error);
+			throw new Error((error as Error).message);
+		}
+	},
+
 	login: async (payload: LoginPayload): Promise<LoginResponse> => {
 		try {
 			const response = await login(payload);

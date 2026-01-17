@@ -51,6 +51,10 @@ export const GetUserByUsernameResponseSchema = z.object({
 	exists: z.boolean()
 });
 
+export const GetUserByEmailResponseSchema = z.object({
+	exists: z.boolean()
+});
+
 export const MentionedUsersSchema = UsersSchema.pick({
 	id: true,
 	firstname: true,

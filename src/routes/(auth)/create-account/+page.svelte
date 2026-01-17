@@ -1,13 +1,13 @@
+<script lang="ts" module>
+	const emailAddressValue = 'email-address';
+	const primaryInformationValue = 'primary-information';
+	const departmentSelectionValue = 'department-selection';
+	const userAccountValue = 'user-account';
+
+	type NavigationStep = typeof emailAddressValue | typeof primaryInformationValue | typeof departmentSelectionValue | typeof userAccountValue;
+</script>
+
 <script lang="ts">
-	import { Tabs, TabsContent, TabsList, TabsTrigger } from '$lib/components/ui/tabs';
-	import PrimaryInformationForm, {
-		type FormData as PrimaryInformationFormData,
-		defaultFormData as defaultPrimaryInformationFormData
-	} from './PrimaryInformationForm.svelte';
-	import CreateAccountForm, {
-		type FormData as CreateAccountFormData,
-		defaultFormData as defaultCreateAccountFormData
-	} from './CreateAccountForm.svelte';
 	import { CREATE_ACCOUNT_SUCCESS, LOGIN } from '$lib/constants';
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowLeftIcon } from '@lucide/svelte';
@@ -22,25 +22,25 @@
 	} from '$lib/models/users/users.schema';
 	import { usersActions } from '$lib/store/users.store';
 	import { uuid } from '$lib/utils/uuid.util';
-	import { systemSettingsActions, systemSettingsStore } from '$lib/store/system-settings.store';
+	import { systemSettingsStore } from '$lib/store/system-settings.store';
 	import Skeleton from '$lib/components/ui/skeleton/skeleton.svelte';
 	import CreateUserReachLimit from './CreateUserReachLimit.svelte';
+	import EmailForm, { type FormData as EmailFormData, initialFormData as initialEmailFormData } from './EmailForm.svelte';
+	import UserPrimaryInformationForm, { type FormData as UserPrimaryInformationFormData, initialFormData as initialUserPrimaryInformationFormData } from './UserPrimaryInformationForm.svelte';
+	import DepartmentForm, { type FormData as DepartmentFormData, initialFormData as initialDepartmentFormData } from './DepartmentForm.svelte';
+	import UserAccountForm, { type FormData as UserAccountFormData, initialFormData as initialUserAccountFormData } from './UserAccountForm.svelte';
 
-	const primaryInformationValue = 'primary-information';
-	const createAccountValue = 'create-account';
-
-	let activeTab = $state(primaryInformationValue);
-	let isPrimaryInformationFormInvalid = $state(false);
-	let disabledCreateAccountTab = $state(true);
+	let activeStep = $state<NavigationStep>(emailAddressValue);
 	let totalUsers = $state(0);
-	let loading = $state(false);
+	let loading = $state(true);
 
-	let systemSettings = $derived($systemSettingsStore);
+	let emailAddressFormData = $state<EmailFormData>(initialEmailFormData);
+	let userPrimaryInformationFormData = $state<UserPrimaryInformationFormData>(initialUserPrimaryInformationFormData);
+	let departmentFormData = $state<DepartmentFormData>(initialDepartmentFormData);
+	let userAccountFormData = $state<UserAccountFormData>(initialUserAccountFormData);
+	let isCreatingAccount = $state(false);
 
-	let primaryInformationFormData = $state<PrimaryInformationFormData>(
-		defaultPrimaryInformationFormData
-	);
-	let createAccountFormData = $state<CreateAccountFormData>(defaultCreateAccountFormData);
+	let systemSettings = $derived($systemSettingsStore)
 
 	let isAccountCreationLimitReached = $derived(
 		totalUsers >= (systemSettings?.number_of_users_creation_limit || 0)
@@ -51,23 +51,21 @@
 		const { count } = await usersActions.getTotalUsers();
 		totalUsers = count;
 		loading = false;
+
 		departmentsActions.getDepartments({ page: 1, size: 25 });
 	});
 
-	function handlePrimaryInformationFormProceed(__: PrimaryInformationFormData) {
-		disabledCreateAccountTab = false;
-
-		if (!isPrimaryInformationFormInvalid) {
-			activeTab = createAccountValue;
-		}
-	}
-
-	async function handleCreateAccount(__: CreateAccountFormData) {
+	async function handleCreateAccount() {
 		try {
+			isCreatingAccount = true;
+			const { username, password } = userAccountFormData;
 			const payload: PostUsers = PostUsersSchema.parse({
 				id: uuid(),
-				...primaryInformationFormData,
-				...createAccountFormData,
+				...emailAddressFormData,
+				...userPrimaryInformationFormData,
+				...departmentFormData,
+				username,
+				password,
 				role: UserRolesEnumSchema.enum.user,
 				status: UserStatusEnumSchema.enum.needs_verification,
 				avatar: '',
@@ -76,21 +74,29 @@
 			});
 
 			await usersActions.createAccount(payload);
-			await usersActions.createUserProperties(
-				payload.id,
-				{
-					id: uuid(),
-					user_id: payload.id,
-					remaining_tickets_creation: systemSettings?.number_of_tickets_creation_limit ?? 0,
-					bypass_ticket_creation_limit: false
-				},
-				true
-			);
 
 			goto(CREATE_ACCOUNT_SUCCESS);
 		} catch (error) {
 			console.error(error);
+		} finally {
+			isCreatingAccount = false;
 		}
+	}
+
+	function handleEmailAddressFormProceed(__: EmailFormData) {
+		activeStep = primaryInformationValue;
+	}
+
+	function handleUserPrimaryInformationFormProceed(__: UserPrimaryInformationFormData) {
+		activeStep = departmentSelectionValue;
+	}
+
+	function handleDepartmentFormProceed(__: DepartmentFormData) {
+		activeStep = userAccountValue;
+	}
+
+	function handleUserAccountFormProceed(__: UserAccountFormData) {
+		handleCreateAccount();
 	}
 </script>
 
@@ -114,29 +120,31 @@
 		<h1 class="text-2xl font-bold">Create your account</h1>
 		<p class="text-md text-gray-500">Enter the following information to create your account</p>
 	</div>
-	<div class="w-full max-w-lg">
-		<Tabs bind:value={activeTab}>
-			<TabsList>
-				<TabsTrigger value={primaryInformationValue}>Primary Information</TabsTrigger>
-				<TabsTrigger
-					value={createAccountValue}
-					disabled={isPrimaryInformationFormInvalid || disabledCreateAccountTab}
-					>Create Account</TabsTrigger
-				>
-			</TabsList>
-			<TabsContent value={primaryInformationValue}>
-				<PrimaryInformationForm
-					bind:invalid={isPrimaryInformationFormInvalid}
-					bind:formData={primaryInformationFormData}
-					onProceed={handlePrimaryInformationFormProceed}
-				/>
-			</TabsContent>
-			<TabsContent value={createAccountValue}>
-				<CreateAccountForm
-					bind:formData={createAccountFormData}
-					onCreateAccount={handleCreateAccount}
-				/>
-			</TabsContent>
-		</Tabs>
+	<div class="w-full max-w-lg p-6 bg-gray-50 rounded-md">
+		{#if activeStep === emailAddressValue}
+			<EmailForm
+				bind:formData={emailAddressFormData}
+				onSubmit={handleEmailAddressFormProceed}
+			/>
+		{:else if activeStep === primaryInformationValue}
+			<UserPrimaryInformationForm
+				bind:formData={userPrimaryInformationFormData}
+				onCancel={() => activeStep = emailAddressValue}
+				onSubmit={handleUserPrimaryInformationFormProceed}
+			/>
+		{:else if activeStep === departmentSelectionValue}
+			<DepartmentForm
+				bind:formData={departmentFormData}
+				onCancel={() => activeStep = primaryInformationValue}
+				onSubmit={handleDepartmentFormProceed}
+			/>
+		{:else if activeStep === userAccountValue}
+			<UserAccountForm
+				bind:formData={userAccountFormData}
+				disabled={isCreatingAccount}
+				onCancel={() => activeStep = departmentSelectionValue}
+				onSubmit={handleUserAccountFormProceed}
+			/>
+		{/if}
 	</div>
 {/if}

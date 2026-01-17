@@ -1,5 +1,6 @@
 <script lang="ts">
 	import EmailVerifyAccountTemplate from "./EmailVerifyAccountTemplate.svelte";
+	import EmailWelcomeUser from "./EmailWelcomeUser.svelte";
 	import TicketStatusInProgress from "./TicketStatusInProgress.svelte";
 	import TicketStatusDone from "./TicketStatusDone.svelte";
 	import TicketHasNewComment from "./TicketHasNewComment.svelte";
@@ -9,6 +10,11 @@
 	<div class="w-full">
 		<h2 class="text-2xl font-bold mb-4 text-center">Email Verification Template</h2>
 		<EmailVerifyAccountTemplate />
+	</div>
+
+	<div class="w-full border-t-4 border-gray-300 pt-8">
+		<h2 class="text-2xl font-bold mb-4 text-center">Welcome User Template</h2>
+		<EmailWelcomeUser />
 	</div>
 	
 	<div class="w-full border-t-4 border-gray-300 pt-8">

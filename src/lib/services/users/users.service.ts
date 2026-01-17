@@ -2,6 +2,7 @@ import {
 	API_USERS,
 	API_USERS_CHANGE_PASSWORD,
 	API_USERS_CHANGE_USERNAME,
+	API_USERS_CHECK_EMAIL,
 	API_USERS_CHECK_USERNAME,
 	API_USERS_CREATE_ACCOUNT,
 	API_USERS_ID,
@@ -13,6 +14,7 @@ import type { Pagination } from '$lib/models/common/common.type';
 import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 import type {
 	GetUser,
+	GetUserByEmailResponse,
 	GetUserByUsernameResponse,
 	PaginatedUsers,
 	PostUsers,
@@ -168,6 +170,21 @@ export async function checkUsername(username: string): Promise<GetUserByUsername
 		const url = new URL(API_USERS_CHECK_USERNAME, window.location.origin);
 		url.searchParams.set('username', username);
 
+		const result = await requestFetch(url.toString());
+		if (!result.ok) {
+			throw new Error(result.statusText);
+		}
+		return result.json();
+	} catch (error) {
+		console.error(error);
+		throw new Error((error as Error).message);
+	}
+}
+
+export async function checkEmail(email: string): Promise<GetUserByEmailResponse> {
+	try {
+		const url = new URL(API_USERS_CHECK_EMAIL, window.location.origin);
+		url.searchParams.set('email', email);
 		const result = await requestFetch(url.toString());
 		if (!result.ok) {
 			throw new Error(result.statusText);

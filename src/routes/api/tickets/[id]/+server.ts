@@ -1,6 +1,8 @@
 import { TABLES } from '$lib/constants/tables.constants';
 import type { GetTicket, Ticket } from '$lib/models/tickets/tickets.type';
 import { supabase } from '$lib/supabase/client';
+import { sendEmailToUserUpdateTicketToDone, sendEmailToUserUpdateTicketToInProgress } from '$lib/services/email/send-email.service';
+import { TicketStatusesSchema } from '$lib/models/tickets/tickets.schema.js';
 
 export const GET = async ({ params }) => {
 	const { id } = params;
@@ -43,12 +45,23 @@ export const PUT = async ({ params, request }) => {
     files(*)
     `
 		)
-		.single()
-		.overrideTypes<GetTicket>();
+		.single();
+
 	if (error) {
 		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
 	}
-	return new Response(JSON.stringify(data), { status: 200 });
+
+	const typedData = data as GetTicket;
+
+	if (typedData.status === TicketStatusesSchema.enum.done) {
+		sendEmailToUserUpdateTicketToDone(typedData.reported_by?.id, typedData);
+	}
+
+	if (typedData.status === TicketStatusesSchema.enum.in_progress) {
+		sendEmailToUserUpdateTicketToInProgress(typedData.reported_by?.id, typedData);
+	}
+
+	return new Response(JSON.stringify(typedData), { status: 200 });
 };
 
 export const DELETE = async ({ params }) => {

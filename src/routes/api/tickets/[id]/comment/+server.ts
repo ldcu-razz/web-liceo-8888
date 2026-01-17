@@ -6,6 +6,7 @@ import type {
 	TicketComment
 } from '$lib/models/tickets/ticket-comments.type';
 import type { RequestHandler } from '@sveltejs/kit';
+import { sendEmailToUserUpdateTicketComment } from '$lib/services/email/send-email.service';
 
 export const GET: RequestHandler = async ({ params, url }) => {
 	const page = Number(url.searchParams.get('page')) || 1;
@@ -65,7 +66,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.json();
 
-	const { data, error } = await supabase
+	const { data, error: commentError } = await supabase
 		.from(TABLES.TICKET_COMMENTS)
 		.insert(body)
 		.select(
@@ -76,10 +77,19 @@ export const POST: RequestHandler = async ({ request }) => {
 		)
 		.single()
 		.overrideTypes<GetTicketComment>();
-	if (error) {
-		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+
+		
+	if (commentError) {
+		return new Response(JSON.stringify({ error: commentError.message }), { status: 500 });
 	}
-	return new Response(JSON.stringify(data), { status: 200 });
+		
+	const commentTypedData = data as GetTicketComment;
+
+	if (commentTypedData.is_visible_to_public) {
+		sendEmailToUserUpdateTicketComment(commentTypedData);
+	}
+
+	return new Response(JSON.stringify(commentTypedData), { status: 200 });
 };
 
 export const PUT: RequestHandler = async ({ request }) => {
