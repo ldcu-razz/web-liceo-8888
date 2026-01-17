@@ -60,7 +60,7 @@
 		<div class="flex flex-1 items-center justify-between gap-2">
 			<span class="w-52 text-sm text-gray-500">Remaining Tickets Creation</span>
 			<div class="flex items-center gap-2">
-				<Input type="number" class="w-24" bind:value={remainingTicketsCreation} />
+				<Input type="number" class="w-24" bind:value={remainingTicketsCreation} min="0" />
 				<Button
 					variant="outline"
 					size="sm"
