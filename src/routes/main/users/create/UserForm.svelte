@@ -3,6 +3,7 @@
 	import { Field, FieldGroup, FieldLabel, FieldError } from '$lib/components/ui/field';
 	import FieldSeparator from '$lib/components/ui/field/field-separator.svelte';
 	import { Input } from '$lib/components/ui/input';
+	import { InputGroup, InputGroupAddon, InputGroupInput } from '$lib/components/ui/input-group';
 	import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
 	import { SelectCalendar } from '$lib/components/ui/select-calendar';
 	import { SexEnumSchema, UUIDSchema } from '$lib/models/common/common.schema';
@@ -27,6 +28,7 @@
 	import type { Departments } from '$lib/models/departments/departments.type';
 	import { debounce } from '$lib/utils/reactive.utils';
 	import { usersActions } from '$lib/store/users.store';
+	import { LoaderCircle } from '@lucide/svelte';
 
 	export type FormData = z.infer<typeof formSchema>;
 
@@ -50,7 +52,9 @@
 			lastname: z.string().min(1, 'Lastname is required'),
 			sex: SexEnumSchema,
 			birthdate: z.string().min(1, 'Birthdate is required'),
-			email: z.string().min(1, 'Email is required').email('Invalid email address'),
+			email: z.string().min(1, 'Email is required').email('Invalid email address').refine((email) => email.includes('liceo.edu.ph'), {
+				message: 'The email address is not a valid Liceo email address',
+			}),
 			contact_number: z
 				.string()
 				.min(1, 'Contact number is required')
@@ -129,7 +133,11 @@
 		departments.find((department) => department.id === formData.department_id)
 	);
 
+	let isModeUpdate = $derived(mode === 'update');
+
 	let isUsernameExists = $state(false);
+	let isEmailExists = $state(false);
+	let isCheckingEmail = $state(false);
 
 	const debouncedCheckUsername = debounce(async (username: string) => {
 		const response = await usersActions.checkUsername(username);
@@ -142,6 +150,34 @@
 			errors.username = undefined;
 		}
 	}, 600);
+
+	const debouncedCheckEmail = debounce(async (email: string) => {
+		// Validate email format first
+		const emailResult = formSchema.shape.email.safeParse(email);
+		if (!emailResult.success) {
+			isEmailExists = false;
+			isCheckingEmail = false;
+			return;
+		}
+
+		isCheckingEmail = true;
+		try {
+			const response = await usersActions.checkEmail(email);
+			isEmailExists = response.exists;
+
+			if (isEmailExists) {
+				errors.email = 'Email already registered';
+				touched.email = true;
+			} else {
+				errors.email = undefined;
+			}
+		} catch (error) {
+			console.error('Error checking email:', error);
+			isEmailExists = false;
+		} finally {
+			isCheckingEmail = false;
+		}
+	}, 300);
 
 	$effect(() => {
 		if (formData.birthdate) {
@@ -161,6 +197,12 @@
 		}
 	});
 
+	$effect(() => {
+		if (formData.email && mode === 'create') {
+			debouncedCheckEmail(formData.email);
+		}
+	});
+
 	function validateFormData() {
 		const schema = mode === 'create' ? formSchema : formSchemaUpdate;
 		const result = validateForm(formData, schema);
@@ -169,6 +211,12 @@
 		// Check for async username validation error
 		if (mode === 'create' && isUsernameExists) {
 			errors.username = 'Username is already taken';
+			result.invalid = true;
+		}
+
+		// Check for async email validation error
+		if (mode === 'create' && isEmailExists) {
+			errors.email = 'Email already registered';
 			result.invalid = true;
 		}
 
@@ -182,6 +230,12 @@
 		// Preserve async username validation error
 		if (field === 'username' && isUsernameExists) {
 			errors.username = 'Username is already taken';
+			result.invalid = true;
+		}
+
+		// Preserve async email validation error
+		if (field === 'email' && isEmailExists) {
+			errors.email = 'Email already registered';
 			result.invalid = true;
 		}
 
@@ -199,6 +253,11 @@
 		// Clear username existence check when username changes
 		if (field === 'username' && isUsernameExists) {
 			isUsernameExists = false;
+		}
+
+		// Clear email existence check when email changes
+		if (field === 'email' && isEmailExists) {
+			isEmailExists = false;
 		}
 
 		if (touched[field]) {
@@ -372,22 +431,30 @@
 			{/if}
 		</Field>
 
-		<Field>
-			<FieldLabel for="email">
-				<span>Email</span>
-			</FieldLabel>
-			<Input
+	<Field>
+		<FieldLabel for="email">
+			<span>Email</span>
+		</FieldLabel>
+		<InputGroup class="bg-white">
+			<InputGroupInput
 				type="email"
 				id="email"
 				bind:value={formData.email}
-				aria-invalid={hasFieldErrorMessage('email')}
+				disabled={isModeUpdate}
+				aria-invalid={hasFieldErrorMessage('email') || isEmailExists}
 				onblur={() => markTouched('email')}
 				oninput={(e) => handleInputChange('email', e.currentTarget.value)}
 			/>
-			{#if getFieldErrorMessage('email')}
-				<FieldError errors={[{ message: getFieldErrorMessage('email') }]} />
-			{/if}
-		</Field>
+			<InputGroupAddon align="inline-end">
+				{#if isCheckingEmail}
+					<LoaderCircle class="size-4 animate-spin" />
+				{/if}
+			</InputGroupAddon>
+		</InputGroup>
+		{#if getFieldErrorMessage('email')}
+			<FieldError errors={[{ message: getFieldErrorMessage('email') }]} />
+		{/if}
+	</Field>
 
 		<Field>
 			<FieldLabel for="contact-number">
