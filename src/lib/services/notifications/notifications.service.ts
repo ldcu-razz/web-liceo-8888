@@ -149,7 +149,7 @@ export function getCreateTicketNotificationPayload(
 			code: ticket.code,
 			title: `<span style="font-weight: 600;">${createdByFullName}</span> created a new ticket`,
 			message: ticket.description,
-			// If anonymous, use empty string so UI can show HatGlasses icon
+			
 			created_by: isAnonymous ? '' : createdBy.id
 		},
 		mark_as_read: false,

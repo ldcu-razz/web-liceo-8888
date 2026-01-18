@@ -58,9 +58,9 @@
 		<div class="center flex flex-1 gap-4">
 			{#if isAnonymous}
 				<div
-					class="flex size-5 items-center justify-center rounded-full border-sky-300 bg-sky-100 text-sky-900"
+					class="flex size-8 items-center justify-center rounded-full border-sky-300 bg-sky-100 text-sky-900"
 				>
-					<HatGlasses class="size-4" />
+					<HatGlasses class="size-5" />
 				</div>
 			{:else}
 				<UserAvatar name={createdByUserFullName} imageLink={createdByUserAvatar} sizeClass="size-8" />
