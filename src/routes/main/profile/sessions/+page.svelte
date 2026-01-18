@@ -35,7 +35,7 @@
 	}
 </script>
 
-<div class="flex flex-col gap-6 py-4">
+<div class="w-full">
 	<div class="flex justify-between">
 		<h1 class="text-md text-2xl font-semibold">Sessions</h1>
 	</div>
@@ -47,7 +47,7 @@
 	{:else}
 		<div class="flex flex-col gap-2">
 			{#each meSessions as session}
-				<div class="rounded-md border border-border p-2 max-w-[95%] overflow-hidden mx-auto">
+				<div class="rounded-md border border-border p-2">
 					<div class="flex items-center justify-between gap-3">
 						<TooltipProvider delayDuration={0}>
 							<Tooltip>
@@ -74,7 +74,7 @@
 	{/if}
 
 	{#if !loading}
-		<div>
+		<div class="mt-4">
 			<Button
 				variant="outline"
 				size="sm"
@@ -122,13 +122,12 @@
 {#snippet expiredAtBadge(date: number)}
 	<div class="shrink-0 rounded-md border border-border bg-gray-50 px-2 py-1">
 		<span class="text-xs font-semibold text-gray-800"
-			>Expired At: {new Date(date).toLocaleDateString('en-US', {
-				month: 'long',
+			>Expired At: {new Date(date).toLocaleString('en-US', {
+				month: 'short',
 				day: 'numeric',
 				year: 'numeric',
-				hour: '2-digit',
+				hour: 'numeric',
 				minute: '2-digit',
-				second: '2-digit',
 				hour12: true
 			})}</span
 		>
