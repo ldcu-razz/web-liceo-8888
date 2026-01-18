@@ -173,15 +173,19 @@ export const notificationsActions = {
 			// For Mentioned Users
 			const mentionedUsers = comment.mentioned_users;
 			if (mentionedUsers.length > 0) {
-				const mentionedUserpayload: PostNotifications = mentionedUsers.map((user) => {
-					return getTicketNotificationCommentMentionedUserPayload(
-						ticket,
-						comment,
-						meStoreData,
-						user.id
-					);
-				});
-				await createNotification(mentionedUserpayload);
+				const mentionedUserpayload: PostNotifications = mentionedUsers
+					.map((user) => {
+						return getTicketNotificationCommentMentionedUserPayload(
+							ticket,
+							comment,
+							meStoreData,
+							user.id
+						);
+					})
+					.filter((payload) => payload !== null);
+				if (mentionedUserpayload.length > 0) {
+					await createNotification(mentionedUserpayload);
+				}
 			}
 
 			// For Reported User
@@ -189,8 +193,10 @@ export const notificationsActions = {
 				const reportedUser = get(allUsersMap)[ticket.reported_by.id];
 				const reportedUserPayload: PostNotifications = [
 					getTicketNotificationReportedUserPayload(ticket, comment, meStoreData, reportedUser.id)
-				];
-				await createNotification(reportedUserPayload);
+				].filter((payload) => payload !== null);
+				if (reportedUserPayload.length > 0) {
+					await createNotification(reportedUserPayload);
+				}
 			}
 		} catch (error) {
 			console.error(error);
