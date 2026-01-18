@@ -111,8 +111,9 @@
 		}
 	}
 
-	function handleSaveEditDescription() {
-		ticketsActions.updateTicketDescription(ticket.id, descriptionValue);
+	async function handleSaveEditDescription() {
+		await ticketsActions.updateTicketDescription(ticket.id, descriptionValue);
+		ticket = { ...ticket, description: descriptionValue };
 		isEditDescription = false;
 		descriptionValue = '';
 	}
