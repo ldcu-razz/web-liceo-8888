@@ -6,7 +6,6 @@
 	import { transformText } from '$lib/utils/texts.utils';
 	import { useSignedUrl } from '$lib/hooks/use-signed-url.svelte';
 	import { departmentsMap } from '$lib/store/departments.store';
-	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 	let me = $derived($meStore);
 	let department = $derived($departmentsMap[me?.department_id ?? '']);
@@ -112,12 +111,10 @@
 				<span class="text-sm">{me?.email ?? ''}</span>
 			</div>
 
-			{#if me?.role === UserRolesEnumSchema.enum.department_staff}
-				<div class="col-span-4 flex flex-col gap-1">
-					<span class="text-xs text-gray-500">Assigned Department</span>
-					<span class="text-sm">{department?.name ?? ''}</span>
-				</div>
-			{/if}
+			<div class="col-span-4 flex flex-col gap-1">
+				<span class="text-xs text-gray-500">Department</span>
+				<span class="text-sm">{department?.name ?? ''}</span>
+			</div>
 		</div>
 	</div>
 </div>

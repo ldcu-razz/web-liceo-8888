@@ -47,8 +47,8 @@
 	{:else}
 		<div class="flex flex-col gap-2">
 			{#each meSessions as session}
-				<div class="rounded-md border border-border p-2">
-					<div class="flex items-center justify-between gap-3">
+				<div class="rounded-md border border-border p-2 flex justify-between">
+					<div class="flex-1 flex items-center justify-between gap-3">
 						<TooltipProvider delayDuration={0}>
 							<Tooltip>
 								<TooltipTrigger class="max-w-[50%]">
