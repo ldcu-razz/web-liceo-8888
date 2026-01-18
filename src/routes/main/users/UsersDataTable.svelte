@@ -104,7 +104,7 @@
 			</div>
 			<Pagination
 				count={totalCount}
-				page={pagination.page}
+				bind:page={pagination.page}
 				perPage={pagination.size}
 				onPageChange={handlePageChange}
 				class="w-fit"
