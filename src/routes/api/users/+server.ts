@@ -22,7 +22,7 @@ export const GET = async ({ url }) => {
 
 	if (query) {
 		queryBuilder = queryBuilder.or(
-			`firstname.ilike.%${query}%,lastname.ilike.%${query}%,username.ilike.%${query}%`
+			`firstname.ilike.%${query}%,lastname.ilike.%${query}%,username.ilike.%${query}%,rfid_number.ilike.%${query}%`
 		);
 	}
 
