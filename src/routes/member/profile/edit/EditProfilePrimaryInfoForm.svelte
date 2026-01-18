@@ -2,12 +2,12 @@
 	import z from 'zod';
 
 	const formSchema = z.object({
-		firstname: z.string().min(1, 'Firstname is required'),
-		lastname: z.string().min(1, 'Lastname is required'),
+		firstname: z.string().min(1, 'Firstname is required').regex(/^[a-zA-Z\s\-]+$/, 'Only alphabetic characters, spaces, and hyphens are allowed'),
+		lastname: z.string().min(1, 'Lastname is required').regex(/^[a-zA-Z\s\-]+$/, 'Only alphabetic characters, spaces, and hyphens are allowed'),
 		sex: SexEnumSchema,
 		birthdate: z.string().min(1, 'Birthdate is required'),
 		email: z.string().email('Invalid email address'),
-		contact_number: z.string().optional()
+		contact_number: z.string().optional().refine((val) => !val || val.length <= 13, 'Contact number must be at most 13 characters')
 	});
 
 	export type FormData = z.infer<typeof formSchema>;
