@@ -5,6 +5,7 @@ import { getDashboardStats, getTotalTicketsGraph } from '$lib/services/dashboard
 import { getTickets } from '$lib/services/tickets/tickets.service';
 import { writable, get } from 'svelte/store';
 import { meStore } from './me.store';
+import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
 export const dashboardStatsStore = writable<DashboardStats>();
 export const dashboardStatsLoadingStore = writable<boolean>(false);
@@ -53,7 +54,7 @@ export const dashboardActions = {
 			dashboardRecentTicketsErrorStore.set(null);
 			const user = get(meStore);
 			let departmentsAssignedIds: string[] | undefined;
-			if (user?.role === 'department_staff' && user.department_id) {
+			if (user?.role === UserRolesEnumSchema.enum.department_staff && user.department_id) {
 				departmentsAssignedIds = [user.department_id];
 			}
 			const tickets = await getTickets({ page: 1, size: 15 }, undefined, departmentsAssignedIds);
