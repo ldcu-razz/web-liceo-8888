@@ -163,9 +163,7 @@ export function getUpdateStatusTicketNotificationPayload(
 	updatedBy: GetUser,
 	notifyToUserId: string
 ): PostNotificationPayload {
-	const updatedByFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${updatedBy.firstname} ${updatedBy.lastname}`;
+	const updatedByFullName = `${updatedBy.firstname} ${updatedBy.lastname}`;
 	const ticketStatusName = transformText(ticket.status);
 	return {
 		id: uuid(),
@@ -189,12 +187,8 @@ export function getUserAssignedTicketNotificationPayload(
 	assignedTo: Users,
 	notifyToUserId: string
 ): PostNotificationPayload {
-	const assignedByFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${assignedBy.firstname} ${assignedBy.lastname}`;
-	const assignedToFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${assignedTo.firstname} ${assignedTo.lastname}`;
+	const assignedByFullName = `${assignedBy.firstname} ${assignedBy.lastname}`;
+	const assignedToFullName = `${assignedTo.firstname} ${assignedTo.lastname}`;
 	return {
 		id: uuid(),
 		type: NotificationsTypesSchema.enum.ticket_user_assigned,
@@ -216,10 +210,11 @@ export const getTicketNotificationReportedUserPayload = (
 	comment: GetTicketComment,
 	createdByUser: GetUser,
 	notifyToUserId: string
-): PostNotificationPayload => {
-	const createdByUserFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${createdByUser.firstname} ${createdByUser.lastname}`;
+): PostNotificationPayload | null => {
+	if (createdByUser.id === notifyToUserId) {
+		return null;
+	}
+	const createdByUserFullName = `${createdByUser.firstname} ${createdByUser.lastname}`;
 	return {
 		id: uuid(),
 		type: NotificationsTypesSchema.enum.ticket_commented,
@@ -241,10 +236,11 @@ export const getTicketNotificationCommentMentionedUserPayload = (
 	comment: GetTicketComment,
 	createdByUser: GetUser,
 	notifyToUserId: string
-): PostNotificationPayload => {
-	const createdByUserFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${createdByUser.firstname} ${createdByUser.lastname}`;
+): PostNotificationPayload | null => {
+	if (createdByUser.id === notifyToUserId) {
+		return null;
+	}
+	const createdByUserFullName = `${createdByUser.firstname} ${createdByUser.lastname}`;
 	return {
 		id: uuid(),
 		type: NotificationsTypesSchema.enum.ticket_commented,
@@ -268,9 +264,7 @@ export const getTicketNotificationDepartmentAssignedPayload = (
 	notifyToUserId: string
 ): PostNotificationPayload => {
 	const departmentName = `${department.name}`;
-	const assignedByFullName = ticket?.anon
-		? 'Anonymous User'
-		: `${assignedBy.firstname} ${assignedBy.lastname}`;
+	const assignedByFullName = `${assignedBy.firstname} ${assignedBy.lastname}`;
 	const assignedById = assignedBy.id;
 	return {
 		id: uuid(),
