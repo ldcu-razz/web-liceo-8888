@@ -47,8 +47,8 @@
 	{:else}
 		<div class="flex flex-col gap-2">
 			{#each meSessions as session}
-				<div class="rounded-md border border-border p-4">
-					<div class="flex items-center justify-between gap-6">
+				<div class="rounded-md border border-border p-2 max-w-[95%] overflow-hidden mx-auto">
+					<div class="flex items-center justify-between gap-3">
 						<TooltipProvider delayDuration={0}>
 							<Tooltip>
 								<TooltipTrigger class="max-w-[50%]">
@@ -59,7 +59,7 @@
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
-						<div class="flex gap-2">
+						<div class="ml-auto flex flex-wrap items-center gap-2">
 							{#if session.is_revoked}
 								{@render expiredBadge()}
 							{:else}
