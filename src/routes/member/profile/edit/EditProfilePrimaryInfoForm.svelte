@@ -219,6 +219,7 @@
 			<Input
 				type="email"
 				id="email"
+				disabled
 				class="py-5 {getFieldError('email', touched, errors)
 					? 'border-destructive ring-destructive/20 dark:ring-destructive/40'
 					: ''}"
