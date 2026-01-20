@@ -53,7 +53,7 @@
 	let isMeRoleDepartmentStaff = $derived(me?.role === UserRolesEnumSchema.enum.department_staff);
 
 	let disabledDeleteTicketButton = $derived(
-		me?.role === UserRolesEnumSchema.enSum.department_staff ||
+		me?.role === UserRolesEnumSchema.enum.department_staff ||
 			me?.role === UserRolesEnumSchema.enum.user
 	);
 
