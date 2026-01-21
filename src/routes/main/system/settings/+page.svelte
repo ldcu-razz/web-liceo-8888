@@ -112,6 +112,22 @@
 						onblur={() =>
 							handleUpdateSystemSettings({ number_of_tickets_creation_limit: ticketCreationLimit })}
 					/>
+					<p></p>
+					<div class="flex flex-col gap-1">
+						<div class="text-xs font-medium">Reset all users ticket limit</div>
+						<p class="text-xs text-muted-foreground">
+							The reset all users ticket limit is used to reset the ticket limit for all users.
+						</p>
+					</div>
+					<div class="mt-3 flex justify-start">
+						<Button
+							variant="destructive"
+							size="sm"
+							disabled={resetAllUsersTicketLimitLoading}
+							onclick={() => handleShowResetAllUsersTicketLimitAlertDialog()}
+							>Reset All Users Ticket Limit</Button
+						>
+					</div>
 				</div>
 			</div>
 
@@ -148,26 +164,6 @@
 						onCheckedChange={() =>
 							handleUpdateSystemSettings({ is_maintenance_mode: maintenanceMode })}
 					/>
-				</div>
-			</div>
-
-			<div class="col-span-6 h-full">
-				<div class="flex h-full flex-col gap-2 rounded-md border border-border p-4">
-					<div class="flex flex-col gap-1">
-						<div class="text-xs font-medium">Reset all users ticket limit</div>
-						<p class="text-xs text-muted-foreground">
-							The reset all users ticket limit is used to reset the ticket limit for all users.
-						</p>
-					</div>
-					<div class="mt-3 flex justify-start">
-						<Button
-							variant="destructive"
-							size="sm"
-							disabled={resetAllUsersTicketLimitLoading}
-							onclick={() => handleShowResetAllUsersTicketLimitAlertDialog()}
-							>Reset All Users Ticket Limit</Button
-						>
-					</div>
 				</div>
 			</div>
 		</div>
