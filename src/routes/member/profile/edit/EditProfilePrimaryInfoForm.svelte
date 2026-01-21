@@ -7,7 +7,9 @@
 		sex: SexEnumSchema,
 		birthdate: z.string().min(1, 'Birthdate is required'),
 		email: z.string().email('Invalid email address'),
-		contact_number: z.string().optional().refine((val) => !val || val.length <= 13, 'Contact number must be at most 13 characters')
+		contact_number: z.string().optional().refine((val) => !val || /^(09\d{9}|\+639\d{9})$/.test(val),'Phone number must be either 11 digits (local) or +63 followed by 10 digits'
+  )
+
 	});
 
 	export type FormData = z.infer<typeof formSchema>;
