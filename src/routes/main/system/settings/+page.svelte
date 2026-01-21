@@ -107,6 +107,7 @@
 					</div>
 					<Input
 						type="number"
+						min="0"
 						bind:value={ticketCreationLimit}
 						onblur={() =>
 							handleUpdateSystemSettings({ number_of_tickets_creation_limit: ticketCreationLimit })}
