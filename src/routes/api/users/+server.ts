@@ -12,7 +12,8 @@ export const GET = async ({ url }) => {
 	let queryBuilder = supabase
 		.from('users')
 		.select(
-			'*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)'
+			'*, properties:user_properties(id, remaining_tickets_creation, bypass_ticket_creation_limit)',
+			{ count: 'exact' }
 		)
 		.order('createdAt', { ascending: false });
 
@@ -30,18 +31,12 @@ export const GET = async ({ url }) => {
 		queryBuilder = queryBuilder.in('role', userRolesArray);
 	}
 
-	const { data, error } = await queryBuilder.overrideTypes<Users>();
+	const { data, count, error } = await queryBuilder.overrideTypes<Users>();
 
 	if (error) {
 		return new Response(JSON.stringify({ error: error.message }), { status: 500 });
 	}
 
-	const { count, error: countError } = await supabase
-		.from('users')
-		.select('*', { count: 'exact', head: true });
-	if (countError) {
-		return new Response(JSON.stringify({ error: countError.message }), { status: 500 });
-	}
 	return new Response(JSON.stringify({ data, count, page, size }), { status: 200 });
 };
 

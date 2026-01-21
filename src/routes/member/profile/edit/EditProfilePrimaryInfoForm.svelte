@@ -56,6 +56,12 @@
 	let sexOptions = $derived(SexEnumSchema.options);
 
 	let birthdate = $state<DateValue | undefined>(undefined);
+	
+	$effect(() => {
+		if (formData.birthdate) {
+			birthdate = fromDate(new Date(formData.birthdate), getLocalTimeZone());
+		}
+	});
 
 	let todayDate = $state<DateValue | undefined>(fromDate(new Date(), getLocalTimeZone()));
 
@@ -200,12 +206,20 @@
 			<SelectCalendar
 				bind:value={birthdate}
 				maxValue={todayDate}
-				buttonClass="py-5 bg-white {getFieldError('birthdate', touched, errors)
-					? 'border-destructive ring-destructive/20 dark:ring-destructive/40'
-					: ''}"
+				buttonClass="py-5 bg-white {getFieldError('birthdate', touched, errors) ? 'border-destructive ring-destructive/20 dark:ring-destructive/40' : ''}"
 				onValueChange={handleBirthdateChange}
 				onOpenChange={handleBirthdatePopoverClose}
-			/>
+				>
+				<span slot="trigger">
+					{#if birthdate}
+					{birthdate.toDate(getLocalTimeZone()).toLocaleDateString()}
+					{:else if formData.birthdate}
+					{new Date(formData.birthdate).toLocaleDateString()}
+					{:else}
+					Select your birthdate
+					{/if}
+				</span>
+			</SelectCalendar>
 
 			{#if getFieldError('birthdate', touched, errors)}
 				<span class="text-sm text-red-500">{getFieldError('birthdate', touched, errors)}</span>
@@ -219,6 +233,7 @@
 			<Input
 				type="email"
 				id="email"
+				disabled
 				class="py-5 {getFieldError('email', touched, errors)
 					? 'border-destructive ring-destructive/20 dark:ring-destructive/40'
 					: ''}"

@@ -19,6 +19,9 @@
 	} from '$lib/utils/form.utils';
 	import { LoaderCircle } from '@lucide/svelte';
 	import z from 'zod';
+	import { FilesSchema } from '$lib/models/files/files.schema';
+	import FilePlaceholder from '$lib/components/common/FilePlaceholder.svelte';
+	import { toast } from 'svelte-sonner';
 
 	export const formSchema = z.object({
 		code: z.string().optional().default(''),
@@ -29,7 +32,8 @@
 		status: TicketStatusesSchema.default(TicketStatusesSchema.enum.backlog),
 		current_department_assigned: z.string().nullable().default(null),
 		current_user_assigned: z.string().nullable().default(null),
-		reported_by: z.string().nullable().default(null)
+		reported_by: z.string().nullable().default(null),
+		attachments: FilesSchema.array()
 	});
 
 	export type FormData = z.infer<typeof formSchema>;
@@ -43,7 +47,8 @@
 		status: TicketStatusesSchema.enum.backlog,
 		current_department_assigned: null,
 		current_user_assigned: null,
-		reported_by: ''
+		reported_by: '',
+		attachments: []
 	};
 
 	export type Props = {
@@ -51,6 +56,7 @@
 		loading?: boolean;
 		disabledPositiveButton?: boolean;
 		invalid?: boolean;
+		uploadedFiles?: File[];
 		onSubmit?: (formData: FormData) => void;
 		onCancel?: () => void;
 	};
@@ -62,6 +68,7 @@
 		loading = $bindable(false),
 		disabledPositiveButton = false,
 		invalid = $bindable(false),
+		uploadedFiles = $bindable([]),
 		onSubmit = () => {},
 		onCancel = () => {}
 	}: Props = $props();
@@ -75,7 +82,8 @@
 		status: false,
 		current_department_assigned: false,
 		current_user_assigned: false,
-		reported_by: false
+		reported_by: false,
+		attachments: false
 	});
 
 	let isFormTouched = $derived(Object.values(touchedFields).some((value) => value === true));
@@ -111,6 +119,44 @@
 		if (!validation.invalid) {
 			onSubmit(formData);
 		}
+	}
+
+	function openAttachments() {
+		document.getElementById('attachments')?.click();
+	}
+
+	async function handleAttachmentsChange(e: Event) {
+		const input = document.getElementById('attachments') as HTMLInputElement;
+		const files = input.files;
+		const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB in bytes
+
+		if (files) {
+			const validFiles: File[] = [];
+			const invalidFiles: string[] = [];
+
+			Array.from(files).forEach((file) => {
+				if (file.size > MAX_FILE_SIZE) {
+					invalidFiles.push(file.name);
+				} else {
+					validFiles.push(file);
+				}
+			});
+
+			if (invalidFiles.length > 0) {
+				toast.error(`File${invalidFiles.length > 1 ? 's' : ''} too large`, {
+					description: `${invalidFiles.join(', ')} exceed${invalidFiles.length === 1 ? 's' : ''} the 25MB limit`
+				});
+			}
+
+			if (validFiles.length > 0) {
+				uploadedFiles = [...uploadedFiles, ...validFiles];
+			}
+		}
+		input.value = '';
+	}
+
+	function handleRemoveFile(file: File) {
+		uploadedFiles = uploadedFiles.filter((f) => f !== file);
 	}
 </script>
 
@@ -187,6 +233,38 @@
 				</p>
 			{/if}
 		</Field>
+
+		<Field>
+			<FieldLabel class="gap-1">Attachments</FieldLabel>
+			<div
+				class="group flex min-h-14 w-full cursor-pointer items-center justify-center rounded-md border border-dashed border-border bg-gray-100 p-2"
+				role="button"
+				tabindex="0"
+				onkeydown={(e) => e.key === 'Enter' && openAttachments()}
+				onclick={openAttachments}
+			>
+				<Input
+					id="attachments"
+					type="file"
+					multiple
+					class="hidden"
+					accept="image/*,video/*,application/pdf"
+					onchange={handleAttachmentsChange}
+				/>
+				<span class="text-sm text-muted-foreground">Click to upload attachments</span>
+			</div>
+		</Field>
+		{#if uploadedFiles.length > 0}
+			<div class="flex gap-2 overflow-x-auto">
+				{#each uploadedFiles as file}
+					{@const isNonMediaFile = file.type !== 'image' && file.type !== 'video'}
+					{@const sizeClass = isNonMediaFile ? 'w-52 h-32' : 'size-32'}
+					<div class={sizeClass}>
+						<FilePlaceholder {file} onRemove={() => handleRemoveFile(file)} />
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</FieldGroup>
 
 	<div class="mt-4 flex gap-2">

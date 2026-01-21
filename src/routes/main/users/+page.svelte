@@ -91,7 +91,7 @@
 		</Button>
 	</div>
 
-	<UsersDataTable {loading} {columns} {data} />
+	<UsersDataTable {loading} {columns} {data} searchQuery={search} />
 </div>
 
 <AlertDialog bind:open={showDeleteUserAlertDialog}>

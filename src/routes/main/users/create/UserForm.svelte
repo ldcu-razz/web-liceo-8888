@@ -60,7 +60,7 @@
 				.min(1, 'Contact number is required')
 				.max(13, 'Invalid contact number')
 				.startsWith('09', 'Contact number must start with 09'),
-			department_id: UUIDSchema,
+			department_id: UUIDSchema.min(1, 'Department is required'),
 			role: UserRolesEnumSchema,
 			username: z
 				.string()
@@ -138,6 +138,10 @@
 	let isUsernameExists = $state(false);
 	let isEmailExists = $state(false);
 	let isCheckingEmail = $state(false);
+	
+	$effect(() => {
+		validateFormData();
+	});
 
 	const debouncedCheckUsername = debounce(async (username: string) => {
 		const response = await usersActions.checkUsername(username);
@@ -149,6 +153,7 @@
 		} else {
 			errors.username = undefined;
 		}
+		validateFormData();
 	}, 600);
 
 	const debouncedCheckEmail = debounce(async (email: string) => {
@@ -176,6 +181,7 @@
 			isEmailExists = false;
 		} finally {
 			isCheckingEmail = false;
+			validateFormData();
 		}
 	}, 300);
 
@@ -622,7 +628,7 @@
 					type="submit"
 					variant="secondary"
 					class="w-fit"
-					disabled={(invalid && isFormTouched) || loading}
+					disabled={invalid || loading || isCheckingEmail}
 				>
 					Create User
 				</Button>
@@ -631,7 +637,7 @@
 					type="submit"
 					variant="secondary"
 					class="w-fit"
-					disabled={(invalid && isFormTouched) || loading}
+					disabled={invalid || loading || isCheckingEmail}
 				>
 					Update User
 				</Button>
