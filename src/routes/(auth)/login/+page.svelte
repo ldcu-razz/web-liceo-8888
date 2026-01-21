@@ -26,6 +26,7 @@
 			const role = response.user.role;
 			if (
 				role === UserRolesEnumSchema.enum.admin ||
+				role === UserRolesEnumSchema.enum.department_staff ||
 				role === UserRolesEnumSchema.enum.super_admin
 			) {
 				goto(MAIN);
