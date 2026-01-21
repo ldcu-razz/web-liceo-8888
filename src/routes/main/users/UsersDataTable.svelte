@@ -30,7 +30,7 @@
 </script>
 
 <script lang="ts">
-	let { columns, data, loading = $bindable(false) }: DataTableProps<Users, unknown> = $props();
+	let { columns, data, searchQuery, loading = $bindable(false) }: DataTableProps<Users, unknown> & { searchQuery: string } = $props();
 
 	let pagination = $state($usersPagination);
 
@@ -49,9 +49,9 @@
 	});
 
 	async function handlePageChange(page: number) {
-		await usersActions.getUsers({ page: page, size: pagination.size });
-		table.setPageIndex(page);
-	}
+    await usersActions.getUsers({ page: page, size: pagination.size }, searchQuery); 
+    table.setPageIndex(page);
+}
 </script>
 
 <div class="relative">
