@@ -64,6 +64,8 @@
 		}
 	]);
 
+	const priorityOrder = ['highest', 'high', 'medium', 'low', 'lowest'];
+
 	let columns = $derived<BoardColumn[]>(
 		baseColumns.map((column) => ({
 			...column,
@@ -71,6 +73,7 @@
 				.filter((ticket) => {
 					return ticket.status === column.title;
 				})
+				.sort((a, b) => priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority))
 				.map((ticket) => ticket)
 		}))
 	);
