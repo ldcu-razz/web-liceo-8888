@@ -138,10 +138,6 @@
 	let isUsernameExists = $state(false);
 	let isEmailExists = $state(false);
 	let isCheckingEmail = $state(false);
-	
-	$effect(() => {
-		validateFormData();
-	});
 
 	const debouncedCheckUsername = debounce(async (username: string) => {
 		const response = await usersActions.checkUsername(username);
@@ -181,7 +177,6 @@
 			isEmailExists = false;
 		} finally {
 			isCheckingEmail = false;
-			validateFormData();
 		}
 	}, 300);
 
