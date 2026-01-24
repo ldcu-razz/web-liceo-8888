@@ -26,7 +26,7 @@
 	import { debounce } from '$lib/utils/reactive.utils';
 	import { UserRolesEnumSchema } from '$lib/models/users/users.schema';
 
-	const priorityOrder = ['highest', 'high', 'medium', 'low', 'lowest'];
+	const priorityOrder = TicketsPrioritiesSchema.options;
 
 	let tickets = $derived(
 		$ticketsStore.sort((a, b) => priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority))
