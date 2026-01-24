@@ -4,6 +4,7 @@
 	import { ChevronDownIcon, ListIcon, PlusIcon, PresentationIcon } from '@lucide/svelte';
 	import TicketsBoard from './kanban-board/TicketsBoard.svelte';
 	import type { GetTicket, PostTicket, TicketStatuses } from '$lib/models/tickets/tickets.type';
+	import { TicketsPrioritiesSchema } from '$lib/models/tickets/tickets.schema';
 	import TicketsList from './list/TicketsList.svelte';
 	import TicketsFilters from './TicketsFilters.svelte';
 	import Dialog from '$lib/components/ui/dialog/dialog.svelte';
