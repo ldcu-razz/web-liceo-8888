@@ -39,6 +39,8 @@
 	} from '$lib/components/ui/tooltip';
 	import AnonymousBadge from '$lib/components/common/AnonymousBadge.svelte';
 	import FilePlaceholder from '$lib/components/common/FilePlaceholder.svelte';
+	import { goto } from '$app/navigation';
+	import { TICKETS_BOARD } from '$lib/constants/routes.constants';
 
 	export type Props = {
 		ticket: GetTicket;
@@ -95,6 +97,7 @@
 
 	function handleDeleteTicket() {
 		ticketsActions.deleteTicket(ticket.id);
+		goto(TICKETS_BOARD);
 		close();
 	}
 

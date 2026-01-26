@@ -43,6 +43,7 @@
 	let showCreateTicketForm = $state(false);
 	let createTicketFormData = $state<CreateTicketFormData>({ ...initialFormData });
 	let createTicketFormLoading = $state(false);
+	let uploadedFiles = $state<File[]>([]);
 
 	let isTickerReachedMaxLimit = $derived(tickets.length >= totalCount);
 
@@ -149,11 +150,12 @@
 			updatedAt: new Date().toISOString()
 		};
 
-		await ticketsActions.createTicket(payload);
+		await ticketsActions.createTicket(payload, uploadedFiles);
 
 		showCreateTicketForm = false;
 		createTicketFormLoading = false;
 		createTicketFormData = { ...initialFormData };
+		uploadedFiles = [];
 	}
 
 	function handleNavigateToList() {
@@ -238,6 +240,7 @@
 		<DialogTitle>Create Ticket</DialogTitle>
 		<CreateTicketForm
 			bind:formData={createTicketFormData}
+			bind:uploadedFiles
 			loading={createTicketFormLoading}
 			onSubmit={handleAddTicketClick}
 			onCancel={toggleCreateTicketForm}
