@@ -343,7 +343,7 @@
 				{/if}
 
 				{#if activeTab === historyTab}
-					<div class="max-h-[calc(80vh-230px)] overflow-y-auto">
+					<div class="max-h-[calc(80vh-230px)] min-h-10 overflow-y-auto">
 						<TicketHistory ticketId={ticket.id} isAnonymous={isAnonymous} />
 					</div>
 				{/if}
