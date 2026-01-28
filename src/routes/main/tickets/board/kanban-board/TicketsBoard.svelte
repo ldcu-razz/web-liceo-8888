@@ -1,6 +1,6 @@
 <script lang="ts" module>
 	import { Badge } from '$lib/components/ui/badge';
-	import { TicketStatusesSchema } from '$lib/models/tickets/tickets.schema';
+	import { TicketStatusesSchema, TicketsPrioritiesSchema } from '$lib/models/tickets/tickets.schema';
 	import type { GetTicket, Ticket, TicketStatuses } from '$lib/models/tickets/tickets.type';
 	import { transformText } from '$lib/utils/texts.utils';
 	import TicketsCard from '../TicketsCard.svelte';
@@ -64,7 +64,7 @@
 		}
 	]);
 
-	const priorityOrder = ['highest', 'high', 'medium', 'low', 'lowest'];
+	const priorityOrder = TicketsPrioritiesSchema.options;
 
 	let columns = $derived<BoardColumn[]>(
 		baseColumns.map((column) => ({
